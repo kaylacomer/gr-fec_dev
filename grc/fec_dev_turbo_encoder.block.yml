@@ -1,5 +1,6 @@
 id: variable_turbo_encoder_def
 label: Turbo Encoder Definition
+category: '[fec_dev]'
 flags: [ show_id ]
 
 parameters:

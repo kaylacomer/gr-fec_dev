@@ -10,7 +10,6 @@
 
 #include "turbo_encoder_impl.h"
 #include <gnuradio/fec/generic_encoder.h>
-#include <aff3ct.hpp>
 #include <volk/volk.h>
 #include <sstream>
 
@@ -45,8 +44,6 @@ fec::generic_encoder::sptr turbo_encoder::make(int frame_size,
         int N_rsc = 2 * (frame_size+std::log2(trellis_size));
         auto enco_n = aff3ct::module::Encoder_RSC_generic_sys<B_8>(frame_size, N_rsc, buffered, polys);
         auto enco_i = enco_n;
-
-        // auto trellis = enco_n.get_trellis();
         
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
         d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
@@ -85,9 +82,9 @@ double turbo_encoder_impl::rate() { return d_frame_size / d_output_size; }
 
 void turbo_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
-    const signed char* in = (const signed char*)inbuffer;
-    signed char* out = (signed char*)outbuffer;
-
+    const B_8* in = (const B_8*)inbuffer;
+    B_8* out = (B_8*)outbuffer;
+    
     d_encoder->encode(in, out);
 }
 

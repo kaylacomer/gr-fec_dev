@@ -7,4 +7,6 @@
 #
 install(FILES
     fec_dev_turbo_encoder.block.yml
-    fec_dev_turbo_decoder.block.yml DESTINATION share/gnuradio/grc/blocks)
+    fec_dev_turbo_decoder.block.yml
+    fec_dev_bch_encoder.block.yml
+    DESTINATION share/gnuradio/grc/blocks)

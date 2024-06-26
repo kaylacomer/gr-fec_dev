@@ -12,7 +12,8 @@
 include(GrPlatform) #define LIB_SUFFIX
 list(APPEND fec_dev_sources
     turbo_encoder_impl.cc
-    turbo_decoder_impl.cc )
+    turbo_decoder_impl.cc
+    bch_encoder_impl.cc )
 
 set(fec_dev_sources
     "${fec_dev_sources}"
@@ -55,7 +56,10 @@ include(GrTest)
 # If your unit tests require special include paths, add them here
 #include_directories()
 # List all files that contain Boost.UTF unit tests here
-list(APPEND test_fec_dev_sources)
+
+list(APPEND test_fec_dev_sources
+
+)
 # Anything we need to link to for the unit tests go here
 list(APPEND GR_TEST_TARGET_DEPS gnuradio-fec_dev)
 
