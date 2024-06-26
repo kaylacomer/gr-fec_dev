@@ -13,7 +13,8 @@
 #include <string>
 
 #include "Tools/types.h"
-#include "Module/Encoder/BCH/Encoder_bch.hpp"
+#include "Module/Encoder/BCH/Encoder_BCH.hpp"
+#include "Tools/Code/BCH/BCH_polynomial_generator.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -25,6 +26,8 @@ private:
   unsigned int d_max_frame_size;
   int d_input_size;
   int d_output_size;
+
+  std::unique_ptr<aff3ct::module::Encoder_BCH<B_8>> d_encoder;
 
 public:
   bch_encoder_impl(int frame_size);

@@ -6,7 +6,6 @@
  */
 
 #include "bch_encoder_impl.h"
-#include <gnuradio/fec_dev/bch_encoder.h>
 #include <gnuradio/io_signature.h>
 
 namespace gr {
@@ -25,7 +24,16 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_size)
     {
         set_frame_size(frame_size);
 
-        //create encoder
+        int N = 127;
+        int t = 15;
+        auto poly = aff3ct::tools::BCH_polynomial_generator<B_8>(N, t);
+        int n_redundancy = poly.get_n_rdncy();
+        int K = N - n_redundancy;
+
+        d_input_size = K;
+        d_output_size = N;
+
+        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(K, N, poly);
 }
 
 /*
@@ -50,21 +58,20 @@ bool bch_encoder_impl::set_frame_size(unsigned int frame_size)
     }
 
     d_frame_size = frame_size;
-    d_output_size = frame_size;
-    d_input_size = frame_size;
 
     return ret;
 }
 
-double bch_encoder_impl::rate() { return d_frame_size / d_output_size; }
+double bch_encoder_impl::rate() { return d_input_size / d_output_size; }
 
 void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
-    const unsigned char* in = (const unsigned char*)inbuffer;
-    unsigned char* out = (unsigned char*)outbuffer;
+    const B_8* in = (const B_8*)inbuffer;
+    B_8* out = (B_8*)outbuffer;
 
     // call encoder
-    memcpy(out, in, d_frame_size * sizeof(char));
+    // memcpy(out, in, d_frame_size * sizeof(char));
+    d_encoder->encode(in, out);
 }
 
 } /* namespace fec_dev */

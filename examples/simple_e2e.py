@@ -25,7 +25,7 @@ class simple_fg(gr.top_block):
         self.source = blocks.vector_source_b(vector, False, 1, [])
         self.throttle = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.unpack = blocks.unpack_k_bits_bb(8)
-        self.enc_turbo = enc_turbo = fec_dev.turbo_encoder.make(frame_size * 8)
+        self.enc_turbo = enc_turbo = fec_dev.bch_encoder.make(frame_size * 8)
         self.fec_encoder = fec.extended_encoder(enc_turbo, threading= None, puncpat=puncpat)
         constellation = digital.constellation_bpsk()
         self.mapper = digital.constellation_encoder_bc(constellation)
@@ -68,7 +68,7 @@ def main():
     print('\npacked')
     # print(f'src: {np.packbits(src_data)}')
     print(f'enc: {np.packbits(enc_data)}')
-    print(f'dec: {np.packbits(dec_data)}')
+    # print(f'dec: {np.packbits(dec_data)}')
 
     return True
 
