@@ -5,20 +5,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-#ifndef INCLUDED_FEC_DEV_BCH_ENCODER_IMPL_H
-#define INCLUDED_FEC_DEV_BCH_ENCODER_IMPL_H
+#ifndef INCLUDED_FEC_DEV_BCH_DECODER_IMPL_H
+#define INCLUDED_FEC_DEV_BCH_DECODER_IMPL_H
 
-#include <gnuradio/fec_dev/bch_encoder.h>
+#include <gnuradio/fec_dev/bch_decoder.h>
 #include <map>
 #include <string>
 
 #include "Tools/types.h"
-#include "Module/Encoder/BCH/Encoder_bch.hpp"
+#include "Module/Decoder/BCH/Decoder_bch.hpp"
 
 namespace gr {
 namespace fec_dev {
     
-class FEC_API bch_encoder_impl : public bch_encoder
+class FEC_API bch_decoder_impl : public bch_decoder
 {
 private:
   unsigned int d_frame_size;
@@ -27,8 +27,8 @@ private:
   int d_output_size;
 
 public:
-  bch_encoder_impl(int frame_size);
-  ~bch_encoder_impl() override;
+  bch_decoder_impl(int frame_size);
+  ~bch_decoder_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;
   double rate() override;
@@ -40,4 +40,4 @@ public:
 } // namespace fec_dev
 } // namespace gr
 
-#endif /* INCLUDED_FEC_DEV_BCH_ENCODER_IMPL_H */
+#endif /* INCLUDED_FEC_DEV_BCH_DECODER_IMPL_H */

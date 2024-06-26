@@ -13,7 +13,8 @@ include(GrPlatform) #define LIB_SUFFIX
 list(APPEND fec_dev_sources
     turbo_encoder_impl.cc
     turbo_decoder_impl.cc
-    bch_encoder_impl.cc )
+    bch_encoder_impl.cc
+    bch_decoder_impl.cc )
 
 set(fec_dev_sources
     "${fec_dev_sources}"
@@ -58,6 +59,7 @@ include(GrTest)
 # List all files that contain Boost.UTF unit tests here
 
 list(APPEND test_fec_dev_sources
+
 
 )
 # Anything we need to link to for the unit tests go here
