@@ -39,6 +39,7 @@ private:
     unsigned int d_max_frame_size;
     unsigned int d_frame_size;
     int d_input_size;
+    int d_output_size;
     int d_trellis_size;
     std::unique_ptr<aff3ct::module::Decoder_turbo<B_8, Q_8>> d_decoder;
     std::unique_ptr<aff3ct::tools::Interleaver_core_LTE<>> d_interleaver_core;

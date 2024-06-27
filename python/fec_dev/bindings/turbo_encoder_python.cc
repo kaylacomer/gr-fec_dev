@@ -42,7 +42,7 @@ void bind_turbo_encoder(py::module& m)
              py::arg("standard") = ::gr::fec_dev::_enc_standard_t::LTE,
              py::arg("subencoder") = ::gr::fec_dev::_enc_sub_type_t::RSC,
              py::arg("buffered") = true,
-             py::arg("polys") = std::vector<int>{011, 013},
+             py::arg("polys") = std::vector<int>{013, 015},
              py::arg("trellis_size") = 8,
              D(turbo_encoder, make))
 

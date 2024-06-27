@@ -84,23 +84,24 @@ bool turbo_decoder_impl::set_frame_size(unsigned int frame_size)
     }
 
     d_frame_size = frame_size;
+    d_output_size = frame_size;
     d_input_size = 3*d_frame_size + 4*std::log2(d_trellis_size);
 
     return ret;
 }
 
-double turbo_decoder_impl::rate() { return d_frame_size / d_input_size; }
+double turbo_decoder_impl::rate() { return d_output_size / d_input_size; }
 
 void turbo_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const float* in = (const float*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    auto my_quant_input =  std::vector<Q_8>(d_input_size);
-    auto quant = aff3ct::module::Quantizer_pow2_fast<float,Q_8>(d_input_size, 6);
-    quant.process(in, my_quant_input.data(), -1);
+    auto quant_input =  std::vector<Q_8>(d_input_size);
+    auto quantizer = aff3ct::module::Quantizer_pow2_fast<float,Q_8>(d_input_size, 6);
+    quantizer.process(in, quant_input.data(), -1);
 
-    d_decoder->decode_siho(my_quant_input.data(), out, -1);
+    d_decoder->decode_siho(quant_input.data(), out, -1);
 }
 
 } /* namespace fec */
