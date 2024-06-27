@@ -22,7 +22,16 @@ fec::generic_decoder::sptr bch_decoder::make(int frame_size)
     {
         set_frame_size(frame_size);
 
-        //create decoder
+        int N = 63;
+        int t = 3;
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(N, t);
+        int n_redundancy = d_poly_gen->get_n_rdncy();
+        int K = N - n_redundancy;
+
+        d_input_size = K;
+        d_output_size = N;
+
+        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>>(K, N, *d_poly_gen);
 }
 
 bch_decoder_impl::~bch_decoder_impl()
@@ -44,21 +53,22 @@ bool bch_decoder_impl::set_frame_size(unsigned int frame_size)
     }
 
     d_frame_size = frame_size;
-    d_input_size = frame_size;
-    d_output_size = frame_size;
 
     return ret;
 }
 
-double bch_decoder_impl::rate() { return d_frame_size / d_input_size; } // decoder rate
+double bch_decoder_impl::rate() { return d_output_size / d_input_size; } // decoder rate
 
 void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
-    const unsigned char* in = (const unsigned char*)inbuffer;
-    unsigned char* out = (unsigned char*)outbuffer;
+    const float* in = (const float*)inbuffer;
+    B_8* out = (B_8*)outbuffer;
 
-    // call decoder
-    memcpy(out, in, d_frame_size * sizeof(char));
+    auto quant_input =  std::vector<Q_8>(d_input_size);
+    auto quantizer = aff3ct::module::Quantizer_pow2_fast<float,Q_8>(d_input_size, 6);
+    quantizer.process(in, quant_input.data(), -1);
+
+    d_decoder->decode_siho(quant_input.data(), out, -1);
 }
 
 

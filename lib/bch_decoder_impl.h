@@ -12,8 +12,12 @@
 #include <map>
 #include <string>
 
+#include <aff3ct.hpp>
 #include "Tools/types.h"
-#include "Module/Decoder/BCH/Decoder_bch.hpp"
+#include "Module/Decoder/BCH/Standard/Decoder_BCH_std.hpp"
+#include "Module/Decoder/BCH/Fast/Decoder_BCH_fast.hpp"
+#include "Module/Decoder/BCH/Decoder_BCH.hpp"
+#include "Tools/Code/BCH/BCH_polynomial_generator.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -25,6 +29,9 @@ private:
   unsigned int d_max_frame_size;
   int d_input_size;
   int d_output_size;
+
+  std::unique_ptr<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
   bch_decoder_impl(int frame_size);
