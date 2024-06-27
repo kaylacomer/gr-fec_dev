@@ -28,6 +28,7 @@ private:
   int d_output_size;
 
   std::unique_ptr<aff3ct::module::Encoder_BCH<B_8>> d_encoder;
+  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
   bch_encoder_impl(int frame_size);

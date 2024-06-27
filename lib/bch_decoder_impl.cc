@@ -28,10 +28,10 @@ fec::generic_decoder::sptr bch_decoder::make(int frame_size)
         int n_redundancy = d_poly_gen->get_n_rdncy();
         int K = N - n_redundancy;
 
-        d_input_size = K;
-        d_output_size = N;
+        d_input_size = N;
+        d_output_size = K;
 
-        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>>(K, N, *d_poly_gen);
+        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_std<B_8, Q_8>>(K, N, *d_poly_gen);
 }
 
 bch_decoder_impl::~bch_decoder_impl()

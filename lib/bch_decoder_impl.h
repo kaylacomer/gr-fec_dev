@@ -30,7 +30,7 @@ private:
   int d_input_size;
   int d_output_size;
 
-  std::unique_ptr<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::module::Decoder_BCH_std<B_8, Q_8>> d_decoder;
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:

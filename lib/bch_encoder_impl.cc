@@ -26,14 +26,14 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_size)
 
         int N = 63;
         int t = 3;
-        auto poly = aff3ct::tools::BCH_polynomial_generator<B_8>(N, t);
-        int n_redundancy = poly.get_n_rdncy();
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(N, t);
+        int n_redundancy = d_poly_gen->get_n_rdncy();
         int K = N - n_redundancy;
 
         d_input_size = K;
         d_output_size = N;
-        
-        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(K, N, poly);
+
+        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(K, N, *d_poly_gen);
 }
 
 /*
