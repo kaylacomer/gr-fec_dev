@@ -58,7 +58,7 @@ bool bch_encoder_impl::set_frame_size(unsigned int codeword)
 
     uint8_t m = std::ceil(std::log2(codeword+1));
     d_output_size = std::pow(2,m)-1;
-    d_frame_size = d_input_size - m*d_t;
+    d_frame_size = codeword - m*d_t;
     d_input_size = d_frame_size;
 
     return ret;

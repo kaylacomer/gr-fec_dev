@@ -108,11 +108,9 @@ void turbo_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     const float* in = (const float*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    auto my_quant_input =  std::vector<Q_8>(d_input_size);
-    auto quant = aff3ct::module::Quantizer_pow2_fast<float,Q_8>(d_input_size, 6);
-    quant.process(in, my_quant_input.data(), -1);
-
-    d_decoder->decode_siho(my_quant_input.data(), out, -1);
+    volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_input_size);
+    d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
+    d_decoder->decode_siho(d_quant_input.data(), out, -1);
 }
 
 } // namespace fec_dev

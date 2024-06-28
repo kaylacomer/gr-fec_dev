@@ -7,7 +7,6 @@ from gnuradio import fec
 from gnuradio import fec_dev
 from gnuradio import digital
 import numpy as np
-import aff3ct
 
 import sys
 import time
@@ -22,19 +21,20 @@ class simple_fg(gr.top_block):
         # vector = list(bytes.fromhex('0000000000000000'))
         vector = list(bytes.fromhex('4848500301164607407819311081044c23cb52000000'))
         frame_size = len(vector)
+        codeword_size = 127 #frame_size * 8 - 1
 
         self.source = blocks.vector_source_b(vector, False, 1, [])
         self.throttle = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.unpack = blocks.unpack_k_bits_bb(8)
-        self.enc_bch = enc_bch = fec_dev.bch_encoder.make(frame_size * 8)
+        self.enc_bch = enc_bch = fec_dev.bch_encoder.make(codeword_size)
         self.fec_encoder = fec.encoder(enc_bch, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
         self.mapper = digital.constellation_encoder_bc(constellation)
-        self.dec_bch = dec_bch = fec_dev.bch_decoder.make(frame_size * 8)
+        self.dec_bch = dec_bch = fec_dev.bch_decoder.make(codeword_size)
         self.fec_decoder = fec.decoder(dec_bch, gr.sizeof_float, gr.sizeof_char)
 
         self.complex_to_real = blocks.complex_to_real(1)
-        self.multiply = blocks.multiply_const_ff(-1)
+        self.multiply = blocks.multiply_const_ff(1)
 
         self.src_b = blocks.vector_sink_b()
         self.enc_b = blocks.vector_sink_b()

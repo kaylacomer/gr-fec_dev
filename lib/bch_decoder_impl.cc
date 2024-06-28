@@ -8,6 +8,7 @@
 #include <gnuradio/fec_dev/bch_decoder.h>
 #include <gnuradio/io_signature.h>
 #include "bch_decoder_impl.h"
+#include <volk/volk.h>
 
 namespace gr {
 namespace fec_dev {
@@ -22,6 +23,10 @@ fec::generic_decoder::sptr bch_decoder::make(int codeword, uint8_t t)
         d_t(t)
     {
         set_frame_size(codeword);
+
+        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_input_size, 2);
+        d_quant_input = std::vector<Q_8>(d_input_size);
+        d_tmp_input = std::vector<float>(d_input_size);
 
         d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_input_size, t);
         d_zeros = d_input_size - codeword;
@@ -62,11 +67,9 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     const float* in = (const float*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    auto quant_input =  std::vector<Q_8>(d_input_size);
-    auto quantizer = aff3ct::module::Quantizer_pow2_fast<float,Q_8>(d_input_size, 6);
-    quantizer.process(in, quant_input.data(), -1);
-
-    d_decoder->decode_siho(quant_input.data(), out, -1);
+    volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_input_size);
+    d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
+    d_decoder->decode_siho(d_quant_input.data(), out, -1);
 
     if (d_zeros > 0) {
         ;
