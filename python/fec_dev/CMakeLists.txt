@@ -14,7 +14,6 @@ if(NOT PYTHONINTERP_FOUND)
     return()
 endif()
 
-add_subdirectory(bindings)
 
 ########################################################################
 # Install python sources
@@ -26,14 +25,14 @@ gr_python_install(FILES __init__.py DESTINATION ${GR_PYTHON_DIR}/gnuradio/fec_de
 ########################################################################
 include(GrTest)
 
+list(APPEND GR_TEST_PYTHON_DIRS ${CMAKE_BINARY_DIR} ${PROJECT_BINARY_DIR}/gr-fec_dev/python)
+
 set(GR_TEST_TARGET_DEPS gnuradio-fec_dev)
 file(GLOB py_qa_test_files "qa_*.py")
 
+foreach(py_qa_test_file ${py_qa_test_files})
+  get_filename_component(py_qa_test_name ${py_qa_test_file} NAME_WE)
+  gr_add_test(${py_qa_test_name} ${QA_PYTHON_EXECUTABLE} -B ${py_qa_test_file})
+endforeach(py_qa_test_file)
 
-
-# Create a package directory that tests can import. It includes everything
-# from `python/`.
-add_custom_target(
-    copy_module_for_tests ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}
-            ${PROJECT_BINARY_DIR}/test_modules/gnuradio/fec_dev/)
+add_subdirectory(bindings)

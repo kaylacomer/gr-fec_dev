@@ -7,6 +7,7 @@ from gnuradio import fec
 from gnuradio import fec_dev
 from gnuradio import digital
 import numpy as np
+import aff3ct
 
 import sys
 import time

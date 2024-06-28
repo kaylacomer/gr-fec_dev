@@ -18,6 +18,7 @@
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -42,7 +43,7 @@ void bind_turbo_encoder(py::module& m)
              py::arg("standard") = ::gr::fec_dev::_enc_standard_t::LTE,
              py::arg("subencoder") = ::gr::fec_dev::_enc_sub_type_t::RSC,
              py::arg("buffered") = true,
-             py::arg("polys") = std::vector<int>{011, 013},
+             py::arg("polys") = std::vector<int>{013, 015},
              py::arg("trellis_size") = 8,
              D(turbo_encoder, make))
 
@@ -54,6 +55,5 @@ void bind_turbo_encoder(py::module& m)
 
 
         .def("rate", &turbo_encoder::rate, D(turbo_encoder, rate))
-
         ;
 }
