@@ -69,8 +69,10 @@ class turbo_simple(gr.top_block, Qt.QWidget):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 32000
-        self.enc = enc = fec_dev.turbo_encoder_make((frame_size*8))
-        self.dec = dec = fec_dev.turbo_decoder.make((frame_size*8))
+        self.enc_turbo = enc_turbo = fec_dev.turbo_encoder_make((frame_size*8))
+        self.enc_bch = enc_bch = fec_dev.bch_encoder_make(2048)
+        self.dec_turbo = dec_turbo = fec_dev.turbo_decoder.make((frame_size*8))
+        self.dec_bch = dec_bch = fec_dev.bch_decoder_make(20)
         self.constellation = constellation = digital.constellation_bpsk().base()
         self.constellation.set_npwr(1.0)
 
@@ -126,14 +128,14 @@ class turbo_simple(gr.top_block, Qt.QWidget):
 
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.qwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.fec_generic_encoder_0 = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
-        self.fec_generic_decoder_0 = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
+        self.fec_generic_encoder_0 = fec.encoder(enc_bch, gr.sizeof_char, gr.sizeof_char)
+        self.fec_generic_decoder_0 = fec.decoder(dec_bch, gr.sizeof_float, gr.sizeof_char)
         self.digital_constellation_encoder_bc_0 = digital.constellation_encoder_bc(constellation)
         self.blocks_vector_source_x_0 = blocks.vector_source_b(2*(frame_size//15)*[0, 0, 1, 0, 3, 0, 7, 0, 15, 0, 31, 0, 63, 0, 127], True, 1, [])
         self.blocks_vector_sink_x_0 = blocks.vector_sink_b(1, 1024)
         self.blocks_unpack_k_bits_bb_0 = blocks.unpack_k_bits_bb(8)
         self.blocks_throttle2_0 = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
-        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(1)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff((-1))
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
         self.blocks_char_to_float_2 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_1 = blocks.char_to_float(1, 1)
@@ -182,17 +184,29 @@ class turbo_simple(gr.top_block, Qt.QWidget):
         self.blocks_throttle2_0.set_sample_rate(self.samp_rate)
         self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
 
-    def get_enc(self):
-        return self.enc
+    def get_enc_turbo(self):
+        return self.enc_turbo
 
-    def set_enc(self, enc):
-        self.enc = enc
+    def set_enc_turbo(self, enc_turbo):
+        self.enc_turbo = enc_turbo
 
-    def get_dec(self):
-        return self.dec
+    def get_enc_bch(self):
+        return self.enc_bch
 
-    def set_dec(self, dec):
-        self.dec = dec
+    def set_enc_bch(self, enc_bch):
+        self.enc_bch = enc_bch
+
+    def get_dec_turbo(self):
+        return self.dec_turbo
+
+    def set_dec_turbo(self, dec_turbo):
+        self.dec_turbo = dec_turbo
+
+    def get_dec_bch(self):
+        return self.dec_bch
+
+    def set_dec_bch(self, dec_bch):
+        self.dec_bch = dec_bch
 
     def get_constellation(self):
         return self.constellation

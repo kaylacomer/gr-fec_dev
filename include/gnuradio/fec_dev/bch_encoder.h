@@ -32,7 +32,7 @@ public:
     *        tagged stream style, this is the maximum allowable
     *        number of bits per frame.
     */
-    static generic_encoder::sptr make(int frame_size);
+    static generic_encoder::sptr make(int codeword=127, uint8_t t=5);
 
     /*!
     * Sets the uncoded frame size to \p frame_size. If \p
@@ -41,7 +41,7 @@ public:
     * value and this function will return false. Otherwise, it
     * returns true.
     */
-    bool set_frame_size(unsigned int frame_size) override = 0;
+    bool set_frame_size(unsigned int codeword) override = 0;
 
     /*!
     * Returns the coding rate of this encoder.

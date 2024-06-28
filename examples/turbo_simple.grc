@@ -53,7 +53,23 @@ blocks:
     coordinate: [560, 172.0]
     rotation: 0
     state: enabled
-- name: dec
+- name: dec_bch
+  id: fec_dev_bch_decoder
+  parameters:
+    alias: ''
+    comment: ''
+    dim1: '1'
+    dim2: '1'
+    framebits: '20'
+    ndim: '0'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [872, 268.0]
+    rotation: 0
+    state: enabled
+- name: dec_turbo
   id: variable_turbo_decoder_def
   parameters:
     comment: ''
@@ -69,7 +85,24 @@ blocks:
     coordinate: [960, 172.0]
     rotation: 0
     state: enabled
-- name: enc
+- name: enc_bch
+  id: fec_dev_bch_encoder
+  parameters:
+    alias: ''
+    comment: ''
+    dim1: '1'
+    dim2: '1'
+    framebits: '2048'
+    ndim: '0'
+    t: '180'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [744, 256.0]
+    rotation: 0
+    state: enabled
+- name: enc_turbo
   id: variable_turbo_encoder_def
   parameters:
     buffered: 'True'
@@ -173,7 +206,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1'
+    const: '-1'
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -280,7 +313,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decoder: dec
+    decoder: dec_bch
     itype: float
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -298,7 +331,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    encoder: enc
+    encoder: enc_bch
     itype: byte
     maxoutbuf: '0'
     minoutbuf: '0'

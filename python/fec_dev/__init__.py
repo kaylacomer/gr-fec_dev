@@ -26,3 +26,9 @@ turbo_encoder_make = turbo_encoder.make
 
 turbo_decoder.__init__ = turbo_decoder.make
 turbo_decoder_make = turbo_decoder.make
+
+bch_encoder.__init__ = bch_encoder.make
+bch_encoder_make = bch_encoder.make
+
+bch_decoder.__init__ = bch_decoder.make
+bch_decoder_make = bch_decoder.make

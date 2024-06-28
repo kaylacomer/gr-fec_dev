@@ -11,6 +11,7 @@
 #include <gnuradio/fec_dev/bch_decoder.h>
 #include <map>
 #include <string>
+#include <cmath>
 
 #include <aff3ct.hpp>
 #include "Tools/types.h"
@@ -29,15 +30,17 @@ private:
   unsigned int d_max_frame_size;
   int d_input_size;
   int d_output_size;
+  int d_t;
+  int d_zeros;
 
   std::unique_ptr<aff3ct::module::Decoder_BCH_std<B_8, Q_8>> d_decoder;
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
-  bch_decoder_impl(int frame_size);
+  bch_decoder_impl(int codeword=127, uint8_t t=5);
   ~bch_decoder_impl() override;
 
-  bool set_frame_size(unsigned int frame_size) override;
+  bool set_frame_size(unsigned int codeword) override;
   double rate() override;
   int get_output_size() override;
   int get_input_size() override;
