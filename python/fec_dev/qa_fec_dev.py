@@ -8,6 +8,6 @@ class test_fec_dev(gr_unittest.TestCase):
     def tearDown(self):
         self.tb = None
 
-   def test_001_setup(self):
+    def test_001_setup(self):
         block_size = 16
         num_info_bits = 8
