@@ -15,4 +15,5 @@ install(FILES api.h
     turbo_decoder.h
     bch_encoder.h
     bch_decoder.h
-    ra_encoder.h DESTINATION include/gnuradio/fec_dev)
+    ra_encoder.h
+    ra_decoder.h DESTINATION include/gnuradio/fec_dev)

@@ -1,19 +1,19 @@
-id: fec_dev_ra_encoder
+id: fec_dev_ra_decoder
 category: '[fec_dev]'
-label: Repeat and Accumulate Encoder Definition
+label: Repeat and Accumulate Decoder Definition
 flags: [show_id]
 
 templates:
   imports: from gnuradio import fec_dev
   var_make: |-
     % if int(ndim)==0:
-    self.${id} = ${id} = fec_dev.ra_encoder_make(${framebits})\
+    self.${id} = ${id} = fec_dev.ra_decoder_make(${framebits})\
     % elif int(ndim)==1:
-    self.${id} = ${id} = list(map((lambda a:fec_dev.ra_encoder_make(${framebits})),\
+    self.${id} = ${id} = list(map((lambda a:fec_dev.ra_decoder_make(${framebits})),\
     range(0,${dim1})))
     % else:
     self.${id} = ${id} = list(map((lambda b:list(map((lambda a: \
-    fec_dev.ra_encoder_make(${framebits})),\
+    fec_dev.ra_decoder_make(${framebits})),\
     range(0,${dim2})))), range(0,${dim1})))
     % endif
 
@@ -37,8 +37,7 @@ parameters:
   label: Frame Bits
   dtype: int
   default: '2048'
-value: ${ fec_dev.ra_encoder.make(framebits) }
-
+value: ${ fec_dev.ra_decoder.make(framebits) }
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

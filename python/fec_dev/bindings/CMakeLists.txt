@@ -29,7 +29,8 @@ list(APPEND fec_dev_python_files
     turbo_decoder_python.cc
     bch_encoder_python.cc
     bch_decoder_python.cc
-    ra_encoder_python.cc python_bindings.cc)
+    ra_encoder_python.cc
+    ra_decoder_python.cc python_bindings.cc)
 
 gr_pybind_make_oot(fec_dev ../../.. gr::fec_dev "${fec_dev_python_files}")
 
