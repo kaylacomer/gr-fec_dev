@@ -16,7 +16,9 @@ list(APPEND fec_dev_sources
     bch_encoder_impl.cc
     bch_decoder_impl.cc
     ra_encoder_impl.cc
-    ra_decoder_impl.cc )
+    ra_decoder_impl.cc
+    rs_encoder_impl.cc
+    rs_decoder_impl.cc )
 
 set(fec_dev_sources
     "${fec_dev_sources}"
