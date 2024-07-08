@@ -13,6 +13,9 @@
 #include <volk/volk.h>
 #include <sstream>
 
+#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
+#include "Tools/Interleaver/CCSDS/Interleaver_core_CCSDS.hpp"
+
 namespace gr {
 namespace fec_dev {
 
@@ -40,16 +43,31 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
       d_max_frame_size(frame_size),
       d_trellis_size(trellis_size)
 {
+    if (standard == LTE) {
+        std::cout << "LTE" << std::endl;
+        d_trellis_size = 8;
+        polys = {013,015};
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
+    }
+    else if (standard == CCSDS) {
+        std::cout << "CCSDS" << std::endl;
+        d_trellis_size = 16;
+        polys = {023,033};
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(frame_size);
+    }
+    else {
+        std::cout << "should not be here -- CUSTOM not developed" << std::endl;
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
+    }
+
     set_frame_size(frame_size);
 
-    // polys = {013, 015};
-    int N_rsc = 2 * (frame_size + std::log2(trellis_size));
+    int N_rsc = 2 * (frame_size + std::log2(d_trellis_size));
     auto enco_n =
         aff3ct::module::Encoder_RSC_generic_sys<B_8>(frame_size, N_rsc, buffered, polys);
     auto enco_i = enco_n;
 
-    d_interleaver_core =
-        std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
+    
     d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
 
     d_encoder = std::make_unique<aff3ct::module::Encoder_turbo<B_8>>(

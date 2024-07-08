@@ -10,6 +10,11 @@
 
 #include <Module/Quantizer/Pow2/Quantizer_pow2.hpp>
 #include <Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp>
+#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
+#include "Tools/Interleaver/CCSDS/Interleaver_core_CCSDS.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -47,16 +52,31 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_size,
       d_max_frame_size(frame_size),
       d_trellis_size(trellis_size)
 {
+    if (standard == LTE) {
+        std::cout << "LTE" << std::endl;
+        d_trellis_size = 8;
+        polys = {013,015};
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
+    }
+    else if (standard == CCSDS) {
+        std::cout << "CCSDS" << std::endl;
+        d_trellis_size = 16;
+        polys = {023,033};
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(frame_size);
+    }
+    else {
+        std::cout << "should not be here -- CUSTOM not developed" << std::endl;
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
+    }
+
     set_frame_size(frame_size);
 
-    d_interleaver_core =
-        std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(frame_size);
     d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
     d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_input_size, 2);
     d_quant_input = std::vector<Q_8>(d_input_size);
     d_tmp_input = std::vector<float>(d_input_size);
 
-    int N_rsc = 2 * (frame_size + std::log2(trellis_size));
+    int N_rsc = 2 * (frame_size + std::log2(d_trellis_size));
     auto enco_n =
         aff3ct::module::Encoder_RSC_generic_sys<B_8>(frame_size, N_rsc, buffered, polys);
     auto enco_i = enco_n;
@@ -64,9 +84,9 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_size,
     auto trellis_n = enco_n.get_trellis();
     auto trellis_i = trellis_n;
 
-    auto dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_fast<B_8, Q_8>(
+    auto dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(
         frame_size, trellis_n, buffered);
-    auto dec_i = aff3ct::module::Decoder_RSC_BCJR_seq_fast<B_8, Q_8>(
+    auto dec_i = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(
         frame_size, trellis_i, buffered);
 
     d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_fast<B_8, Q_8>>(

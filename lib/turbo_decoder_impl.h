@@ -20,8 +20,6 @@
 #include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 #include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
 #include "Tools/Interleaver/Interleaver_core.hpp"
-#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
-#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo_fast.hpp"
 
@@ -44,7 +42,7 @@ private:
     std::vector<float> d_tmp_input;
     std::vector<Q_8> d_quant_input;
     std::unique_ptr<aff3ct::module::Decoder_turbo<B_8, Q_8>> d_decoder;
-    std::unique_ptr<aff3ct::tools::Interleaver_core_LTE<>> d_interleaver_core;
+    std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
     std::unique_ptr<aff3ct::module::Interleaver<Q_8>> d_pi;
     std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
