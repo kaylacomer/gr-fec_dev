@@ -24,9 +24,9 @@ namespace fec_dev {
 class FEC_API turbo_encoder_impl : public turbo_encoder
 {
 private:
-  unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_output_size;
+  int d_frame_size;
+  int d_K;
+  int d_N;
   int d_trellis_size;
   std::unique_ptr<aff3ct::module::Encoder_turbo<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;

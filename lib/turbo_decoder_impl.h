@@ -34,10 +34,9 @@ private:
     int get_input_item_size() override;
     const char* get_input_conversion() override;
 
-    unsigned int d_max_frame_size;
-    unsigned int d_frame_size;
-    int d_input_size;
-    int d_output_size;
+    int d_frame_size;
+    int d_K;
+    int d_N;
     int d_trellis_size;
     std::vector<float> d_tmp_input;
     std::vector<Q_8> d_quant_input;
