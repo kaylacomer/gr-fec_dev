@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(bch_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b8db4debef6105747cb4ea50bc75e181)                     */
+/* BINDTOOL_HEADER_FILE_HASH(a3b7ce639e3d7ec6009a473d1e117a07)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,14 +37,14 @@ void bind_bch_encoder(py::module& m)
         std::shared_ptr<bch_encoder>>(m, "bch_encoder", D(bch_encoder))
 
         .def_static("make", &bch_encoder::make,
-           py::arg("codeword"),
+           py::arg("frame_bits"),
            py::arg("t") = 5,
            D(bch_encoder,make)
         )
 
         .def("set_frame_size",
             &bch_encoder::set_frame_size,
-            py::arg("codeword"),
+            py::arg("frame_bits"),
             D(bch_encoder, set_frame_size))
 
         .def("rate", &bch_encoder::rate, D(bch_encoder, rate))

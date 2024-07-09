@@ -28,9 +28,9 @@ public:
     /*!
     * Build a bch decoding FEC API object.
     *
-    * \param codeword Number of encoded bits per frame.
+    * \param frame_bits Number of encoded bits per frame.
     */
-    static generic_decoder::sptr make(int codeword=127, uint8_t t=5);
+    static generic_decoder::sptr make(int frame_bits=127, uint8_t t=5);
 
     /*!
     * Sets the uncoded frame size to \p frame_size. If \p
@@ -39,7 +39,7 @@ public:
     * value and this function will return false. Otherwise, it
     * returns true.
     */
-    bool set_frame_size(unsigned int codeword) override = 0;
+    bool set_frame_size(unsigned int frame_bits) override = 0;
 
     /*!
     * Returns the coding rate of this decoder.

@@ -24,20 +24,18 @@ class FEC_API bch_encoder_impl : public bch_encoder
 {
 private:
   unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_input_size;
-  int d_output_size;
+  int d_K;
+  int d_N;
   int d_t;
-  int d_zeros;
 
   std::unique_ptr<aff3ct::module::Encoder_BCH<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
-  bch_encoder_impl(int codeword=127, uint8_t t=5);
+  bch_encoder_impl(int frame_bits=127, uint8_t t=5);
   ~bch_encoder_impl() override;
 
-  bool set_frame_size(unsigned int codeword) override;
+  bool set_frame_size(unsigned int frame_bits) override;
   double rate() override;
   int get_output_size() override;
   int get_input_size() override;

@@ -11,28 +11,31 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr bch_encoder::make(int codeword, uint8_t t)
+fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
 {
-    return fec::generic_encoder::sptr(new bch_encoder_impl(codeword, t));
+    return fec::generic_encoder::sptr(new bch_encoder_impl(frame_bits, t));
 }
     /*
      * The private constructor
      */
-    bch_encoder_impl::bch_encoder_impl(int codeword, uint8_t t)
+    bch_encoder_impl::bch_encoder_impl(int frame_bits, uint8_t t)
         : generic_encoder("bch_encoder"),
-        d_max_frame_size(codeword),
+        d_frame_size(frame_bits),
         d_t(t)
     {
-        set_frame_size(codeword);
+        set_frame_size(frame_bits);
 
-        if (d_frame_size < 3) {
-            ; //error
+        if (d_K < 3) {
+            throw std::runtime_error("K < 3 - frame_bits and t incompatible. Reduce t or increase frame_bits");
         }
 
-        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_output_size, t);
-        d_zeros = d_output_size - codeword;
+        if (d_K - d_frame_size > 0) {
+            d_logger->info("Padding {:d}-bit input with {:d} zeros", d_frame_size, d_K - d_frame_size);
+        }
 
-        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_frame_size, d_output_size, *d_poly_gen);
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, t);
+
+        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
 }
 
 /*
@@ -42,40 +45,31 @@ bch_encoder_impl::~bch_encoder_impl()
 {
 }
 
-int bch_encoder_impl::get_output_size() { return d_output_size; }
-int bch_encoder_impl::get_input_size() { return d_input_size; }
+int bch_encoder_impl::get_output_size() { return d_N; }
+int bch_encoder_impl::get_input_size() { return d_frame_size; }
 
-bool bch_encoder_impl::set_frame_size(unsigned int codeword)
+bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
 {
     bool ret = true;
-    if (codeword > d_max_frame_size) {
-        d_logger->info("tried to set frame to {:d}; max possible is {:d}",
-                    codeword,
-                    d_max_frame_size);
-        codeword = d_max_frame_size;
-        ret = false;
-    }
 
-    uint8_t m = std::ceil(std::log2(codeword+1));
-    d_output_size = std::pow(2,m)-1;
-    d_frame_size = codeword - m*d_t;
-    d_input_size = d_frame_size;
+    uint8_t m = std::ceil(std::log2(frame_bits+1));
+    d_N = std::pow(2,m)-1;
+    d_K = d_N - m*d_t;
 
     return ret;
 }
 
-double bch_encoder_impl::rate() { return d_input_size / d_output_size; }
+double bch_encoder_impl::rate() { return d_frame_size / d_N; }
 
 void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    if (d_zeros > 0) {
-        ; //pad input with zeros
-    }
+    std::vector<B_8> input_vector(in, in + d_frame_size);
+    input_vector.resize(d_K, 0);
 
-    d_encoder->encode(in, out);
+    d_encoder->encode(input_vector.data(), out);
 }
 
 } /* namespace fec_dev */
