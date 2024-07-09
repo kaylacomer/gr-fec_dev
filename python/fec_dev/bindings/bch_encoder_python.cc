@@ -30,7 +30,7 @@ namespace py = pybind11;
 void bind_bch_encoder(py::module& m)
 {
 
-    using bch_encoder    = gr::fec_dev::bch_encoder;
+    using bch_encoder = gr::fec_dev::bch_encoder;
 
 
     py::class_<bch_encoder, gr::fec::generic_encoder,

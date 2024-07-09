@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ra_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(129946b5e354879874526af8bed89603)                     */
+/* BINDTOOL_HEADER_FILE_HASH(75f81ff2b68ae845850860300de1c564)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -29,32 +29,27 @@ namespace py = pybind11;
 
 void bind_ra_decoder(py::module& m)
 {
+
     using ra_decoder = ::gr::fec_dev::ra_decoder;
 
 
-    py::class_<ra_decoder, gr::fec::generic_decoder,
-        std::shared_ptr<ra_decoder>>(m, "ra_decoder", D(ra_decoder))
+    py::class_<ra_decoder, gr::fec::generic_decoder, std::shared_ptr<ra_decoder>>(
+        m, "ra_decoder", D(ra_decoder))
 
         .def_static("make", &ra_decoder::make,
-           py::arg("frame_size"),
-           D(ra_decoder,make)
-        )
+             py::arg("K"),
+             py::arg("N"),
+             py::arg("iter") = 1,
+             D(ra_decoder, make))
+
 
         .def("set_frame_size",
-            &ra_decoder::set_frame_size,
-            py::arg("frame_size"),
-            D(ra_decoder, set_frame_size))
+             &ra_decoder::set_frame_size,
+             py::arg("K"),
+             D(ra_decoder, set_frame_size))
+
 
         .def("rate", &ra_decoder::rate, D(ra_decoder, rate))
 
         ;
 }
-
-
-
-
-
-
-
-
-

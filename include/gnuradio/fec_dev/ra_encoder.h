@@ -27,20 +27,20 @@ public:
     /*!
     * Build a ra encoding FEC API object.
     *
-    * \param frame_size Number of bits per frame. If using in the
+    * \param K Number of bits per frame. If using in the
     *        tagged stream style, this is the maximum allowable
     *        number of bits per frame.
     */
-    static generic_encoder::sptr make(int frame_size);
+    static generic_encoder::sptr make(int K, int N);
 
     /*!
-    * Sets the uncoded frame size to \p frame_size. If \p
-    * frame_size is greater than the value given to the
+    * Sets the uncoded frame size to \p K. If \p
+    * K is greater than the value given to the
     * constructor, the frame size will be capped by that initial
     * value and this function will return false. Otherwise, it
     * returns true.
     */
-    bool set_frame_size(unsigned int frame_size) override = 0;
+    bool set_frame_size(unsigned int K) override = 0;
 
     /*!
     * Returns the coding rate of this encoder.

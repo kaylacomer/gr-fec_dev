@@ -13,7 +13,9 @@
 #include <string>
 
 #include "Tools/types.h"
-#include "Module/Decoder/RA/Decoder_ra.hpp"
+#include "Module/Decoder/RA/Decoder_RA.hpp"
+#include "Tools/Interleaver/Interleaver_core.hpp"
+#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -21,16 +23,20 @@ namespace fec_dev {
 class FEC_API ra_decoder_impl : public ra_decoder
 {
 private:
-  unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_output_size;
-  int d_input_size;
+  unsigned int d_K;
+  int d_N;
+  std::vector<float> d_tmp_input;
+  std::vector<Q_8> d_quant_input;
+  std::unique_ptr<aff3ct::module::Decoder_RA<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
+  std::unique_ptr<aff3ct::module::Interleaver<Q_8>> d_pi;
+  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
-  ra_decoder_impl(int frame_size);
+  ra_decoder_impl(int K, int N, int iter=1);
   ~ra_decoder_impl() override;
 
-  bool set_frame_size(unsigned int frame_size) override;
+  bool set_frame_size(unsigned int K) override;
   double rate() override;
   int get_output_size() override;
   int get_input_size() override;

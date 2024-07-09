@@ -15,15 +15,19 @@
  */
 
 
-
- static const char *__doc_gr_fec_dev_ra_decoder = R"doc()doc";
-
-
- static const char *__doc_gr_fec_dev_ra_decoder_ra_decoder = R"doc()doc";
+static const char* __doc_gr_fec_dev_ra_decoder = R"doc()doc";
 
 
- static const char *__doc_gr_fec_dev_ra_decoder_make = R"doc()doc";
+static const char* __doc_gr_fec_dev_ra_decoder_ra_decoder_0 = R"doc()doc";
 
- static const char* __doc_gr_fec_dev_ra_decoder_set_frame_size = R"doc()doc";
 
- static const char* __doc_gr_fec_dev_ra_decoder_rate = R"doc()doc";
+static const char* __doc_gr_fec_dev_ra_decoder_ra_decoder_1 = R"doc()doc";
+
+
+static const char* __doc_gr_fec_dev_ra_decoder_make = R"doc()doc";
+
+
+static const char* __doc_gr_fec_dev_ra_decoder_set_frame_size = R"doc()doc";
+
+
+static const char* __doc_gr_fec_dev_ra_decoder_rate = R"doc()doc";

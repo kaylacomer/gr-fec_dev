@@ -13,7 +13,8 @@
 #include <string>
 
 #include "Tools/types.h"
-#include "Module/Encoder/RA/Encoder_ra.hpp"
+#include "Module/Encoder/RA/Encoder_RA.hpp"
+#include "Tools/Interleaver/Interleaver_core.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -21,16 +22,17 @@ namespace fec_dev {
 class FEC_API ra_encoder_impl : public ra_encoder
 {
 private:
-  unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_output_size;
-  int d_input_size;
+  unsigned int d_K;
+  int d_N;
+  std::unique_ptr<aff3ct::module::Encoder_RA<B_8>> d_encoder;
+  std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
+  std::unique_ptr<aff3ct::module::Interleaver<B_8>> d_interleaver;
 
 public:
-  ra_encoder_impl(int frame_size);
+  ra_encoder_impl(int K, int N);
   ~ra_encoder_impl() override;
 
-  bool set_frame_size(unsigned int frame_size) override;
+  bool set_frame_size(unsigned int K) override;
   double rate() override;
   int get_output_size() override;
   int get_input_size() override;

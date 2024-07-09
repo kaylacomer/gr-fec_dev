@@ -32,3 +32,9 @@ bch_encoder_make = bch_encoder.make
 
 bch_decoder.__init__ = bch_decoder.make
 bch_decoder_make = bch_decoder.make
+
+ra_encoder.__init__ = ra_encoder.make
+ra_encoder_make = ra_encoder.make
+
+ra_decoder.__init__ = ra_decoder.make
+ra_decoder_make = ra_decoder.make
