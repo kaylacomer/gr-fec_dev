@@ -51,7 +51,7 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
       d_trellis_size(trellis_size)
 {
     if (standard == LTE) {
-        d_logger->info("Encoding to LTE standard (8-stage trellis, [013, 015] polynomials, LTE interleaver)");
+        // d_logger->info("Encoding to LTE standard (8-stage trellis, [013, 015] polynomials, LTE interleaver)");
 
         d_trellis_size = 8;
         polys = {013,015};
@@ -61,7 +61,7 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(d_K);
     }
     else if (standard == CCSDS) {
-        d_logger->info("Encoding to CCSDS standard (16-stage trellis, [023, 033] polynomials, CCSDS interleaver)");
+        // d_logger->info("Encoding to CCSDS standard (16-stage trellis, [023, 033] polynomials, CCSDS interleaver)");
 
         d_trellis_size = 16;
         polys = {023,033};

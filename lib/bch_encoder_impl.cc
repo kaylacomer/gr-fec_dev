@@ -29,10 +29,6 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
             throw std::runtime_error("K < 3 - frame_bits and t incompatible. Reduce t or increase frame_bits");
         }
 
-        if (d_K - d_frame_size > 0) {
-            d_logger->info("Padding {:d}-bit input with {:d} zeros", d_frame_size, d_K - d_frame_size);
-        }
-
         d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, t);
 
         d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
@@ -70,6 +66,10 @@ void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     input_vector.resize(d_K, 0);
 
     d_encoder->encode(input_vector.data(), out);
+
+    // if (d_K - d_frame_size > 0) {
+    //     d_logger->info("Padding {:d}-bit input with {:d} zeros", d_frame_size, d_K - d_frame_size);
+    // }
 }
 
 } /* namespace fec_dev */

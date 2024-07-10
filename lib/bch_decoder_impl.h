@@ -30,6 +30,7 @@ private:
   int d_K;
   int d_N;
   int d_t;
+  d_zeros;
   std::vector<float> d_tmp_input;
   std::vector<Q_8> d_quant_input;
 
