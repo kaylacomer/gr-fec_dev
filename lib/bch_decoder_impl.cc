@@ -38,7 +38,7 @@ bch_decoder_impl::~bch_decoder_impl()
 }
 
 int bch_decoder_impl::get_output_size() { return d_frame_size; }
-int bch_decoder_impl::get_input_size() { return d_N - (d_K - d_frame_size); }
+int bch_decoder_impl::get_input_size() { return d_N; }
 
 bool bch_decoder_impl::set_frame_size(unsigned int frame_bits)
 {
@@ -51,7 +51,7 @@ bool bch_decoder_impl::set_frame_size(unsigned int frame_bits)
     return ret;
 }
 
-double bch_decoder_impl::rate() { return d_frame_size / (d_N - (d_K - d_frame_size)); } // decoder rate
+double bch_decoder_impl::rate() { return d_frame_size / d_N; } // decoder rate
 
 void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
@@ -60,17 +60,11 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 
     volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_N);
     d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
+    
+    std::vector<B_8> temp_output(d_K);
+    d_decoder->decode_siho(d_quant_input.data(), temp_output.data(), -1);
 
-    int zeros = d_K - d_frame_size;
-    if (zeros > 0) {
-        d_quant_input.insert(d_quant_input.begin(), zeros, 0);
-    }
-    
-    std::vector<B_8> tmp_output(d_K);
-    bool status = d_decoder->decode_siho(d_quant_input.data(), tmp_output.data(), -1);
-    
-    std::cout << status << std::endl;
-    std::memcpy(out, tmp_output.data(), d_frame_size * sizeof(B_8));
+    std::memcpy(out, temp_output.data(), d_frame_size * sizeof(B_8));
 }
 
 
