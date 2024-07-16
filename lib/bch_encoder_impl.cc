@@ -41,7 +41,7 @@ bch_encoder_impl::~bch_encoder_impl()
 {
 }
 
-int bch_encoder_impl::get_output_size() { return d_N; }
+int bch_encoder_impl::get_output_size() { return d_N - (d_K - d_frame_size); }
 int bch_encoder_impl::get_input_size() { return d_frame_size; }
 
 bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
@@ -55,32 +55,28 @@ bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
     return ret;
 }
 
-double bch_encoder_impl::rate() { return d_frame_size / (d_N); }
+double bch_encoder_impl::rate() { return d_frame_size / (d_N - (d_K - d_frame_size)); }
 
 void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const B_8* in = (const B_8*)inbuffer;
     std::vector<B_8> input_vector(in, in + d_frame_size);
 
-    input_vector.resize(d_K, 0);
-    // int zeros = d_K - d_frame_size;
-    // if (zeros > 0) {
-    //     input_vector.insert(input_vector.begin(), zeros, 0);
-    // }
+    int zeros = d_K - d_frame_size;
+    if (zeros > 0) {
+        input_vector.insert(input_vector.begin(), zeros, 0);
+    }
 
     B_8* out = (B_8*)outbuffer;
+    std::vector<B_8> tmp_output(d_N);
 
-    d_encoder->encode(input_vector.data(), out);
+    d_encoder->encode(input_vector.data(), tmp_output.data());
 
-    // std::vector<B_8> tmp_output(d_N);
+    if (zeros > 0) {
+        tmp_output.erase(tmp_output.begin(), tmp_output.begin() + zeros);
+    }
 
-    // d_encoder->encode(input_vector.data(), tmp_output.data());
-
-    // if (zeros > 0) {
-    //     tmp_output.erase(tmp_output.begin(), tmp_output.begin() + zeros);
-    // }
-
-    // std::memcpy(out, tmp_output.data() + zeros, d_N - zeros);
+    std::memcpy(out, tmp_output.data() + zeros, d_N - zeros);
 }
 
 } /* namespace fec_dev */
