@@ -11,9 +11,11 @@
 #include <gnuradio/fec_dev/rs_encoder.h>
 #include <map>
 #include <string>
+#include <memory>
 
 #include "Tools/types.h"
-#include "Module/Encoder/RS/Encoder_rs.hpp"
+#include "Module/Encoder/RS/Encoder_RS.hpp"
+#include "Tools/Code/RS/RS_polynomial_generator.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -22,9 +24,10 @@ class FEC_API rs_encoder_impl : public rs_encoder
 {
 private:
   unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_output_size;
-  int d_input_size;
+  int d_K;
+  int d_N;
+  std::unique_ptr<aff3ct::module::Encoder_RS<B_8>> d_encoder;
+  std::unique_ptr<aff3ct::tools::RS_polynomial_generator> d_poly_gen;
 
 public:
   rs_encoder_impl(int frame_size);

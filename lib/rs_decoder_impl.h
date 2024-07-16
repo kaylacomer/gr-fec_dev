@@ -13,7 +13,9 @@
 #include <string>
 
 #include "Tools/types.h"
-#include "Module/Decoder/RS/Decoder_rs.hpp"
+#include "Module/Decoder/RS/Standard/Decoder_RS_std.hpp"
+#include "Tools/Code/RS/RS_polynomial_generator.hpp"
+#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -22,9 +24,15 @@ class FEC_API rs_decoder_impl : public rs_decoder
 {
 private:
   unsigned int d_frame_size;
-  unsigned int d_max_frame_size;
-  int d_output_size;
-  int d_input_size;
+  int d_K;
+  int d_N;
+  int d_t;
+  std::vector<float> d_tmp_input;
+  std::vector<Q_8> d_quant_input;
+
+  std::unique_ptr<aff3ct::module::Decoder_RS_std<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::tools::RS_polynomial_generator> d_poly_gen;
+  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
   rs_decoder_impl(int frame_size);
