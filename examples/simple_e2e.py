@@ -22,6 +22,7 @@ class simple_fg(gr.top_block):
         vector = list(bytes.fromhex('4848500301164607407819311081044c23cb52000000'))
         frame_size = len(vector)
         frame_bits = frame_size * 8
+        t=7
 
         self.source = blocks.vector_source_b(vector, False, 1, [])
         self.throttle = blocks.throttle( gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
