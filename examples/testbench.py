@@ -62,16 +62,25 @@ def main():
 
     random_generator = np.random.default_rng(seed=SEED)
     vector = list(random_generator.bytes(total_bytes * BITS_PER_BYTE))
-    # msg = [list(random_generator.bytes(frame_bytes * BITS_PER_BYTE)) for n in range(0,num_frames)]
+
+    frame_error_count = 100
 
     filename = 'data.csv'
     with open(filename, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
-        # write simulation info in comments at beginning of file
-        csvwriter.writerow(['Sigma', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
+        # TODO write simulation info in comments at beginning of file
+        csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
 
-        for sigma in [1.0, 1.1, 1.2, 1.3, 1.4, 1.5]:
-            print(f'sigma: {sigma}')
+        ebn0 = [10, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6] # dB
+
+        for snr in ebn0:
+            sigma = 1/np.sqrt(2) * 1/(10**(snr/20))
+
+            # TODO get rate from flowgraph
+            rate = 1/3
+            bps = 1 # bits per symbol
+            esn0 = snr + 10*np.log10(rate * bps)
+
             fg = test_fg(vector, frame_bytes, sigma)
             fg.start()
             start = timeit.default_timer()
@@ -80,7 +89,6 @@ def main():
             elapsed_time = end - start
 
             src_data = np.array(fg.src_b.data())
-            # enc_data = np.array(fg.enc_b.data())
             dec_data = np.array(fg.dec_b.data())
 
             bits = len(src_data)
@@ -95,7 +103,7 @@ def main():
             # throughput = bits / elapsed_time / 10 ** 6 ###### not as simple - need bits transmitted or received per second
             formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
 
-            csvwriter.writerow([sigma, bit_errors, ber, frame_errors, fer, formatted_time])
+            csvwriter.writerow([snr, esn0, sigma, bit_errors, ber, frame_errors, fer, formatted_time])
 
     return True
 
