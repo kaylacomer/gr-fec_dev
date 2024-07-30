@@ -57,15 +57,15 @@ class test_fg(gr.top_block):
         self.connect((self.fec_decoder, 0),(self.dec_b, 0))
 
 def main():
-    total_bytes = frame_bytes * num_frames
+    bytes_per_vector = frame_bytes * num_frames
 
+    print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\tFE\tFER\tTime elapsed (HH:MM:SS)')
+    # TODO useful filename
     filename = 'data.csv'
     with open(filename, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         # TODO write simulation info in comments at beginning of file
-        csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
-
-        ebn0 = [10, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6] # dB
+        csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Frames', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
 
         for snr in ebn0:
             sigma = 1/np.sqrt(2) * 1/(10**(snr/20))
@@ -81,7 +81,7 @@ def main():
 
             while (frame_errors < frame_error_count):
                 random_generator = np.random.default_rng()
-                vector = list(random_generator.bytes(total_bytes * BITS_PER_BYTE))
+                vector = list(random_generator.bytes(bytes_per_vector * BITS_PER_BYTE))
 
                 fg = test_fg(vector, frame_bytes, sigma)
                 fg.start()
@@ -97,41 +97,48 @@ def main():
                 frame_errors += np.count_nonzero([np.count_nonzero(diff) for diff in diffByFrame])
 
                 loops += 1
+
+                frames = loops * num_frames
+                bits = frames * frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE
+                ber = bit_errors / bits
+                fer = frame_errors / frames
+
+                now = timeit.default_timer()
+                elapsed_time = now - start
+                formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
+
+                print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{frames}\t{bit_errors}\t{ber:.4f}\t{frame_errors}\t{fer:.4f}\t{formatted_time}', end='\r')
             
-            end = timeit.default_timer()
-            elapsed_time = end - start
-            formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
             # TODO -- do not let run more than X frames / minutes, set by user
             # TODO calculate throughput = bits tx/second
-
-            bits = loops * num_frames * frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE
-            ber = bit_errors / bits
-            fer = frame_errors / (loops * num_frames)
-
-            csvwriter.writerow([snr, esn0, sigma, bit_errors, ber, frame_errors, fer, formatted_time])
+            print()
+            csvwriter.writerow([snr, esn0, sigma, frames, bit_errors, ber, frame_errors, fer, formatted_time])
 
     return True
 
 if __name__ == "__main__":
     BITS_PER_BYTE = 8
 
-    frame_bytes = 20
-    num_frames = 20
-    frame_error_count = 100
+    parser = argparse.ArgumentParser(description='') # TODO add description
+    parser.add_argument('--frame_bytes', type=int, default=120,
+                        help='number of bytes within one frame')
+    parser.add_argument('--num_frames', type=int, default=50,
+                        help='number of frames in each randomized vector')
+    parser.add_argument('--frame_error_count', type=int, default=100,
+                        help='simulation will continue until this number of frame errors is reached')
 
-    # parser = argparse.ArgumentParser(description='Simulate .')
-    # parser.add_argument('frame_bytes', metavar='N', type=int, nargs='+',
-    #                     help='an integer for the accumulator')
-    # parser.add_argument('--sum', dest='accumulate', action='store_const',
-    #                     const=sum, default=max,
-    #                     help='sum the integers (default: find the max)')
+    args = parser.parse_args()
 
-    # args = parser.parse_args()
-    # print(args.accumulate(args.integers))
+    frame_bytes = args.frame_bytes
+    num_frames = args.num_frames
+    frame_error_count = args.frame_error_count
 
+    ebn0 = [10, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6] # dB
+    codec = 'turbo'
     
     # TODO command line arguments
     # TODO command line print updates like aff3ct (if simple to code)
+    # TODO catch keyboard interrupt
     sys.exit(not main())
 
 
