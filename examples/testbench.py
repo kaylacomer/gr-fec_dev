@@ -14,6 +14,8 @@ import time
 import csv
 import argparse
 
+BITS_PER_BYTE = 8
+
 class test_fg(gr.top_block):
     def __init__(self, vector, frame_bytes, sigma):
         gr.top_block.__init__(self, "FEC testbench", catch_exceptions=True)
@@ -29,6 +31,7 @@ class test_fg(gr.top_block):
         self.enc_turbo = enc_turbo = fec_dev.turbo_encoder.make(frame_bits)
         self.fec_encoder = fec.encoder(enc_turbo, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
+        constellation.set_npwr(2 * sigma**2)
         self.mapper = digital.constellation_encoder_bc(constellation)
         self.noise = analog.noise_source_c(analog.GR_GAUSSIAN, sigma)
         self.add = blocks.add_vcc(1)
@@ -38,9 +41,9 @@ class test_fg(gr.top_block):
         self.complex_to_real = blocks.complex_to_real(1)
 
         self.src_b = blocks.vector_sink_b()
-        self.enc_b = blocks.vector_sink_f()
+        # self.enc_b = blocks.vector_sink_f()
         self.dec_b = blocks.vector_sink_b()
-        self.null = blocks.null_sink(gr.sizeof_int)
+        # self.null = blocks.null_sink(gr.sizeof_int)
 
         self.connect((self.source, 0),(self.throttle,0))
         self.connect((self.throttle, 0),(self.unpack, 0))
@@ -53,13 +56,13 @@ class test_fg(gr.top_block):
         self.connect((self.complex_to_real,0), (self.fec_decoder,0))
 
         self.connect((self.unpack, 0),(self.src_b, 0))
-        self.connect((self.complex_to_real, 0),(self.enc_b, 0))
+        # self.connect((self.complex_to_real, 0),(self.enc_b, 0))
         self.connect((self.fec_decoder, 0),(self.dec_b, 0))
 
-def main():
+def main(frame_bytes, num_frames, frame_error_count, ebn0):
     bytes_per_vector = frame_bytes * num_frames
 
-    print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\tFE\tFER\tTime elapsed (HH:MM:SS)')
+    print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\t\tFE\tFER\t\tTime elapsed (HH:MM:SS)')
     # TODO useful filename
     filename = 'data.csv'
     with open(filename, 'w') as csvfile:
@@ -68,8 +71,7 @@ def main():
         csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Frames', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
 
         for snr in ebn0:
-            sigma = 1/np.sqrt(2) * 1/(10**(snr/20))
-            sigma = 1.5
+            sigma = A * 1/np.sqrt(2) * 1/(10**(snr/20))
 
             # TODO get rate from flowgraph
             rate = 1/3
@@ -107,7 +109,7 @@ def main():
                 elapsed_time = now - start
                 formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
 
-                print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{frames}\t{bit_errors}\t{ber:.4f}\t{frame_errors}\t{fer:.4f}\t{formatted_time}', end='\r')
+                print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{frames}\t{bit_errors}\t{ber:.3E}\t{frame_errors}\t{fer:.3E}\t{formatted_time}', end='\r')
             
             # TODO -- do not let run more than X frames / minutes, set by user
             # TODO calculate throughput = bits tx/second
@@ -117,29 +119,44 @@ def main():
     return True
 
 if __name__ == "__main__":
-    BITS_PER_BYTE = 8
+    # A = 1.75
+    # A = 1
+    A = 2
 
     parser = argparse.ArgumentParser(description='') # TODO add description
-    parser.add_argument('--frame_bytes', type=int, default=120,
+
+    parser.add_argument('-c', '--codec', choices=['turbo'], default='turbo',
+                        help='encoding and decoding scheme')
+
+    parser.add_argument('-b', '--frame_bytes', type=int, default=20,
                         help='number of bytes within one frame')
-    parser.add_argument('--num_frames', type=int, default=50,
+    parser.add_argument('-f', '--num_frames', type=int, default=50,
                         help='number of frames in each randomized vector')
-    parser.add_argument('--frame_error_count', type=int, default=100,
+    parser.add_argument('-e', '--frame_error_count', type=int, default=100,
                         help='simulation will continue until this number of frame errors is reached')
+    
+    parser.add_argument('-m', '--min_ebn0', type=float, default=0,
+                        help='minimum simulated signal-to-noise ratio (Eb/N0) in dB (energy per bit over noise energy)')
+    parser.add_argument('-M', '--max_ebn0', type=float, default=0.5,
+                        help='maximum simulated signal-to-noise ratio (Eb/N0) in dB (energy per bit over noise energy)')
+    parser.add_argument('-s', '--snr_step', type=float, default=0.1,
+                        help='SNR (Eb/N0) step in dB between each simulation iteration')
+    
+    parser.add_argument('-l', '--ebn0_list', nargs='*',
+                        help='list of SNRs (Eb/N0 in dB) to simulate; if set, ignores minimum, maximum, and step parameters')
 
     args = parser.parse_args()
 
-    frame_bytes = args.frame_bytes
-    num_frames = args.num_frames
-    frame_error_count = args.frame_error_count
+    if args.ebn0_list:
+        ebn0 = args.ebn0_list
+    else:
+        ebn0 = np.round(np.arange(args.min_ebn0, args.max_ebn0, args.snr_step), int(np.log10(1/args.snr_step)))
 
-    ebn0 = [10, 10.1, 10.2, 10.3, 10.4, 10.5, 10.6] # dB
-    codec = 'turbo'
+    codec = args.codec
     
-    # TODO command line arguments
-    # TODO command line print updates like aff3ct (if simple to code)
     # TODO catch keyboard interrupt
-    sys.exit(not main())
+    # TODO BCH
+    sys.exit(not main(args.frame_bytes, args.num_frames, args.frame_error_count, ebn0))
 
 
 
