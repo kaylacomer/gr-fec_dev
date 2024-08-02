@@ -17,7 +17,7 @@ import argparse
 BITS_PER_BYTE = 8
 
 class test_fg(gr.top_block):
-    def __init__(self, vector, frame_bytes, sigma):
+    def __init__(self, vector, frame_bytes, sigma, codec, t_errors):
         gr.top_block.__init__(self, "FEC testbench", catch_exceptions=True)
 
         samp_rate = 32e3
@@ -28,15 +28,25 @@ class test_fg(gr.top_block):
         self.source = blocks.vector_source_b(vector, False, 1, [])
         self.throttle = blocks.throttle(gr.sizeof_char, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.unpack = blocks.unpack_k_bits_bb(BITS_PER_BYTE)
-        self.enc_turbo = enc_turbo = fec_dev.turbo_encoder.make(frame_bits)
-        self.fec_encoder = fec.encoder(enc_turbo, gr.sizeof_char, gr.sizeof_char)
+
+        if (codec == 'turbo'):
+            self.enc = enc = fec_dev.turbo_encoder.make(frame_bits)
+            self.dec = dec = fec_dev.turbo_decoder.make(frame_bits)
+        elif (codec == 'BCH'):
+            self.enc = enc = fec_dev.bch_encoder.make(frame_bits, t_errors)
+            self.dec = dec = fec_dev.bch_decoder.make(frame_bits, t_errors)
+        elif (codec == 'RA'):
+            self.enc = enc = fec_dev.ra_encoder.make(frame_bits)
+            self.dec = dec = fec_dev.ra_decoder.make(frame_bits)
+        # TODO error else
+        
+        self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
         constellation.set_npwr(2 * sigma**2)
         self.mapper = digital.constellation_encoder_bc(constellation)
         self.noise = analog.noise_source_c(analog.GR_GAUSSIAN, sigma)
         self.add = blocks.add_vcc(1)
-        self.dec_turbo = dec_turbo = fec_dev.turbo_decoder.make(frame_bits)
-        self.fec_decoder = fec.decoder(dec_turbo, gr.sizeof_float, gr.sizeof_char)
+        self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
 
         self.complex_to_real = blocks.complex_to_real(1)
 
@@ -59,7 +69,7 @@ class test_fg(gr.top_block):
         # self.connect((self.complex_to_real, 0),(self.enc_b, 0))
         self.connect((self.fec_decoder, 0),(self.dec_b, 0))
 
-def main(frame_bytes, num_frames, frame_error_count, ebn0):
+def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
     bytes_per_vector = frame_bytes * num_frames
 
     print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\t\tFE\tFER\t\tTime elapsed (HH:MM:SS)')
@@ -71,12 +81,7 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0):
         csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Frames', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
 
         for snr in ebn0:
-            sigma = A * 1/np.sqrt(2) * 1/(10**(snr/20))
-
-            # TODO get rate from flowgraph
-            rate = 1/3
-            bps = 1 # bits per symbol
-            esn0 = snr + 10*np.log10(rate * bps)
+            sigma = A * 1/np.sqrt(2) * 1/np.sqrt((10**(snr/10)))
 
             bit_errors = frame_errors = loops = 0
             start = timeit.default_timer()
@@ -85,7 +90,7 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0):
                 random_generator = np.random.default_rng()
                 vector = list(random_generator.bytes(bytes_per_vector * BITS_PER_BYTE))
 
-                fg = test_fg(vector, frame_bytes, sigma)
+                fg = test_fg(vector, frame_bytes, sigma, codec, t_errors)
                 fg.start()
                 fg.wait()
 
@@ -109,6 +114,13 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0):
                 elapsed_time = now - start
                 formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
 
+                # rate = fg.enc.rate()
+                # print(rate)
+                # # TODO get rate from flowgraph
+                rate = 1/3
+                bps = 1 # bits per symbol
+                esn0 = snr + 10*np.log10(rate * bps)
+
                 print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{frames}\t{bit_errors}\t{ber:.3E}\t{frame_errors}\t{fer:.3E}\t{formatted_time}', end='\r')
             
             # TODO -- do not let run more than X frames / minutes, set by user
@@ -125,8 +137,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='') # TODO add description
 
-    parser.add_argument('-c', '--codec', choices=['turbo'], default='turbo',
+    parser.add_argument('-c', '--codec', choices=['turbo', 'BCH', 'RA'], default='turbo',
                         help='encoding and decoding scheme')
+    parser.add_argument('-t', '--correctable_errors', type=int, default=0,
+                        help='if applicable for type of codec (BCH, RS), number of errors that can be corrected')
 
     parser.add_argument('-b', '--frame_bytes', type=int, default=20,
                         help='number of bytes within one frame')
@@ -153,10 +167,11 @@ if __name__ == "__main__":
         ebn0 = np.round(np.arange(args.min_ebn0, args.max_ebn0, args.snr_step), int(np.log10(1/args.snr_step)))
 
     codec = args.codec
+    t_errors = args.correctable_errors
+    # TODO CCSDS supported frame sizes are 1784, 3568, 7136, 8920. Padding with zeros is inefficient
     
-    # TODO catch keyboard interrupt
     # TODO BCH
-    sys.exit(not main(args.frame_bytes, args.num_frames, args.frame_error_count, ebn0))
+    sys.exit(not main(args.frame_bytes, args.num_frames, args.frame_error_count, ebn0, codec, t_errors))
 
 
 
