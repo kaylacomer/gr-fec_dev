@@ -14,20 +14,11 @@
 #include <sstream>
 #include <vector>
 
-#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
-#include "Tools/Interleaver/CCSDS/Interleaver_core_CCSDS.hpp"
-#include "Tools/Interleaver/Column_row/Interleaver_core_column_row.hpp"
-#include "Tools/Interleaver/Golden/Interleaver_core_golden.hpp"
-#include "Tools/Interleaver/NO/Interleaver_core_NO.hpp"
-#include "Tools/Interleaver/Random/Interleaver_core_random.hpp"
-#include "Tools/Interleaver/Random_column/Interleaver_core_random_column.hpp"
-#include "Tools/Interleaver/Row_column/Interleaver_core_row_column.hpp"
-
 namespace gr {
 namespace fec_dev {
 
 fec::generic_encoder::sptr turbo_encoder::make(int frame_size,
-                                               enc_standard_t standard,
+                                               interleaver_t standard,
                                                enc_sub_type_t subencoder,
                                                bool buffered,
                                                std::vector<int> polys,
@@ -41,7 +32,7 @@ fec::generic_encoder::sptr turbo_encoder::make(int frame_size,
  * The private constructor
  */
 turbo_encoder_impl::turbo_encoder_impl(int frame_size,
-                                       enc_standard_t standard,
+                                       interleaver_t standard,
                                        enc_sub_type_t subencoder,
                                        bool buffered,
                                        std::vector<int> polys,
@@ -114,7 +105,7 @@ bool turbo_encoder_impl::set_frame_size(unsigned int frame_size)
     return true;
 }
 
-double turbo_encoder_impl::rate() { return d_frame_size / d_N; }
+double turbo_encoder_impl::rate() { return static_cast<float>(d_frame_size) / d_N; }
 
 void turbo_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

@@ -23,6 +23,8 @@
 #include "Module/Decoder/Turbo/Decoder_turbo.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo_fast.hpp"
 
+#include "turbo_decoder_impl.h"
+
 namespace gr {
 namespace fec_dev {
 
@@ -47,7 +49,7 @@ private:
 
 public:
     turbo_decoder_impl(int frame_size,
-                      enc_standard_t standard=LTE,
+                      interleaver_t standard=LTE,
                       enc_sub_type_t subencoder=RSC,
                       bool buffered=true,
                       std::vector<int> polys={013,015},

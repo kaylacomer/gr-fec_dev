@@ -20,6 +20,7 @@ namespace py = pybind11;
 // Please do not delete
 /**************************************/
 // BINDING_FUNCTION_PROTOTYPES(
+    void bind_aff3ct_common(py::module& m);
     void bind_turbo_encoder(py::module& m);
     void bind_turbo_decoder(py::module& m);
     void bind_turbo_common(py::module& m);
@@ -59,6 +60,7 @@ PYBIND11_MODULE(fec_dev_python, m)
     // Please do not delete
     /**************************************/
     // BINDING_FUNCTION_CALLS(
+    bind_aff3ct_common(m);
     bind_turbo_common(m);
     bind_turbo_encoder(m);
     bind_turbo_decoder(m);

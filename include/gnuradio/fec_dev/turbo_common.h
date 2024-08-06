@@ -8,14 +8,10 @@
 #ifndef INCLUDED_FEC_DEV_TURBO_COMMON_H
 #define INCLUDED_FEC_DEV_TURBO_COMMON_H
 
+#include "gnuradio/fec_dev/aff3ct_common.h" //interleaver types
+
 namespace gr {
 namespace fec_dev {
-
-typedef enum _enc_standard_t {
-    LTE = 0,
-    CCSDS,
-    CUSTOM
-} enc_standard_t;
 
 typedef enum _enc_sub_type_t {
     RSC = 0

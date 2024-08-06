@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(9280b86d07aeef1f56af2f1464023d66)                     */
+/* BINDTOOL_HEADER_FILE_HASH(ec27581f20fe6b25575ae1c3c8bf1c55)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -40,7 +40,7 @@ void bind_turbo_decoder(py::module& m)
         .def_static("make",
                     &turbo_decoder::make,
                     py::arg("frame_size"),
-                    py::arg("enc_standard") = gr::fec_dev::_enc_standard_t::LTE,
+                    py::arg("enc_standard") = gr::fec_dev::_interleaver_t::LTE,
                     py::arg("enc_sub_type") = gr::fec_dev::_enc_sub_type_t::RSC,
                     py::arg("buffered") = true,
                     py::arg("polys") = std::vector<int>{013, 015},

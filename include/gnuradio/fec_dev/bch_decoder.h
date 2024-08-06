@@ -10,7 +10,6 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
-#include <aff3ct.hpp>
 
 namespace gr {
 namespace fec_dev {

@@ -11,11 +11,12 @@ class test_bch(gr_unittest.TestCase):
         self.tb = None
 
     def test_basic(self):
-        frame_bits = 176
+        frame_bits = 200
         data_size = frame_bits//8
+        t = 5
 
-        enc = fec_dev.bch_encoder.make(frame_bits)
-        dec = fec_dev.bch_decoder.make(frame_bits)
+        enc = fec_dev.bch_encoder.make(frame_bits, t)
+        dec = fec_dev.bch_decoder.make(frame_bits, t)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)

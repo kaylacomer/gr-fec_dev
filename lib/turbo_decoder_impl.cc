@@ -11,14 +11,7 @@
 #include <Module/Quantizer/Pow2/Quantizer_pow2.hpp>
 #include <Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp>
 
-#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
-#include "Tools/Interleaver/CCSDS/Interleaver_core_CCSDS.hpp"
-#include "Tools/Interleaver/Column_row/Interleaver_core_column_row.hpp"
-#include "Tools/Interleaver/Golden/Interleaver_core_golden.hpp"
-#include "Tools/Interleaver/NO/Interleaver_core_NO.hpp"
-#include "Tools/Interleaver/Random/Interleaver_core_random.hpp"
-#include "Tools/Interleaver/Random_column/Interleaver_core_random_column.hpp"
-#include "Tools/Interleaver/Row_column/Interleaver_core_row_column.hpp"
+#include "gnuradio/fec_dev/aff3ct_common.h"
 
 #include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
 #include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
@@ -38,7 +31,7 @@ namespace gr {
 namespace fec_dev {
 
 fec::generic_decoder::sptr turbo_decoder::make(int frame_size,
-                                               enc_standard_t standard,
+                                               interleaver_t standard,
                                                enc_sub_type_t subencoder,
                                                bool buffered,
                                                std::vector<int> polys,
@@ -50,7 +43,7 @@ fec::generic_decoder::sptr turbo_decoder::make(int frame_size,
 }
 
 turbo_decoder_impl::turbo_decoder_impl(int frame_size,
-                                       enc_standard_t standard,
+                                       interleaver_t standard,
                                        enc_sub_type_t subencoder,
                                        bool buffered,
                                        std::vector<int> polys,
@@ -123,7 +116,7 @@ bool turbo_decoder_impl::set_frame_size(unsigned int frame_size)
     return true;
 }
 
-double turbo_decoder_impl::rate() { return d_frame_size / d_N; }
+double turbo_decoder_impl::rate() { return static_cast<float>(d_frame_size) / d_N; }
 
 void turbo_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
@@ -134,7 +127,10 @@ void turbo_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
     
     std::vector<B_8> temp_output(d_K);
-    d_decoder->decode_siho(d_quant_input.data(), temp_output.data(), -1);
+    int status = d_decoder->decode_siho(d_quant_input.data(), temp_output.data(), -1);
+    if (status == 1) {
+        std::cout << "Decoding FAILURE" << std::endl;
+    }
 
     std::memcpy(out, temp_output.data(), d_frame_size * sizeof(B_8));
 }

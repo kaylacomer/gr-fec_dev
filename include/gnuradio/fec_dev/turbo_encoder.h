@@ -40,7 +40,7 @@ public:
     * \param subencoder 
     */
     static generic_encoder::sptr make(int frame_size,
-                                      enc_standard_t standard=LTE,
+                                      interleaver_t standard=LTE,
                                       enc_sub_type_t subencoder=RSC,
                                       bool buffered=true,
                                       std::vector<int> polys={013,015},

@@ -24,6 +24,7 @@ include(GrPybind)
 # Python Bindings
 ########################################################################
 list(APPEND fec_dev_python_files
+    aff3ct_common_python.cc
     turbo_common_python.cc
     turbo_encoder_python.cc
     turbo_decoder_python.cc

@@ -34,7 +34,7 @@ private:
 
 public:
   turbo_encoder_impl(int frame_size,
-                     enc_standard_t standard=LTE,
+                     interleaver_t interleaver_t=LTE,
                      enc_sub_type_t subencoder=RSC,
                      bool buffered=true,
                      std::vector<int> polys={013,015},
