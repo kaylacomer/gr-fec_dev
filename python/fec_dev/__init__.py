@@ -50,3 +50,27 @@ rep_encoder_make = rep_encoder.make
 
 rep_decoder.__init__ = rep_decoder.make
 rep_decoder_make = rep_decoder.make
+
+rsc_encoder.__init__ = rsc_encoder.make
+rsc_encoder_make = rsc_encoder.make
+
+rsc_decoder.__init__ = rsc_decoder.make
+rsc_decoder_make = rsc_decoder.make
+
+ldpc_encoder_aff3ct.__init__ = ldpc_encoder_aff3ct.make
+ldpc_encoder_aff3ct_make = ldpc_encoder_aff3ct.make
+
+ldpc_decoder_aff3ct.__init__ = ldpc_decoder_aff3ct.make
+ldpc_decoder_aff3ct_make = ldpc_decoder_aff3ct.make
+
+polar_encoder_aff3ct.__init__ = polar_encoder_aff3ct.make
+polar_encoder_aff3ct_make = polar_encoder_aff3ct.make
+
+polar_decoder_aff3ct.__init__ = polar_decoder_aff3ct.make
+polar_decoder_aff3ct_make = polar_decoder_aff3ct.make
+
+tpc_encoder_aff3ct.__init__ = tpc_encoder_aff3ct.make
+tpc_encoder_aff3ct_make = tpc_encoder_aff3ct.make
+
+tpc_decoder_aff3ct.__init__ = tpc_decoder_aff3ct.make
+tpc_decoder_aff3ct_make = tpc_decoder_aff3ct.make

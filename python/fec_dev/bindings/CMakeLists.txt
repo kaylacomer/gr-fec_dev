@@ -35,7 +35,15 @@ list(APPEND fec_dev_python_files
     rs_encoder_python.cc
     rs_decoder_python.cc
     rep_encoder_python.cc
-    rep_decoder_python.cc python_bindings.cc)
+    rep_decoder_python.cc
+    tpc_encoder_aff3ct_python.cc
+    tpc_decoder_aff3ct_python.cc
+    polar_decoder_aff3ct_python.cc
+    polar_encoder_aff3ct_python.cc
+    ldpc_encoder_aff3ct_python.cc
+    ldpc_decoder_aff3ct_python.cc
+    rsc_decoder_python.cc
+    rsc_encoder_python.cc python_bindings.cc)
 
 gr_pybind_make_oot(fec_dev ../../.. gr::fec_dev "${fec_dev_python_files}")
 

@@ -20,7 +20,15 @@ list(APPEND fec_dev_sources
     rs_encoder_impl.cc
     rs_decoder_impl.cc
     rep_encoder_impl.cc
-    rep_decoder_impl.cc )
+    rep_decoder_impl.cc
+    tpc_encoder_aff3ct_impl.cc
+    tpc_decoder_aff3ct_impl.cc
+    polar_decoder_aff3ct_impl.cc
+    polar_encoder_aff3ct_impl.cc
+    ldpc_encoder_aff3ct_impl.cc
+    ldpc_decoder_aff3ct_impl.cc
+    rsc_decoder_impl.cc
+    rsc_encoder_impl.cc )
 
 set(fec_dev_sources
     "${fec_dev_sources}"

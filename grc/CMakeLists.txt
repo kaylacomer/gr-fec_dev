@@ -15,4 +15,12 @@ install(FILES
     fec_dev_rs_encoder.block.yml
     fec_dev_rs_decoder.block.yml
     fec_dev_rep_encoder.block.yml
-    fec_dev_rep_decoder.block.yml DESTINATION share/gnuradio/grc/blocks)
+    fec_dev_rep_decoder.block.yml
+    fec_dev_tpc_encoder_aff3ct.block.yml
+    fec_dev_tpc_decoder_aff3ct.block.yml
+    fec_dev_polar_decoder_aff3ct.block.yml
+    fec_dev_polar_encoder_aff3ct.block.yml
+    fec_dev_ldpc_encoder_aff3ct.block.yml
+    fec_dev_ldpc_decoder_aff3ct.block.yml
+    fec_dev_rsc_decoder.block.yml
+    fec_dev_rsc_encoder.block.yml DESTINATION share/gnuradio/grc/blocks)
