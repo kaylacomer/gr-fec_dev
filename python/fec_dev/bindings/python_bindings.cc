@@ -29,6 +29,8 @@ namespace py = pybind11;
     void bind_ra_decoder(py::module& m);
     void bind_rs_encoder(py::module& m);
     void bind_rs_decoder(py::module& m);
+    void bind_rep_encoder(py::module& m);
+    void bind_rep_decoder(py::module& m);
 // ) END BINDING_FUNCTION_PROTOTYPES
 
 
@@ -66,5 +68,7 @@ PYBIND11_MODULE(fec_dev_python, m)
     bind_ra_decoder(m);
     bind_rs_encoder(m);
     bind_rs_decoder(m);
+    bind_rep_encoder(m);
+    bind_rep_decoder(m);
     // ) END BINDING_FUNCTION_CALLS
 }

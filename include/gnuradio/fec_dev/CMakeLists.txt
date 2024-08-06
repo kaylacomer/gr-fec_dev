@@ -18,4 +18,6 @@ install(FILES api.h
     ra_encoder.h
     ra_decoder.h
     rs_encoder.h
-    rs_decoder.h DESTINATION include/gnuradio/fec_dev)
+    rs_decoder.h
+    rep_encoder.h
+    rep_decoder.h DESTINATION include/gnuradio/fec_dev)

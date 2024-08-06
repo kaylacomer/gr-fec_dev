@@ -1,0 +1,31 @@
+/*
+ * Copyright 2024 Free Software Foundation, Inc.
+ *
+ * This file is part of GNU Radio
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ */
+#include "pydoc_macros.h"
+#define D(...) DOC(gr, fec_dev, __VA_ARGS__)
+/*
+  This file contains placeholders for docstrings for the Python bindings.
+  Do not edit! These were automatically extracted during the binding process
+  and will be overwritten during the build process
+ */
+
+
+
+ static const char *__doc_gr_fec_dev_rep_encoder = R"doc()doc";
+
+
+ static const char *__doc_gr_fec_dev_rep_encoder_rep_encoder = R"doc()doc";
+
+
+ static const char *__doc_gr_fec_dev_rep_encoder_make = R"doc()doc";
+
+ static const char* __doc_gr_fec_dev_rep_encoder_set_frame_size = R"doc()doc";
+
+ static const char* __doc_gr_fec_dev_rep_encoder_rate = R"doc()doc";
+
+  

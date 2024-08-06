@@ -59,7 +59,7 @@ void ra_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     
     int status = d_decoder->decode_siho(d_quant_input.data(), out, -1);
     if (status == 1) {
-        std::cout << "FAILURE" << std::endl;
+        std::cout << "Decoding FAILURE" << std::endl;
     }
 }
 

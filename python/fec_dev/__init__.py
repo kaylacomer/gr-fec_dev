@@ -38,3 +38,15 @@ ra_encoder_make = ra_encoder.make
 
 ra_decoder.__init__ = ra_decoder.make
 ra_decoder_make = ra_decoder.make
+
+rs_encoder.__init__ = rs_encoder.make
+rs_encoder_make = rs_encoder.make
+
+rs_decoder.__init__ = rs_decoder.make
+rs_decoder_make = rs_decoder.make
+
+rep_encoder.__init__ = rep_encoder.make
+rep_encoder_make = rep_encoder.make
+
+rep_decoder.__init__ = rep_decoder.make
+rep_decoder_make = rep_decoder.make
