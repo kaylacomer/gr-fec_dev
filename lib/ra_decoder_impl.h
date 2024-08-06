@@ -33,7 +33,7 @@ private:
   std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
-  ra_decoder_impl(int K, int N, int iter=1);
+  ra_decoder_impl(int K, int rep=3, int iter=1);
   ~ra_decoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

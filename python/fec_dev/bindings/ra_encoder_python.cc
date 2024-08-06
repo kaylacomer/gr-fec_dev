@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ra_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(51333878b3125f7f0ed75da2976e9b84)                     */
+/* BINDTOOL_HEADER_FILE_HASH(ddc7a5682ff7937a8af2ad919a4d20fb)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -35,8 +35,8 @@ void bind_ra_encoder(py::module& m)
         std::shared_ptr<ra_encoder>>(m, "ra_encoder", D(ra_encoder))
 
         .def_static("make", &ra_encoder::make,
-           py::arg("frame_size"),
-           py::arg("codeword"),
+           py::arg("K"),
+           py::arg("rep") = 3,
            D(ra_encoder,make)
         )
 

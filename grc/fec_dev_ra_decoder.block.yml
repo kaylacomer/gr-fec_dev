@@ -1,19 +1,19 @@
 id: fec_dev_ra_decoder
-category: '[fec_dev]'
-label: Repeat and Accumulate Decoder Definition
+category: '[Error Coding]'
+label: Repeat-Accumulate Decoder Definition
 flags: [show_id]
 
 templates:
   imports: from gnuradio import fec_dev
   var_make: |-
     % if int(ndim)==0:
-    self.${id} = ${id} = fec_dev.ra_decoder_make(${framebits, codeword, iterations})\
+    self.${id} = ${id} = fec_dev.ra_decoder_make(${framebits, repetitions, iterations})\
     % elif int(ndim)==1:
-    self.${id} = ${id} = list(map((lambda a:fec_dev.ra_decoder_make(${framebits, codeword, iterations})),\
+    self.${id} = ${id} = list(map((lambda a:fec_dev.ra_decoder_make(${framebits, repetitions, iterations})),\
     range(0,${dim1})))
     % else:
     self.${id} = ${id} = list(map((lambda b:list(map((lambda a: \
-    fec_dev.ra_decoder_make(${framebits, codeword, iterations})),\
+    fec_dev.ra_decoder_make(${framebits, repetitions, iterations})),\
     range(0,${dim2})))), range(0,${dim1})))
     % endif
 
@@ -37,15 +37,15 @@ parameters:
   label: Frame Bits
   dtype: int
   default: '2048'
-- id: codeword
-  label: Codeword Size
+- id: repetitions
+  label: Number of Repetitions
   dtype: int
-  default: '4196'
+  default: '3'
 - id: iterations
   label: Number of iterations
   dtype: int
   default: '1'
-value: ${ fec_dev.ra_decoder.make(framebits, codeword, iterations) }
+value: ${ fec_dev.ra_decoder.make(framebits, repetitions, iterations) }
 
 #  'file_format' specifies the version of the GRC yml format used in the file
 #  and should usually not be changed.

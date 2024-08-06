@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ra_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(75f81ff2b68ae845850860300de1c564)                     */
+/* BINDTOOL_HEADER_FILE_HASH(39de98f74f35a3b0d2f2c82ad8084dd9)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,7 +38,7 @@ void bind_ra_decoder(py::module& m)
 
         .def_static("make", &ra_decoder::make,
              py::arg("K"),
-             py::arg("N"),
+             py::arg("rep") = 3,
              py::arg("iter") = 1,
              D(ra_decoder, make))
 

@@ -29,7 +29,7 @@ private:
   std::unique_ptr<aff3ct::module::Interleaver<B_8>> d_interleaver;
 
 public:
-  ra_encoder_impl(int K, int N);
+  ra_encoder_impl(int K, int rep=3);
   ~ra_encoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

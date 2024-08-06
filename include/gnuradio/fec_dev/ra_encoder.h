@@ -15,30 +15,25 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief ra Encoding class.
+* \brief Repeat-Accumulate Encoding class.
 * \ingroup error_coding_blk
 *
 * \details
-* A ra encoder class
+* Repeat-Accumulate encoder class
 */
 class FEC_API ra_encoder : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a ra encoding FEC API object.
+    * Build an RA encoding FEC API object.
     *
-    * \param K Number of bits per frame. If using in the
-    *        tagged stream style, this is the maximum allowable
-    *        number of bits per frame.
+    * \param K Number of bits per frame
+    * \param rep Number of repetitions per bit. Codeword size N = rep*K
     */
-    static generic_encoder::sptr make(int K, int N);
+    static generic_encoder::sptr make(int K, int rep=3);
 
     /*!
-    * Sets the uncoded frame size to \p K. If \p
-    * K is greater than the value given to the
-    * constructor, the frame size will be capped by that initial
-    * value and this function will return false. Otherwise, it
-    * returns true.
+    * Sets the uncoded frame size to \p K
     */
     bool set_frame_size(unsigned int K) override = 0;
 

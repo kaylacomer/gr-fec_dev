@@ -14,14 +14,14 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr ra_decoder::make(int K, int N, int iter)
+fec::generic_decoder::sptr ra_decoder::make(int K, int rep, int iter)
 {
-    return fec::generic_decoder::sptr(new ra_decoder_impl(K, N, iter));
+    return fec::generic_decoder::sptr(new ra_decoder_impl(K, rep, iter));
 }
-    ra_decoder_impl::ra_decoder_impl(int K, int N, int iter)
+    ra_decoder_impl::ra_decoder_impl(int K, int rep, int iter)
         : generic_decoder("ra_decoder"),
         d_K(K),
-        d_N(N)
+        d_N(rep * K)
     {
         set_frame_size(K);
 
@@ -47,7 +47,7 @@ bool ra_decoder_impl::set_frame_size(unsigned int K)
     return true;
 }
 
-double ra_decoder_impl::rate() { return d_K / d_N; } // decoder rate
+double ra_decoder_impl::rate() { return static_cast<float>(d_K) / d_N; } // decoder rate
 
 void ra_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
@@ -57,7 +57,10 @@ void ra_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_N);
     d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
     
-    d_decoder->decode_siho(d_quant_input.data(), out, -1);
+    int status = d_decoder->decode_siho(d_quant_input.data(), out, -1);
+    if (status == 1) {
+        std::cout << "FAILURE" << std::endl;
+    }
 }
 
 } /* namespace fec_dev */
