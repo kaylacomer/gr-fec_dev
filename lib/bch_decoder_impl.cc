@@ -51,7 +51,7 @@ bool bch_decoder_impl::set_frame_size(unsigned int frame_bits)
     return ret;
 }
 
-double bch_decoder_impl::rate() { return d_frame_size / (d_N - (d_K - d_frame_size)); } // decoder rate
+double bch_decoder_impl::rate() { return static_cast<float>(d_frame_size) / (d_N - (d_K - d_frame_size)); } // decoder rate
 
 void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
@@ -69,7 +69,7 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     std::vector<B_8> tmp_output(d_K);
     int status = d_decoder->decode_siho(d_quant_input.data(), tmp_output.data(), -1);
 
-    std::cout << "status: " << status << " ---- SUCCESS 0 , FAILURE 1" << std::endl;
+    // std::cout << "status: " << status << " ---- SUCCESS 0 , FAILURE 1" << std::endl;
     std::memcpy(out, tmp_output.data(), d_frame_size * sizeof(B_8));
     // if (status == spu::runtime::status_t::SUCCESS) {
         std::memcpy(out, tmp_output.data(), d_frame_size * sizeof(B_8));

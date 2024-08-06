@@ -26,6 +26,8 @@ private:
   unsigned int d_frame_size;
   int d_K;
   int d_N;
+  std::vector<B_8> d_tmp_input;
+  std::vector<B_8> d_tmp_output;
   std::unique_ptr<aff3ct::module::Encoder_RS<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::RS_polynomial_generator> d_poly_gen;
 

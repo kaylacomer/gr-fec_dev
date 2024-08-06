@@ -34,7 +34,7 @@ private:
   std::vector<float> d_tmp_input;
   std::vector<Q_8> d_quant_input;
 
-  std::unique_ptr<aff3ct::module::Decoder_BCH_std<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::module::Decoder_BCH<B_8, Q_8>> d_decoder;
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
   std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 

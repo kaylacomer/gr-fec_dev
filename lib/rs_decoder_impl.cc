@@ -51,7 +51,7 @@ bool rs_decoder_impl::set_frame_size(unsigned int frame_size)
     return ret;
 }
 
-double rs_decoder_impl::rate() { return d_N - (d_K - d_frame_size) / d_frame_size; } // decoder rate
+double rs_decoder_impl::rate() { return static_cast<float>((d_N - (d_K - d_frame_size))) / d_frame_size; } // decoder rate
 
 void rs_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
