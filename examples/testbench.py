@@ -17,7 +17,7 @@ import argparse
 BITS_PER_BYTE = 8
 
 class test_fg(gr.top_block):
-    def __init__(self, vector, frame_bytes, sigma, codec, t_errors):
+    def __init__(self, vector, frame_bytes, ebn0, codec, t_errors):
         gr.top_block.__init__(self, "FEC testbench", catch_exceptions=True)
 
         samp_rate = 32e3
@@ -39,6 +39,11 @@ class test_fg(gr.top_block):
             self.enc = enc = fec_dev.ra_encoder.make(frame_bits)
             self.dec = dec = fec_dev.ra_decoder.make(frame_bits)
         # TODO error else
+
+        rate = enc.rate()
+        bps = 1 # bits per symbol
+        self.esn0 = esn0 = ebn0 + 10*np.log10(rate * bps)
+        self.sigma = sigma = 1/np.sqrt(2) * 1/np.sqrt((10**(esn0/10)))
         
         self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
@@ -71,26 +76,25 @@ class test_fg(gr.top_block):
 
 def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
     bytes_per_vector = frame_bytes * num_frames
+    bits_per_vector = bytes_per_vector * BITS_PER_BYTE
 
-    print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\t\tFE\tFER\t\tTime elapsed (HH:MM:SS)')
+    print('Eb/N0 (dB)\tEs/N0 (dB)\tSigma\tFrames\tBE\tBER\t\tFE\tFER\t\tTime elapsed\tThroughput (Mb/s)')
     # TODO useful filename
     filename = 'data.csv'
     with open(filename, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         # TODO write simulation info in comments at beginning of file
-        csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'Sigma', 'Frames', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)'])
+        csvwriter.writerow(['Eb/N0 (dB)', 'Es/N0 (dB)', 'sigma', 'Frames', 'Bit errors', 'BER', 'Frame errors', 'FER', 'Time elapsed (HH:MM:SS)', 'Throughput (Mb/s)'])
 
         for snr in ebn0:
-            sigma = A * 1/np.sqrt(2) * 1/np.sqrt((10**(snr/10)))
-
             bit_errors = frame_errors = loops = 0
             start = timeit.default_timer()
 
             while (frame_errors < frame_error_count):
                 random_generator = np.random.default_rng()
-                vector = list(random_generator.bytes(bytes_per_vector * BITS_PER_BYTE))
+                vector = list(random_generator.bytes(bytes_per_vector))
 
-                fg = test_fg(vector, frame_bytes, sigma, codec, t_errors)
+                fg = test_fg(vector, frame_bytes, snr, codec, t_errors)
                 fg.start()
                 fg.wait()
 
@@ -100,41 +104,47 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
                 diff = src_data ^ dec_data
                 bit_errors += np.count_nonzero(diff)
 
-                diffByFrame = diff.reshape((num_frames, frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE))
-                frame_errors += np.count_nonzero([np.count_nonzero(diff) for diff in diffByFrame])
+
+                N_cw = fg.enc.get_output_size()
+                N_frames = round(bits_per_vector / N_cw)
+
+                # src_frames = np.reshape(np.packbits(src_data), (N_frames, N_cw))
+                # dec_frames = np.reshape(np.packbits(dec_data), (N_frames, N_cw))
+                src_frames = np.reshape(np.packbits(src_data), (num_frames, frame_bytes))
+                dec_frames = np.reshape(np.packbits(dec_data), (num_frames, frame_bytes))
+
+                for i in range(0, len(src_frames)):
+                    if not np.array_equal(src_frames[i], dec_frames[i]):
+                        frame_errors += 1
 
                 loops += 1
+                
+                total_frames = N_frames * loops
+                total_bits = bits_per_vector * loops
 
-                frames = loops * num_frames
-                bits = frames * frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE
-                ber = bit_errors / bits
-                fer = frame_errors / frames
+
+                ber = bit_errors / total_bits
+                fer = frame_errors / total_frames
 
                 now = timeit.default_timer()
                 elapsed_time = now - start
                 formatted_time = time.strftime('%H:%M:%S', time.gmtime(elapsed_time))
+                throughput = total_bits/elapsed_time / 1E6
 
-                # rate = fg.enc.rate()
-                # print(rate)
-                # # TODO get rate from flowgraph
-                rate = 1/3
-                bps = 1 # bits per symbol
-                esn0 = snr + 10*np.log10(rate * bps)
-
-                print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{frames}\t{bit_errors}\t{ber:.3E}\t{frame_errors}\t{fer:.3E}\t{formatted_time}', end='\r')
+                sigma = fg.sigma
+                esn0 = fg.esn0
+                
+                print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{total_frames}\t{bit_errors}\t{ber:.3E}\t{frame_errors}\t{fer:.3E}\t{formatted_time}\t{throughput:.2f}', end='\r')
             
             # TODO -- do not let run more than X frames / minutes, set by user
             # TODO calculate throughput = bits tx/second
             print()
-            csvwriter.writerow([snr, esn0, sigma, frames, bit_errors, ber, frame_errors, fer, formatted_time])
+            bits_per_vector = total_frames * frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE
+            csvwriter.writerow([snr, esn0, sigma, total_frames, bit_errors, ber, frame_errors, fer, formatted_time, throughput])
 
     return True
 
 if __name__ == "__main__":
-    # A = 1.75
-    # A = 1
-    A = 2
-
     parser = argparse.ArgumentParser(description='') # TODO add description
 
     parser.add_argument('-c', '--codec', choices=['turbo', 'BCH', 'RA'], default='turbo',
@@ -144,7 +154,7 @@ if __name__ == "__main__":
 
     parser.add_argument('-b', '--frame_bytes', type=int, default=20,
                         help='number of bytes within one frame')
-    parser.add_argument('-f', '--num_frames', type=int, default=50,
+    parser.add_argument('-f', '--num_frames', type=int, default=1000,
                         help='number of frames in each randomized vector')
     parser.add_argument('-e', '--frame_error_count', type=int, default=100,
                         help='simulation will continue until this number of frame errors is reached')
@@ -164,7 +174,7 @@ if __name__ == "__main__":
     if args.ebn0_list:
         ebn0 = args.ebn0_list
     else:
-        ebn0 = np.round(np.arange(args.min_ebn0, args.max_ebn0, args.snr_step), int(np.log10(1/args.snr_step)))
+        ebn0 = np.round(np.arange(args.min_ebn0, args.max_ebn0 + args.snr_step, args.snr_step), int(np.log10(1/args.snr_step)))
 
     codec = args.codec
     t_errors = args.correctable_errors
