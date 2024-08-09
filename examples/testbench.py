@@ -49,7 +49,7 @@ class test_fg(gr.top_block):
         constellation = digital.constellation_bpsk()
         constellation.set_npwr(2 * sigma**2)
         self.mapper = digital.constellation_encoder_bc(constellation)
-        self.noise = analog.noise_source_c(analog.GR_GAUSSIAN, sigma)
+        self.noise = analog.noise_source_c(analog.GR_GAUSSIAN, np.sqrt(2) * sigma)
         self.add = blocks.add_vcc(1)
         self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
 
@@ -104,12 +104,11 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
                 diff = src_data ^ dec_data
                 bit_errors += np.count_nonzero(diff)
 
+                # N_cw = fg.enc.get_output_size()
+                # N_frames = round(bits_per_vector / N_cw)
+                # src_frames = np.reshape(src_data, (N_frames, N_cw))
+                # dec_frames = np.reshape(dec_data, (N_frames, N_cw))
 
-                N_cw = fg.enc.get_output_size()
-                N_frames = round(bits_per_vector / N_cw)
-
-                # src_frames = np.reshape(np.packbits(src_data), (N_frames, N_cw))
-                # dec_frames = np.reshape(np.packbits(dec_data), (N_frames, N_cw))
                 src_frames = np.reshape(np.packbits(src_data), (num_frames, frame_bytes))
                 dec_frames = np.reshape(np.packbits(dec_data), (num_frames, frame_bytes))
 
@@ -119,7 +118,7 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
 
                 loops += 1
                 
-                total_frames = N_frames * loops
+                total_frames = num_frames * loops
                 total_bits = bits_per_vector * loops
 
 
@@ -137,9 +136,7 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
                 print(f'{snr}\t\t{esn0:.2f}\t\t{sigma:.2f}\t{total_frames}\t{bit_errors}\t{ber:.3E}\t{frame_errors}\t{fer:.3E}\t{formatted_time}\t{throughput:.2f}', end='\r')
             
             # TODO -- do not let run more than X frames / minutes, set by user
-            # TODO calculate throughput = bits tx/second
             print()
-            bits_per_vector = total_frames * frame_bytes*BITS_PER_BYTE*BITS_PER_BYTE
             csvwriter.writerow([snr, esn0, sigma, total_frames, bit_errors, ber, frame_errors, fer, formatted_time, throughput])
 
     return True
