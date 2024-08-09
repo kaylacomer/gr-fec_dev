@@ -39,49 +39,40 @@ class test_fg(gr.top_block):
             self.enc = enc = fec_dev.ra_encoder.make(frame_bits)
             self.dec = dec = fec_dev.ra_decoder.make(frame_bits)
         # TODO error else
+        
+        self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
 
         rate = enc.rate()
         bps = 1 # bits per symbol
         self.esn0 = esn0 = ebn0 + 10*np.log10(rate * bps)
         self.sigma = sigma = 1/np.sqrt(2) * 1/np.sqrt((10**(esn0/10)))
-        
-        self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
+
         constellation = digital.constellation_bpsk()
         constellation.set_npwr(2 * sigma**2)
         self.mapper = digital.constellation_encoder_bc(constellation)
-        self.noise1 = analog.noise_source_c(analog.GR_GAUSSIAN, np.sqrt(2) * sigma)
-        self.add1 = blocks.add_vcc(1)
-        self.dec1 = dec1 = fec_dev.turbo_decoder.make(frame_bits)
-        self.fec_decoder1 = fec.decoder(dec1, gr.sizeof_float, gr.sizeof_char)
-
-        self.complex_to_real1 = blocks.complex_to_real(1)
+        self.complex_to_real = blocks.complex_to_real(1)
 
         self.add = blocks.add_vff(1)
         self.noise = analog.noise_source_f(analog.GR_GAUSSIAN, sigma)
-        self.char_to_float = blocks.char_to_float(1, -2 / sigma**2)
+
         self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
 
         self.src_b = blocks.vector_sink_b()
         # self.enc_b = blocks.vector_sink_f()
         self.dec_b = blocks.vector_sink_b()
-        self.dec1_b = blocks.vector_sink_b()
-        self.null = blocks.null_sink(gr.sizeof_int)
+        # self.null = blocks.null_sink(gr.sizeof_int)
 
         self.connect((self.source, 0),(self.throttle,0))
         self.connect((self.throttle, 0),(self.unpack, 0))
         self.connect((self.unpack, 0), (self.fec_encoder, 0))
 
         self.connect((self.fec_encoder), (self.mapper, 0))
-        self.connect((self.mapper,0), (self.add1,0))
-        self.connect((self.noise1,0), (self.add1,1))
-        self.connect((self.add1,0), (self.complex_to_real1,0))
-        self.connect((self.complex_to_real1,0), (self.fec_decoder1,0))
-        self.connect((self.fec_decoder1, 0),(self.dec1_b, 0))
 
-        self.connect((self.fec_encoder), (self.char_to_float, 0))
-        self.connect((self.char_to_float,0), (self.add,0))
+        self.connect((self.mapper,0), (self.complex_to_real,0))
+        self.connect((self.complex_to_real,0), (self.add,0))
         self.connect((self.noise,0), (self.add,1))
         self.connect((self.add,0), (self.fec_decoder,0))
+
         self.connect((self.fec_decoder, 0),(self.dec_b, 0))
 
         self.connect((self.unpack, 0),(self.src_b, 0))
@@ -112,20 +103,10 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
                 fg.wait()
 
                 src_data = np.array(fg.src_b.data())
-                dec1_data = np.array(fg.dec1_b.data())
                 dec_data = np.array(fg.dec_b.data())
-
-                print(dec_data[:25])
-                print(dec1_data[:25])
-                # dec1_data = np.array(fg.dec1_b.data())
 
                 diff = src_data ^ dec_data
                 bit_errors += np.count_nonzero(diff)
-
-                # N_cw = fg.enc.get_output_size()
-                # N_frames = round(bits_per_vector / N_cw)
-                # src_frames = np.reshape(src_data, (N_frames, N_cw))
-                # dec_frames = np.reshape(dec_data, (N_frames, N_cw))
 
                 src_frames = np.reshape(np.packbits(src_data), (num_frames, frame_bytes))
                 dec_frames = np.reshape(np.packbits(dec_data), (num_frames, frame_bytes))
@@ -133,7 +114,7 @@ def main(frame_bytes, num_frames, frame_error_count, ebn0, codec, t_errors):
                 for i in range(0, len(src_frames)):
                     if not np.array_equal(src_frames[i], dec_frames[i]):
                         frame_errors += 1
-
+                
                 loops += 1
                 
                 total_frames = num_frames * loops
