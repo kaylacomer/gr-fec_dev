@@ -32,8 +32,8 @@ class simple_fg(gr.top_block):
         self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
         self.mapper = digital.constellation_encoder_bc(constellation)
-        self.dec = dec = fec_dev.polar_decoder_aff3ct.make(frame_bits)
-        self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
+        self.dec = dec = fec_dev.rs_decoder.make(frame_bits)
+        # self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
 
         self.complex_to_real = blocks.complex_to_real(1)
 
@@ -47,12 +47,12 @@ class simple_fg(gr.top_block):
         self.connect((self.unpack, 0), (self.fec_encoder, 0))
         self.connect((self.fec_encoder), (self.mapper, 0))
         self.connect((self.mapper,0), (self.complex_to_real,0))
-        self.connect((self.complex_to_real, 0), (self.fec_decoder, 0))
+        # self.connect((self.complex_to_real, 0), (self.fec_decoder, 0))
         self.connect((self.complex_to_real, 0), (self.null, 0))
 
         self.connect((self.unpack, 0),(self.src_b, 0))
         self.connect((self.fec_encoder, 0),(self.enc_b, 0))
-        self.connect((self.fec_decoder, 0),(self.dec_b, 0))
+        # self.connect((self.fec_decoder, 0),(self.dec_b, 0))
 
 def main():
     fg = simple_fg()
@@ -60,22 +60,20 @@ def main():
     fg.wait()
     src_data = np.array(fg.src_b.data())
     enc_data = np.array(fg.enc_b.data())
-    dec_data = np.array(fg.dec_b.data())
+    # dec_data = np.array(fg.dec_b.data())
 
-    # print('unpacked')
-    # print(f'src: {src_data}')
-    # print(len(src_data))
-    # print(f'enc: {enc_data}')
-    # print(len(enc_data))
+    print('unpacked')
+    print(f'src: {src_data}')
+    print(len(src_data))
+    print(f'enc: {enc_data}')
+    print(len(enc_data))
     # print(f'dec: {dec_data}')
     # print(len(dec_data))
 
-    # print('\npacked')
+    print('\npacked')
     print(f'src: {np.packbits(src_data)}')
-    # print(f'enc: {np.packbits(enc_data)}')
-    print(f'dec: {np.packbits(dec_data)}')
-
-    # print(fg.enc.get_output_size())
+    print(f'enc: {np.packbits(enc_data)}')
+    # print(f'dec: {np.packbits(dec_data)}')
 
     return True
 

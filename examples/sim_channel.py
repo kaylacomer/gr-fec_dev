@@ -11,6 +11,7 @@
 
 from PyQt5 import Qt
 from gnuradio import qtgui
+from PyQt5 import QtCore
 from gnuradio import analog
 from gnuradio import blocks
 from gnuradio import digital
@@ -69,6 +70,7 @@ class sim_channel(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.sigma = sigma = 0.001
         self.samp_rate = samp_rate = 32000
         self.enc_turbo = enc_turbo = fec_dev.turbo_encoder_make((frame_size*8))
         self.dec_turbo = dec_turbo = fec_dev.turbo_decoder.make((frame_size*8))
@@ -79,6 +81,9 @@ class sim_channel(gr.top_block, Qt.QWidget):
         # Blocks
         ##################################################
 
+        self._sigma_range = qtgui.Range(0.001, 1, 0.001, 0.001, 200)
+        self._sigma_win = qtgui.RangeWidget(self._sigma_range, self.set_sigma, "'sigma'", "eng_slider", float, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._sigma_win)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             (frame_size*2), #size
             samp_rate, #samp_rate
@@ -136,23 +141,23 @@ class sim_channel(gr.top_block, Qt.QWidget):
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
         self.blocks_char_to_float_1 = blocks.char_to_float(1, 1)
         self.blocks_char_to_float_0 = blocks.char_to_float(1, 1)
-        self.blocks_add_xx_0 = blocks.add_vcc(1)
-        self.analog_noise_source_x_0 = analog.noise_source_c(analog.GR_GAUSSIAN, 1, 0)
+        self.blocks_add_xx_0 = blocks.add_vff(1)
+        self.analog_noise_source_x_0 = analog.noise_source_f(analog.GR_GAUSSIAN, sigma, 0)
 
 
         ##################################################
         # Connections
         ##################################################
         self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_0, 0))
-        self.connect((self.blocks_add_xx_0, 0), (self.blocks_complex_to_real_0, 0))
+        self.connect((self.blocks_add_xx_0, 0), (self.fec_generic_decoder_0, 0))
         self.connect((self.blocks_char_to_float_0, 0), (self.qtgui_time_sink_x_0, 1))
         self.connect((self.blocks_char_to_float_1, 0), (self.qtgui_time_sink_x_0, 0))
-        self.connect((self.blocks_complex_to_real_0, 0), (self.fec_generic_decoder_0, 0))
+        self.connect((self.blocks_complex_to_real_0, 0), (self.blocks_add_xx_0, 1))
         self.connect((self.blocks_throttle2_0, 0), (self.blocks_unpack_k_bits_bb_0, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.blocks_char_to_float_1, 0))
         self.connect((self.blocks_unpack_k_bits_bb_0, 0), (self.fec_generic_encoder_0, 0))
         self.connect((self.blocks_vector_source_x_0, 0), (self.blocks_throttle2_0, 0))
-        self.connect((self.digital_constellation_encoder_bc_0, 0), (self.blocks_add_xx_0, 1))
+        self.connect((self.digital_constellation_encoder_bc_0, 0), (self.blocks_complex_to_real_0, 0))
         self.connect((self.fec_generic_decoder_0, 0), (self.blocks_char_to_float_0, 0))
         self.connect((self.fec_generic_encoder_0, 0), (self.digital_constellation_encoder_bc_0, 0))
 
@@ -171,6 +176,13 @@ class sim_channel(gr.top_block, Qt.QWidget):
     def set_frame_size(self, frame_size):
         self.frame_size = frame_size
         self.blocks_vector_source_x_0.set_data(2*(self.frame_size//15)*[0, 0, 1, 0, 3, 0, 7, 0, 15, 0, 31, 0, 63, 0, 127], [])
+
+    def get_sigma(self):
+        return self.sigma
+
+    def set_sigma(self, sigma):
+        self.sigma = sigma
+        self.analog_noise_source_x_0.set_amplitude(self.sigma)
 
     def get_samp_rate(self):
         return self.samp_rate

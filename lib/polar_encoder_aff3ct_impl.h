@@ -13,7 +13,16 @@
 #include <string>
 
 #include "Tools/types.h"
-//#include "Module/Encoder/POLAR/Encoder_polar.hpp"
+#include "Module/Encoder/Polar/Encoder_polar_sys.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator_5G.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator_BEC.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator_GA_Arikan.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator_GA.hpp"
+#include "Tools/Code/Polar/Frozenbits_generator/Frozenbits_generator_TV.hpp"
+#include "Tools/Interface/Interface_get_set_noise.hpp"
+#include "Tools/Noise/Noise.hpp"
+#include "Tools/Noise/Sigma.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -23,7 +32,8 @@ class FEC_API polar_encoder_aff3ct_impl : public polar_encoder_aff3ct
 private:
   unsigned int d_K;
   int d_N;
-  //std::unique_ptr<aff3ct::module::Encoder_RA<B_8>> d_encoder;
+  std::unique_ptr<aff3ct::module::Encoder_polar<B_8>> d_encoder;
+  std::unique_ptr<aff3ct::tools::Frozenbits_generator> d_frozen_bitgen;
 
 public:
   polar_encoder_aff3ct_impl(int K);
