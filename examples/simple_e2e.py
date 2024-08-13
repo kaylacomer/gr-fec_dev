@@ -28,11 +28,11 @@ class simple_fg(gr.top_block):
         self.source = blocks.vector_source_b(vector, False, 1, [])
         self.throttle = blocks.throttle(gr.sizeof_char*1, samp_rate, True, 0 if "auto" == "auto" else max( int(float(0.1) * samp_rate) if "auto" == "time" else int(0.1), 1) )
         self.unpack = blocks.unpack_k_bits_bb(bits)
-        self.enc = enc = fec_dev.polar_encoder_aff3ct.make(frame_bits)
+        self.enc = enc = fec_dev.tpc_encoder_aff3ct.make(frame_bits)
         self.fec_encoder = fec.encoder(enc, gr.sizeof_char, gr.sizeof_char)
         constellation = digital.constellation_bpsk()
         self.mapper = digital.constellation_encoder_bc(constellation)
-        self.dec = dec = fec_dev.polar_decoder_aff3ct.make(frame_bits)
+        self.dec = dec = fec_dev.tpc_decoder_aff3ct.make(frame_bits)
         self.fec_decoder = fec.decoder(dec, gr.sizeof_float, gr.sizeof_char)
 
         self.complex_to_real = blocks.complex_to_real(1)

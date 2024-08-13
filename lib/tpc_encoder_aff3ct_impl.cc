@@ -17,11 +17,37 @@ fec::generic_encoder::sptr tpc_encoder_aff3ct::make(int K)
 }
     tpc_encoder_aff3ct_impl::tpc_encoder_aff3ct_impl(int K)
         : generic_encoder("tpc_encoder_aff3ct"),
-        d_K(K)
+        d_K(45),
+        d_N(63*63)
     {
         set_frame_size(K);
 
-        //d_encoder = std::make_unique<aff3ct::module::Encoder_RA<B_8>>(d_K, d_N, *d_interleaver);
+        int t=5;
+
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(std::sqrt(d_N), t);
+        int rdncy = d_poly_gen->get_n_rdncy();
+        d_K = std::sqrt(d_N) - rdncy;
+        // auto enc_r = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
+        // auto enc_c = enc_r;
+
+        auto enc_r = aff3ct::module::Encoder_BCH<B_8>(d_K, std::sqrt(d_N), *d_poly_gen);
+        enc_r.set_n_frames(std::sqrt(d_N));
+        auto enc_c = enc_r;
+
+        // const aff3ct::tools::Interleaver_core_row_column<T>::READ_ORDER read_order
+        // const std::string& read_order
+        // "TOP_LEFT"
+    //     Interleaver_core_row_column(const int size, const int n_cols, const std::string& read_order);
+    // Interleaver_core_row_column(const int size,
+    //                             const int n_cols,
+    //                             const aff3ct::tools::Interleaver_core_row_column<T>::READ_ORDER read_order);
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_N, std::sqrt(d_N), "TOP_LEFT");
+        // d_interleaver_core->set_n_frames(d_K);
+        d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
+
+        //  Encoder_turbo_product(const Encoder<B>& enc_r, const Encoder<B>& enc_c, const Interleaver<B>& pi);
+
+        d_encoder = std::make_unique<aff3ct::module::Encoder_turbo_product<B_8>>(enc_r, enc_c, *d_pi);
 }
 
 tpc_encoder_aff3ct_impl::~tpc_encoder_aff3ct_impl()
@@ -43,7 +69,7 @@ void tpc_encoder_aff3ct_impl::generic_work(const void* inbuffer, void* outbuffer
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    //d_encoder->encode(in, out);
+    d_encoder->encode(in, out);
 }
 
 } /* namespace fec_dev */
