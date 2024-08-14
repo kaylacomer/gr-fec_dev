@@ -27,7 +27,10 @@ private:
   int d_K;
   int d_N;
   int d_t;
-
+  int d_zeros;
+  int d_codeword_size;
+  std::vector<B_8> d_tmp_input;
+  std::vector<B_8> d_tmp_output;
 
   std::unique_ptr<aff3ct::module::Encoder_BCH<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;

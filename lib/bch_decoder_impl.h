@@ -31,7 +31,10 @@ private:
   int d_K;
   int d_N;
   int d_t;
+  int d_zeros;
+  int d_codeword_size;
   std::vector<float> d_tmp_input;
+  std::vector<B_8> d_tmp_output;
   std::vector<Q_8> d_quant_input;
 
   std::unique_ptr<aff3ct::module::Decoder_BCH<B_8, Q_8>> d_decoder;
