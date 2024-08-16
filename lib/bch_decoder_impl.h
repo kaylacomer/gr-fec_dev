@@ -13,7 +13,6 @@
 #include <string>
 #include <cmath>
 
-#include <aff3ct.hpp>
 #include "Tools/types.h"
 #include "Module/Decoder/BCH/Standard/Decoder_BCH_std.hpp"
 #include "Module/Decoder/BCH/Fast/Decoder_BCH_fast.hpp"
