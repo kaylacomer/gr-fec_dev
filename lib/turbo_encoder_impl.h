@@ -8,14 +8,16 @@
 #ifndef INCLUDED_FEC_DEV_TURBO_ENCODER_IMPL_H
 #define INCLUDED_FEC_DEV_TURBO_ENCODER_IMPL_H
 
-#include <gnuradio/fec_dev/turbo_encoder.h>
 #include <map>
 #include <string>
+#include <sstream>
+#include <vector>
+
+#include <gnuradio/fec_dev/turbo_encoder.h>
+#include "gnuradio/fec_dev/aff3ct_common.h"
 
 #include "Tools/types.h"
 #include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
-#include "Tools/Interleaver/Interleaver_core.hpp"
-#include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
 #include "Module/Encoder/Turbo/Encoder_turbo.hpp"
 
 namespace gr {
@@ -24,7 +26,6 @@ namespace fec_dev {
 class FEC_API turbo_encoder_impl : public turbo_encoder
 {
 private:
-  int d_frame_size;
   int d_K;
   int d_N;
   int d_trellis_size;

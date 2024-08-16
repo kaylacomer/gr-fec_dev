@@ -9,10 +9,6 @@
 #endif
 
 #include "turbo_encoder_impl.h"
-#include <gnuradio/fec/generic_encoder.h>
-#include <volk/volk.h>
-#include <sstream>
-#include <vector>
 
 namespace gr {
 namespace fec_dev {
@@ -38,46 +34,51 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
                                        std::vector<int> polys,
                                        int trellis_size)
     : generic_encoder("turbo_encoder"),
-      d_frame_size(frame_size),
+      d_K(frame_size),
       d_trellis_size(trellis_size)
 {
     if (standard == LTE) {
-        // d_logger->info("Encoding to LTE standard (8-stage trellis, [013, 015] polynomials, LTE interleaver)");
-
         d_trellis_size = 8;
         polys = {013,015};
-
-        d_K = d_frame_size;
-
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(d_K);
     }
     else if (standard == CCSDS) {
-        // d_logger->info("Encoding to CCSDS standard (16-stage trellis, [023, 033] polynomials, CCSDS interleaver)");
+        std::vector<int> CCSDS_sizes = {1784, 3568, 7136, 8920};
+        if (!count(CCSDS_sizes.begin(), CCSDS_sizes.end(), d_K)) {
+            throw std::runtime_error("CCSDS supported frame sizes are 1784, 3568, 7136, 8920");
+        }
 
         d_trellis_size = 16;
         polys = {023,033};
-
-        if (d_frame_size > 8920) {
-            throw std::runtime_error("maximum frame size for CCSDS is 8920");
-        }
-
-        std::vector<int> CCSDS_sizes = {1784, 3568, 7136, 8920};
-        for (const int& size : CCSDS_sizes) {
-            if (d_frame_size <= size) {
-                d_K = size;
-                break;
-            }
-        }
-        
-        if (d_K - d_frame_size > 0) {
-            d_logger->info("CCSDS supported frame sizes are 1784, 3568, 7136, 8920. Padding {:d}-bit input with {:d} zeros, which is inefficient", d_frame_size, d_K - d_frame_size);
-        }
-
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(d_K);
     }
+    else if (standard == NO) {
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
+    }
+    // else if (standard == COL_ROW) {
+    //     const int n_cols = 1;
+    //     itl_read_order_t read_order = TOP_LEFT;
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, n_cols, read_order);
+    // }
+    // else if (standard == ROW_COL) {
+    //     const int n_cols = 1;
+    //     itl_read_order_t read_order = TOP_LEFT;
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, n_cols, read_order);
+    // }
+    else if (standard == RAND_COL) {
+        int n_cols = 1;
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, n_cols);
+    }
+    else if (standard == GOLDEN) {
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
+    }
+    else if (standard == DVB_RCS1) {
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
+    }
+    else if (standard == DVB_RCS2) {
+        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
+    }
     else {
-        d_logger->info("Custom encoding: {:d}-stage trellis, __ polynomials, random interleaver", d_trellis_size);
-        d_K = d_frame_size;
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
     }
 
@@ -88,7 +89,6 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
     auto enco_i = enco_n;
     
     d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
-
     d_encoder = std::make_unique<aff3ct::module::Encoder_turbo<B_8>>(d_K, d_N, enco_n, enco_i, *d_pi);
 }
 
@@ -98,24 +98,21 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_size,
 turbo_encoder_impl::~turbo_encoder_impl() {}
 
 int turbo_encoder_impl::get_output_size() { return d_N; }
-int turbo_encoder_impl::get_input_size() { return d_frame_size; }
+int turbo_encoder_impl::get_input_size() { return d_K; }
 
 bool turbo_encoder_impl::set_frame_size(unsigned int frame_size)
 {
     return true;
 }
 
-double turbo_encoder_impl::rate() { return static_cast<float>(d_frame_size) / d_N; }
+double turbo_encoder_impl::rate() { return static_cast<float>(d_K) / d_N; }
 
 void turbo_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    std::vector<B_8> input_vector(in, in + d_frame_size);
-    input_vector.resize(d_K, 0);
-
-    d_encoder->encode(input_vector.data(), out);
+    d_encoder->encode(in, out);
 }
 } /* namespace fec_dev */
 } /* namespace gr */

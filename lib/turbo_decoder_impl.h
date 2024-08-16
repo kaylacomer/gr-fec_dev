@@ -12,16 +12,24 @@
 #define INCLUDED_FEC_TURBO_DECODER_IMPL_H
 
 #include <gnuradio/fec_dev/turbo_decoder.h>
+#include "gnuradio/fec_dev/aff3ct_common.h"
+#include <volk/volk.h>
+
 #include <map>
 #include <string>
+#include <cmath>
+#include <cstdio>
+#include <sstream>
+#include <vector>
 
 #include "Tools/types.h"
 #include "Module/Quantizer/Quantizer.hpp"
 #include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 #include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
-#include "Tools/Interleaver/Interleaver_core.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -34,7 +42,6 @@ private:
     int get_input_item_size() override;
     const char* get_input_conversion() override;
 
-    int d_frame_size;
     int d_K;
     int d_N;
     int d_trellis_size;
