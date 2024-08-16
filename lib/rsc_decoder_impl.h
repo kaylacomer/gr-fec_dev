@@ -13,7 +13,12 @@
 #include <string>
 
 #include "Tools/types.h"
-// #include "Module/Encoder/RSC/Encoder_rsc.hpp"
+#include "Module/Quantizer/Quantizer.hpp"
+#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
+#include "Module/Decoder/RSC/Viterbi/Decoder_Viterbi_SIHO.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
+#include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -23,7 +28,11 @@ class FEC_API rsc_decoder_impl : public rsc_decoder
 private:
   unsigned int d_K;
   int d_N;
-  //std::unique_ptr<aff3ct::module::Encoder_RA<B_8>> d_decoder;
+  int d_trellis_size;
+  std::unique_ptr<aff3ct::module::Decoder_Viterbi_SIHO<B_8, Q_8>> d_decoder;
+  std::vector<float> d_tmp_input;
+  std::vector<Q_8> d_quant_input;
+  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
   rsc_decoder_impl(int K);

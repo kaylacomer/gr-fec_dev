@@ -13,7 +13,7 @@
 #include <string>
 
 #include "Tools/types.h"
-//#include "Module/Encoder/RSC/Encoder_rsc.hpp"
+#include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
 
 namespace gr {
 namespace fec_dev {
@@ -23,7 +23,8 @@ class FEC_API rsc_encoder_impl : public rsc_encoder
 private:
   unsigned int d_K;
   int d_N;
-  //std::unique_ptr<aff3ct::module::Encoder_RA<B_8>> d_encoder;
+  int d_trellis_size;
+  std::unique_ptr<aff3ct::module::Encoder_RSC_generic_sys<B_8>> d_encoder;
 
 public:
   rsc_encoder_impl(int K);

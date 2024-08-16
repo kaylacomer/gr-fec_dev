@@ -23,8 +23,6 @@
 #include "Module/Decoder/Turbo/Decoder_turbo.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo_fast.hpp"
 
-#include "turbo_decoder_impl.h"
-
 namespace gr {
 namespace fec_dev {
 
