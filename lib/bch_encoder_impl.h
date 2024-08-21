@@ -23,7 +23,7 @@ namespace fec_dev {
 class FEC_API bch_encoder_impl : public bch_encoder
 {
 private:
-  unsigned int d_frame_size;
+  unsigned int d_frame_bits;
   int d_K;
   int d_N;
   int d_t;

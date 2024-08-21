@@ -13,8 +13,8 @@
 /* If manual edits are made, the following tags should be modified accordingly.    */
 /* BINDTOOL_GEN_AUTOMATIC(1)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
-/* BINDTOOL_HEADER_FILE(aff3ct_common.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b927e59b6812a37ee6abe6aa7c0ba02e)                     */
+/* BINDTOOL_HEADER_FILE(aff3ct_interleaver.h)                                        */
+/* BINDTOOL_HEADER_FILE_HASH(cf6e6b97e1417c408ea5c66807166b5c)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,11 +23,11 @@
 
 namespace py = pybind11;
 
-#include <gnuradio/fec_dev/aff3ct_common.h>
+#include <gnuradio/fec_dev/aff3ct_interleaver.h>
 // pydoc.h is automatically generated in the build directory
-#include <aff3ct_common_pydoc.h>
+#include <aff3ct_interleaver_pydoc.h>
 
-void bind_aff3ct_common(py::module& m)
+void bind_aff3ct_interleaver(py::module& m)
 {
     py::enum_<::gr::fec_dev::_interleaver_t>(m, "_interleaver_t")
         .value("NO", ::gr::fec_dev::_interleaver_t::NO)             // 0

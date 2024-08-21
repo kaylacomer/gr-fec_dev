@@ -59,10 +59,12 @@ class _qa_helper(gr.top_block):
         self.to_float = blocks.char_to_float(1)
         self.snk_input = blocks.vector_sink_b()
         self.snk_output = blocks.vector_sink_b()
+        # self.null = blocks.null_sink(gr.sizeof_int)
 
         self.connect(self.src, self.unpack, self.ext_encoder)
         self.connect(self.ext_encoder, self.map, self.to_float)
         self.connect(self.to_float, self.ext_decoder)
+        # self.connect(self.to_float, self.null)
         self.connect(self.unpack, self.snk_input)
         self.connect(self.ext_decoder, self.snk_output)
 

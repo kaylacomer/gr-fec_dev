@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(ec27581f20fe6b25575ae1c3c8bf1c55)                     */
+/* BINDTOOL_HEADER_FILE_HASH(6c8257b89993d611ca21ba21ebc1805a)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -40,14 +40,21 @@ void bind_turbo_decoder(py::module& m)
         .def_static("make",
                     &turbo_decoder::make,
                     py::arg("frame_size"),
-                    py::arg("enc_standard") = gr::fec_dev::_interleaver_t::LTE,
-                    py::arg("enc_sub_type") = gr::fec_dev::_enc_sub_type_t::RSC,
+                    py::arg("n_iterations") = 6,
+                    py::arg("standard") = ::gr::fec_dev::Turbo::_enc_standard_t::LTE,
                     py::arg("buffered") = true,
                     py::arg("polys") = std::vector<int>{013, 015},
                     py::arg("trellis_size") = 8,
-                    py::arg("n_iterations") = 6,
+                    py::arg("subenc_impl") = ::gr::fec_dev::Turbo::_subenc_implem_t::sys,
+                    py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+                    py::arg("n_ff") = -1,
+                    py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
+                    py::arg("bcjr_impl") = ::gr::fec_dev::BCJR::_bcjr_impl_t::GENERIC,
+                    py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
+                    py::arg("simd_interintra_impl") = ::gr::fec_dev::SIMD::_simd_interintra_impl_t::NA,
+                    py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
+                    py::arg("itl_n_cols") = -1,
                     D(turbo_decoder, make))
-
 
         .def("set_frame_size",
              &turbo_decoder::set_frame_size,

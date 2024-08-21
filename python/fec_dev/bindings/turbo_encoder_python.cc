@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(c8d6e5e4a9b7c57f3ecc909997359429)                     */
+/* BINDTOOL_HEADER_FILE_HASH(5876fd23799b0b13236f715f9c49a72c)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -40,13 +40,15 @@ void bind_turbo_encoder(py::module& m)
         .def_static("make",
              &turbo_encoder::make,
              py::arg("frame_size"),
-             py::arg("standard") = ::gr::fec_dev::_interleaver_t::LTE,
-             py::arg("subencoder") = ::gr::fec_dev::_enc_sub_type_t::RSC,
+             py::arg("standard") = ::gr::fec_dev::Turbo::_enc_standard_t::LTE,
              py::arg("buffered") = true,
              py::arg("polys") = std::vector<int>{013, 015},
              py::arg("trellis_size") = 8,
+             py::arg("subenc_impl") = ::gr::fec_dev::Turbo::_subenc_implem_t::sys,
+             py::arg("n_ff") = -1,
+             py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
+             py::arg("itl_n_cols") = -1,
              D(turbo_encoder, make))
-
 
         .def("set_frame_size",
              &turbo_encoder::set_frame_size,

@@ -10,7 +10,9 @@
 # Install public header files
 ########################################################################
 install(FILES api.h
-    aff3ct_common.h
+    aff3ct_decoder.h
+    aff3ct_interleaver.h
+    bcjr.h
     turbo_common.h
     turbo_encoder.h
     turbo_decoder.h

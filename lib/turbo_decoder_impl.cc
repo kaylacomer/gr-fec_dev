@@ -17,35 +17,52 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr turbo_decoder::make(int frame_size,
-                                               interleaver_t standard,
-                                               enc_sub_type_t subencoder,
-                                               bool buffered,
-                                               std::vector<int> polys,
-                                               int trellis_size,
-                                               int n_iterations)
+fec::generic_decoder::sptr turbo_decoder::make(int frame_bits,
+                                      int n_iterations,
+                                      Turbo::enc_standard_t standard,
+                                      bool buffered,
+                                      std::vector<int> polys,
+                                      int trellis_size,
+                                      Quantizer::quantizer_impl_t quant_impl,
+                                      Turbo::subenc_implem_t subenc_impl,
+                                      int n_ff,
+                                      Decoder::decoder_impl_t dec_impl,
+                                      BCJR::bcjr_impl_t bcjr_impl,
+                                      SIMD::simd_strat_t simd_strat,
+                                      SIMD::simd_interintra_impl_t simd_interintra_impl,
+                                      Interleaver::itl_read_order_t read_order,
+                                      int itl_n_cols)
 {
     return fec::generic_decoder::sptr(new turbo_decoder_impl(
-        frame_size, standard, subencoder, buffered, polys, trellis_size, n_iterations));
+        frame_bits, n_iterations, standard, buffered, polys, trellis_size, quant_impl,
+        subenc_impl, n_ff, dec_impl, bcjr_impl, simd_strat, simd_interintra_impl, read_order, itl_n_cols));
 }
 
-turbo_decoder_impl::turbo_decoder_impl(int frame_size,
-                                       interleaver_t standard,
-                                       enc_sub_type_t subencoder,
-                                       bool buffered,
-                                       std::vector<int> polys,
-                                       int trellis_size,
-                                       int n_iterations)
+turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
+                                      int n_iterations,
+                                      Turbo::enc_standard_t standard,
+                                      bool buffered,
+                                      std::vector<int> polys,
+                                      int trellis_size,
+                                      Quantizer::quantizer_impl_t quant_impl,
+                                      Turbo::subenc_implem_t subenc_impl,
+                                      int n_ff,
+                                      Decoder::decoder_impl_t dec_impl,
+                                      BCJR::bcjr_impl_t bcjr_impl,
+                                      SIMD::simd_strat_t simd_strat,
+                                      SIMD::simd_interintra_impl_t simd_interintra_impl,
+                                      Interleaver::itl_read_order_t read_order,
+                                      int itl_n_cols)
     : generic_decoder("turbo_decoder"),
-      d_K(frame_size),
+      d_K(frame_bits),
       d_trellis_size(trellis_size)
 {
-    if (standard == LTE) {
+    if (standard == Turbo::LTE) {
         d_trellis_size = 8;
         polys = {013,015};
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(d_K);
     }
-    else if (standard == CCSDS) {
+    else if (standard == Turbo::CCSDS) {
         std::vector<int> CCSDS_sizes = {1784, 3568, 7136, 8920};
         if (!count(CCSDS_sizes.begin(), CCSDS_sizes.end(), d_K)) {
             throw std::runtime_error("CCSDS supported frame sizes are 1784, 3568, 7136, 8920");
@@ -55,6 +72,32 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_size,
         polys = {023,033};
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(d_K);
     }
+    // else if (standard == NO) {
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
+    // }
+    // // else if (standard == COL_ROW) {
+    // //     const int n_cols = 1;
+    // //     itl_read_order_t read_order = TOP_LEFT;
+    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, n_cols, read_order);
+    // // }
+    // // else if (standard == ROW_COL) {
+    // //     const int n_cols = 1;
+    // //     itl_read_order_t read_order = TOP_LEFT;
+    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, n_cols, read_order);
+    // // }
+    // else if (standard == RAND_COL) {
+    //     int n_cols = 1;
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, n_cols);
+    // }
+    // else if (standard == GOLDEN) {
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
+    // }
+    // else if (standard == DVB_RCS1) {
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
+    // }
+    // else if (standard == DVB_RCS2) {
+    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
+    // }
     else {
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
     }
@@ -90,7 +133,7 @@ int turbo_decoder_impl::get_input_item_size() { return sizeof(float); }
 
 const char* turbo_decoder_impl::get_input_conversion() { return "none"; }
 
-bool turbo_decoder_impl::set_frame_size(unsigned int frame_size)
+bool turbo_decoder_impl::set_frame_size(unsigned int frame_bits)
 {
     return true;
 }

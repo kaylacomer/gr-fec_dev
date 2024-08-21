@@ -40,7 +40,7 @@ fec::generic_decoder::sptr bch_decoder::make(int frame_bits, uint8_t t)
         d_tmp_input = std::vector<float>(d_codeword_size);
         d_tmp_output = std::vector<B_8>(d_K);
 
-        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_std<B_8, Q_8>>(d_K, d_N, *d_poly_gen);
+        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>>(d_K, d_N, *d_poly_gen);
 }
 
 bch_decoder_impl::~bch_decoder_impl()
@@ -69,15 +69,15 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     
     int status = d_decoder->decode_siho(d_quant_input.data(), d_tmp_output.data(), -1);
 
-    std::cout << "status: " << status << " ---- SUCCESS 0 , FAILURE 1" << std::endl;
-    std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
-    // if (status == spu::runtime::status_t::SUCCESS) {
-    //     std::memcpy(out, tmp_output.data(), d_frame_size * sizeof(B_8));
-    // }
-    // else {
-    //     d_logger->info("Decoding failed");
-    //     std::fill(out, out + d_frame_size, 0);
-    // }
+    // std::cout << "status: " << status << " ---- SUCCESS 0 , FAILURE 1" << std::endl;
+    // std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
+    if (status == spu::runtime::status_t::SUCCESS) {
+        std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
+    }
+    else {
+        d_logger->info("Decoding failed");
+        std::fill(out, out + d_frame_size * sizeof(B_8), 0);
+    }
 }
 
 

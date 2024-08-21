@@ -20,16 +20,18 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
      */
     bch_encoder_impl::bch_encoder_impl(int frame_bits, uint8_t t)
         : generic_encoder("bch_encoder"),
-        d_frame_size(frame_bits),
+        d_frame_bits(frame_bits),
         d_t(t)
     {
         set_frame_size(frame_bits);
 
         uint8_t m = std::ceil(std::log2(frame_bits+1));
         d_N = (1 << m) - 1;
+
         d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, d_t);
         d_K = d_N - d_poly_gen->get_n_rdncy();
-        d_zeros = d_K - d_frame_size;
+
+        d_zeros = d_K - d_frame_bits;
         d_codeword_size = d_N - d_zeros;
 
         if (d_K < 3) {
@@ -38,8 +40,6 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
 
         d_tmp_input = std::vector<B_8>(d_K);
         d_tmp_output = std::vector<B_8>(d_N);
-
-        // d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, d_t);
 
         d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
 }
@@ -52,7 +52,7 @@ bch_encoder_impl::~bch_encoder_impl()
 }
 
 int bch_encoder_impl::get_output_size() { return d_codeword_size; }
-int bch_encoder_impl::get_input_size() { return d_frame_size; }
+int bch_encoder_impl::get_input_size() { return d_frame_bits; }
 
 bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
 {
@@ -61,14 +61,14 @@ bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
     return ret;
 }
 
-double bch_encoder_impl::rate() { return static_cast<float>(d_frame_size) / d_codeword_size; }
+double bch_encoder_impl::rate() { return static_cast<float>(d_frame_bits) / d_codeword_size; }
 
 void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
     
-    std::memcpy(&d_tmp_input[d_zeros], in, d_frame_size * sizeof(B_8));
+    std::memcpy(&d_tmp_input[d_zeros], in, d_frame_bits * sizeof(B_8));
 
     d_encoder->encode(d_tmp_input.data(), d_tmp_output.data());
 

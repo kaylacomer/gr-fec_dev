@@ -12,7 +12,8 @@
 #define INCLUDED_FEC_TURBO_DECODER_IMPL_H
 
 #include <gnuradio/fec_dev/turbo_decoder.h>
-#include "gnuradio/fec_dev/aff3ct_common.h"
+#include "gnuradio/fec_dev/aff3ct_decoder.h"
+#include "gnuradio/fec_dev/aff3ct_interleaver.h"
 #include <volk/volk.h>
 
 #include <map>
@@ -53,16 +54,24 @@ private:
     std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
-    turbo_decoder_impl(int frame_size,
-                      interleaver_t standard=LTE,
-                      enc_sub_type_t subencoder=RSC,
-                      bool buffered=true,
-                      std::vector<int> polys={013,015},
-                      int trellis_size = 8,
-                      int n_iterations = 6);
+    turbo_decoder_impl(int frame_bits,
+                    int n_iterations = 6,
+                    Turbo::enc_standard_t standard=Turbo::LTE,
+                    bool buffered=true,
+                    std::vector<int> polys={013,015},
+                    int trellis_size = 8,
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD,
+                    Turbo::subenc_implem_t subenc_impl=Turbo::sys,
+                    int n_ff = -1,
+                    Decoder::decoder_impl_t dec_impl=Decoder::STD,
+                    BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,
+                    SIMD::simd_strat_t simd_strat=SIMD::SEQ,
+                    SIMD::simd_interintra_impl_t simd_interintra_impl=SIMD::NA,
+                    Interleaver::itl_read_order_t read_order=Interleaver::NA,
+                    int itl_n_cols = -1);
     ~turbo_decoder_impl() override;
 
-    bool set_frame_size(unsigned int frame_size) override;
+    bool set_frame_size(unsigned int frame_bits) override;
     double rate() override;
     void generic_work(const void* inbuffer, void* outbuffer) override;
 };
