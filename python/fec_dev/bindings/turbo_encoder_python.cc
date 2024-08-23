@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(5876fd23799b0b13236f715f9c49a72c)                     */
+/* BINDTOOL_HEADER_FILE_HASH(d69994dfe415ab7f12d80cec35589927)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -46,6 +46,7 @@ void bind_turbo_encoder(py::module& m)
              py::arg("trellis_size") = 8,
              py::arg("subenc_impl") = ::gr::fec_dev::Turbo::_subenc_implem_t::sys,
              py::arg("n_ff") = -1,
+             py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::NO,
              py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
              py::arg("itl_n_cols") = -1,
              D(turbo_encoder, make))

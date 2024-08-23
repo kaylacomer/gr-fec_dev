@@ -8,11 +8,6 @@
 #ifndef INCLUDED_FEC_DEV_AFF3CT_DECODER_H
 #define INCLUDED_FEC_DEV_AFF3CT_DECODER_H
 
-#include "Module/Quantizer/Quantizer.hpp"
-#include "Module/Quantizer/Pow2/Quantizer_pow2.hpp"
-#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
-
-
 namespace gr {
 namespace fec_dev {
 

@@ -19,6 +19,8 @@
 #include "Module/Encoder/BCH/Encoder_BCH.hpp"
 #include "Tools/Code/BCH/BCH_polynomial_generator.hpp"
 
+#include "aff3ct_interleaver_headers.h"
+
 namespace gr {
 namespace fec_dev {
     

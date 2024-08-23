@@ -45,6 +45,7 @@ public:
     * \param bcjr_impl BCJR subdecoder implementation: STD, FAST, VERY_FAST, GENERIC
     * \param simd_strat SIMD strategy. Normally SEQ -- sequential. Can be set to INTER or INTRA
     * \param simd_interintra_impl If using INTER_INTRA SIMD strategy, choose implementation
+    * * \param interleaver Type of interleaver. Only needs to be set if not using LTE or CCSDS standard
     * \param read_order Interleaver read order for COL_ROW, ROW_COL types
     * \param itl_n_cols Interleaver number of columns for column/row types
     */
@@ -61,6 +62,7 @@ public:
                                       BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,
                                       SIMD::simd_strat_t simd_strat=SIMD::SEQ,
                                       SIMD::simd_interintra_impl_t simd_interintra_impl=SIMD::NA,
+                                      Interleaver::interleaver_t interleaver=Interleaver::NO,
                                       Interleaver::itl_read_order_t read_order=Interleaver::NA,
                                       int itl_n_cols = -1);
 

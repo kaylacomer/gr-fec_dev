@@ -19,6 +19,7 @@
 #include "Module/Decoder/BCH/Decoder_BCH.hpp"
 #include "Tools/Code/BCH/BCH_polynomial_generator.hpp"
 #include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
+#include "aff3ct_quantizer_headers.h"
 
 namespace gr {
 namespace fec_dev {

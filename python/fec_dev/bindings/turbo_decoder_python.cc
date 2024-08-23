@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(6c8257b89993d611ca21ba21ebc1805a)                     */
+/* BINDTOOL_HEADER_FILE_HASH(4272d46e7c365cf54bd020ac13cc6c24)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -52,6 +52,7 @@ void bind_turbo_decoder(py::module& m)
                     py::arg("bcjr_impl") = ::gr::fec_dev::BCJR::_bcjr_impl_t::GENERIC,
                     py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
                     py::arg("simd_interintra_impl") = ::gr::fec_dev::SIMD::_simd_interintra_impl_t::NA,
+                    py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::NO,
                     py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
                     py::arg("itl_n_cols") = -1,
                     D(turbo_decoder, make))

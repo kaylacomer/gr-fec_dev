@@ -17,6 +17,8 @@
 #include "Tools/Code/RS/RS_polynomial_generator.hpp"
 #include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 
+#include "aff3ct_quantizer_headers.h"
+
 namespace gr {
 namespace fec_dev {
     

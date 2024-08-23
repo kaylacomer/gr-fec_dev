@@ -20,6 +20,8 @@
 #include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
 #include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
 
+#include "aff3ct_quantizer_headers.h"
+
 namespace gr {
 namespace fec_dev {
     

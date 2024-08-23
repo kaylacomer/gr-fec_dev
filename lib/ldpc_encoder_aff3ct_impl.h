@@ -13,6 +13,7 @@
 #include <string>
 
 #include "Tools/types.h"
+// #include "aff3ct_common_impl.h"
 //#include "Module/Encoder/LDPC/Encoder_ldpc.hpp"
 
 namespace gr {

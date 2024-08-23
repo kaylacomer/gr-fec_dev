@@ -30,12 +30,13 @@ fec::generic_decoder::sptr turbo_decoder::make(int frame_bits,
                                       BCJR::bcjr_impl_t bcjr_impl,
                                       SIMD::simd_strat_t simd_strat,
                                       SIMD::simd_interintra_impl_t simd_interintra_impl,
+                                      Interleaver::interleaver_t interleaver,
                                       Interleaver::itl_read_order_t read_order,
                                       int itl_n_cols)
 {
     return fec::generic_decoder::sptr(new turbo_decoder_impl(
         frame_bits, n_iterations, standard, buffered, polys, trellis_size, quant_impl,
-        subenc_impl, n_ff, dec_impl, bcjr_impl, simd_strat, simd_interintra_impl, read_order, itl_n_cols));
+        subenc_impl, n_ff, dec_impl, bcjr_impl, simd_strat, simd_interintra_impl, interleaver, read_order, itl_n_cols));
 }
 
 turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
@@ -51,6 +52,7 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
                                       BCJR::bcjr_impl_t bcjr_impl,
                                       SIMD::simd_strat_t simd_strat,
                                       SIMD::simd_interintra_impl_t simd_interintra_impl,
+                                      Interleaver::interleaver_t interleaver,
                                       Interleaver::itl_read_order_t read_order,
                                       int itl_n_cols)
     : generic_decoder("turbo_decoder"),

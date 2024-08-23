@@ -32,6 +32,9 @@
 #include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
 #include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
 
+#include "aff3ct_interleaver_headers.h"
+#include "aff3ct_quantizer_headers.h"
+
 namespace gr {
 namespace fec_dev {
 
@@ -67,6 +70,7 @@ public:
                     BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,
                     SIMD::simd_strat_t simd_strat=SIMD::SEQ,
                     SIMD::simd_interintra_impl_t simd_interintra_impl=SIMD::NA,
+                    Interleaver::interleaver_t interleaver=Interleaver::NO,
                     Interleaver::itl_read_order_t read_order=Interleaver::NA,
                     int itl_n_cols = -1);
     ~turbo_decoder_impl() override;

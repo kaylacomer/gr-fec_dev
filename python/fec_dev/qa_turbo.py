@@ -31,8 +31,8 @@ class test_turbo(gr_unittest.TestCase):
         data_size = 264
         frame_bits = data_size*8
 
-        enc = fec_dev.turbo_encoder.make(frame_bits, fec_dev.LTE)
-        dec = fec_dev.turbo_decoder.make(frame_bits, fec_dev.LTE)
+        enc = fec_dev.turbo_encoder.make(frame_bits, standard=fec_dev.Turbo.LTE)
+        dec = fec_dev.turbo_decoder.make(frame_bits, standard=fec_dev.Turbo.LTE)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)
@@ -48,8 +48,8 @@ class test_turbo(gr_unittest.TestCase):
         frame_bits = 1784
         data_size = frame_bits//8
 
-        enc = fec_dev.turbo_encoder.make(frame_bits, fec_dev.CCSDS)
-        dec = fec_dev.turbo_decoder.make(frame_bits, fec_dev.CCSDS)
+        enc = fec_dev.turbo_encoder.make(frame_bits, standard=fec_dev.Turbo.CCSDS)
+        dec = fec_dev.turbo_decoder.make(frame_bits, standard=fec_dev.Turbo.CCSDS)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)

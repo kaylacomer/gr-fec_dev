@@ -29,6 +29,8 @@
 #include "Tools/Noise/Noise.hpp"
 #include "Tools/Noise/Sigma.hpp"
 
+#include "aff3ct_quantizer_headers.h"
+
 namespace gr {
 namespace fec_dev {
     

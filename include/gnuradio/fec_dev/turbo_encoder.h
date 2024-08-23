@@ -37,6 +37,7 @@ public:
     * \param subenc_impl RSC subencoder implementation. Determines whether user
     *        sets polynomials or number of D flip flops
     * \param n_ff Number of D flip flops. Only needed for generic subencoder impl
+    * \param interleaver Type of interleaver. Only needs to be set if not using LTE or CCSDS standard
     * \param read_order Interleaver read order for COL_ROW, ROW_COL types
     * \param itl_n_cols Interleaver number of columns for column/row types
     */
@@ -47,6 +48,7 @@ public:
                                       int trellis_size = 8,
                                       Turbo::subenc_implem_t subenc_impl=Turbo::sys,
                                       int n_ff = -1,
+                                      Interleaver::interleaver_t interleaver=Interleaver::NO,
                                       Interleaver::itl_read_order_t read_order=Interleaver::NA,
                                       int itl_n_cols = -1);
 

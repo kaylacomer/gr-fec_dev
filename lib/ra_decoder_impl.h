@@ -17,6 +17,9 @@
 #include "Tools/Interleaver/Interleaver_core.hpp"
 #include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 
+#include "aff3ct_quantizer_headers.h"
+#include "aff3ct_interleaver_headers.h"
+
 namespace gr {
 namespace fec_dev {
     

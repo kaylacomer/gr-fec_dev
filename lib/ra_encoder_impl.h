@@ -16,6 +16,8 @@
 #include "Module/Encoder/RA/Encoder_RA.hpp"
 #include "Tools/Interleaver/Interleaver_core.hpp"
 
+#include "aff3ct_interleaver_headers.h"
+
 namespace gr {
 namespace fec_dev {
     
