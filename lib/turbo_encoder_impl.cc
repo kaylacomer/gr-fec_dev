@@ -61,39 +61,54 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_bits,
         polys = {023,033};
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(d_K);
     }
-    // else if (standard == NO) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
-    // }
-    // // else if (standard == COL_ROW) {
-    // //     const int n_cols = 1;
-    // //     itl_read_order_t read_order = TOP_LEFT;
-    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, n_cols, read_order);
-    // // }
-    // // else if (standard == ROW_COL) {
-    // //     const int n_cols = 1;
-    // //     itl_read_order_t read_order = TOP_LEFT;
-    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, n_cols, read_order);
-    // // }
-    // else if (standard == RAND_COL) {
-    //     int n_cols = 1;
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, n_cols);
-    // }
-    // else if (standard == GOLDEN) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
-    // }
-    // else if (standard == DVB_RCS1) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
-    // }
-    // else if (standard == DVB_RCS2) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
-    // }
+    else if (interleaver == Interleaver::COL_ROW || interleaver == Interleaver::ROW_COL) {
+        std::string order;
+        switch (read_order) {
+            case Interleaver::TOP_LEFT:
+                order = "TOP_LEFT";
+                break;
+            case Interleaver::TOP_RIGHT:
+                order = "TOP_RIGHT";
+                break;
+            case Interleaver::BOTTOM_LEFT:
+                order = "BOTTOM_LEFT";
+                break;
+            case Interleaver::BOTTOM_RIGHT:
+                order = "BOTTOM_RIGHT";
+                break;
+            default:
+                throw std::runtime_error("Need to specify interleaver read order");
+        }
+        if (interleaver == Interleaver::COL_ROW) d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, itl_n_cols, order);
+        else d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, itl_n_cols, order);
+    }
     else {
-        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
+        switch(interleaver) {
+            case Interleaver::NO:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
+                break;
+            case Interleaver::RAND_COL:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, itl_n_cols);
+                break;
+            case Interleaver::GOLDEN:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
+                break;
+            case Interleaver::DVB_RCS1:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
+                break;
+            case Interleaver::DVB_RCS2:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
+                break;
+            case Interleaver::RANDOM:
+            default:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
+                break;
+        }
     }
 
     d_N = 3 * d_K + 4 * int(std::log2(d_trellis_size));
-
     int N_rsc = 2 * (d_K + std::log2(d_trellis_size));
+
     auto enco_n = aff3ct::module::Encoder_RSC_generic_sys<B_8>(d_K, N_rsc, buffered, polys);
     auto enco_i = enco_n;
     

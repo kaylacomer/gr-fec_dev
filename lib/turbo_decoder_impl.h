@@ -29,8 +29,21 @@
 #include "Module/Encoder/RSC/Encoder_RSC_generic_sys.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo.hpp"
 #include "Module/Decoder/Turbo/Decoder_turbo_fast.hpp"
+#include "Module/Decoder/Turbo/Decoder_turbo_std.hpp"
 #include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
 #include "Module/Decoder/RSC/BCJR/Seq_generic/Decoder_RSC_BCJR_seq_generic_std.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_scan.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_std.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Seq/Decoder_RSC_BCJR_seq_very_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter/Decoder_RSC_BCJR_inter_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter/Decoder_RSC_BCJR_inter_std.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter/Decoder_RSC_BCJR_inter_very_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Intra/Decoder_RSC_BCJR_intra_fast.hpp"
+#include "Module/Decoder/RSC/BCJR/Intra/Decoder_RSC_BCJR_intra_std.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter_intra/Decoder_RSC_BCJR_inter_intra_fast_x2_AVX.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter_intra/Decoder_RSC_BCJR_inter_intra_fast_x2_SSE.hpp"
+#include "Module/Decoder/RSC/BCJR/Inter_intra/Decoder_RSC_BCJR_inter_intra_fast_x4_AVX.hpp"
 
 #include "aff3ct_interleaver_headers.h"
 #include "aff3ct_quantizer_headers.h"
@@ -51,10 +64,12 @@ private:
     int d_trellis_size;
     std::vector<float> d_tmp_input;
     std::vector<Q_8> d_quant_input;
+    // std::unique_ptr<aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8>> dec_n;
+    // std::unique_ptr<aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8>> dec_i;
     std::unique_ptr<aff3ct::module::Decoder_turbo<B_8, Q_8>> d_decoder;
     std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
     std::unique_ptr<aff3ct::module::Interleaver<Q_8>> d_pi;
-    std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+    std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
     turbo_decoder_impl(int frame_bits,

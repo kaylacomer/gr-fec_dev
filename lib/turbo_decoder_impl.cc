@@ -74,53 +74,167 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
         polys = {023,033};
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(d_K);
     }
-    // else if (standard == NO) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
-    // }
-    // // else if (standard == COL_ROW) {
-    // //     const int n_cols = 1;
-    // //     itl_read_order_t read_order = TOP_LEFT;
-    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, n_cols, read_order);
-    // // }
-    // // else if (standard == ROW_COL) {
-    // //     const int n_cols = 1;
-    // //     itl_read_order_t read_order = TOP_LEFT;
-    // //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, n_cols, read_order);
-    // // }
-    // else if (standard == RAND_COL) {
-    //     int n_cols = 1;
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, n_cols);
-    // }
-    // else if (standard == GOLDEN) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
-    // }
-    // else if (standard == DVB_RCS1) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
-    // }
-    // else if (standard == DVB_RCS2) {
-    //     d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
-    // }
+    else if (interleaver == Interleaver::COL_ROW || interleaver == Interleaver::ROW_COL) {
+        std::string order;
+        switch (read_order) {
+            case Interleaver::TOP_LEFT:
+                order = "TOP_LEFT";
+                break;
+            case Interleaver::TOP_RIGHT:
+                order = "TOP_RIGHT";
+                break;
+            case Interleaver::BOTTOM_LEFT:
+                order = "BOTTOM_LEFT";
+                break;
+            case Interleaver::BOTTOM_RIGHT:
+                order = "BOTTOM_RIGHT";
+                break;
+            default:
+                throw std::runtime_error("Need to specify interleaver read order");
+        }
+        if (interleaver == Interleaver::COL_ROW) d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(d_K, itl_n_cols, order);
+        else d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_K, itl_n_cols, order);
+    }
     else {
-        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
+        switch(interleaver) {
+            case Interleaver::NO:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(d_K);
+                break;
+            case Interleaver::RAND_COL:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(d_K, itl_n_cols);
+                break;
+            case Interleaver::GOLDEN:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(d_K);
+                break;
+            case Interleaver::DVB_RCS1:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(d_K);
+                break;
+            case Interleaver::DVB_RCS2:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(d_K);
+                break;
+            case Interleaver::RANDOM:
+            default:
+                d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(d_K);
+                break;
+        }
     }
 
-    d_N = 3 * d_K + 4 * std::log2(d_trellis_size);
-
+    d_N = 3 * d_K + 4 * int(std::log2(d_trellis_size));
     int N_rsc = 2 * (d_K + std::log2(d_trellis_size));
+
     auto enco_n = aff3ct::module::Encoder_RSC_generic_sys<B_8>(d_K, N_rsc, buffered, polys);
     auto enco_i = enco_n;
-
+    
     d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
 
     auto trellis_n = enco_n.get_trellis();
     auto trellis_i = trellis_n;
+    
+    // aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8> dec_n;
+    // aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8> dec_i;
 
     auto dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_n, buffered);
     auto dec_i = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_i, buffered);
+    // if (simd_strat == SIMD::SEQ) {
+    //     if (bcjr_impl == BCJR::GENERIC) { // default
+            // dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_n, buffered);
+            // dec_i = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::SCAN) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_scan<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_scan<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::STD) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_std<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_std<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::FAST) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_fast<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_fast<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::VERY_FAST) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_very_fast<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_seq_very_fast<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else {
+    //         throw std::runtime_error("BCJR implementations for sequential SIMD include GENERIC (STD), STD, FAST, VERY FAST, and SCAN");
+    //     }
+    // }
+    // else if (simd_strat == SIMD::INTER) {
+    //     if (bcjr_impl == BCJR::STD) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_std<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_std<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::FAST) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_fast<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_fast<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::VERY_FAST) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_very_fast<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_very_fast<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else {
+    //         throw std::runtime_error("BCJR implementations for Inter SIMD include STD, FAST, and VERY FAST");
+    //     }
+    // }
+    // else if (simd_strat == SIMD::INTRA) {
+    //     if (bcjr_impl == BCJR::STD) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_intra_std<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_intra_std<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else if (bcjr_impl == BCJR::FAST) {
+    //         dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_intra_fast<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //         dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_intra_fast<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //     }
+    //     else {
+    //         throw std::runtime_error("BCJR implementations for Intra SIMD include STD and FAST");
+    //     }
+    // }
+    // else if (simd_strat == SIMD::INTER_INTRA) {
+    //     if (bcjr_impl == BCJR::FAST) {
+    //         if (simd_interintra_impl == SIMD::simd_interintra_impl_t::X2_AVX) {
+    //             dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x2_AVX<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //             dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x2_AVX<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //         }
+    //         else if (simd_interintra_impl == SIMD::simd_interintra_impl_t::X2_SSE) {
+    //             dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x2_SSE<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //             dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x2_SSE<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //         }
+    //         else if (simd_interintra_impl == SIMD::simd_interintra_impl_t::X4_AVX) {
+    //             dec_n = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x4_AVX<B_8, Q_8>>(d_K, trellis_n, buffered);
+    //             dec_i = std::make_unique<aff3ct::module::Decoder_RSC_BCJR_inter_intra_fast_x4_AVX<B_8, Q_8>>(d_K, trellis_i, buffered);
+    //         }
+    //         else {
+    //             throw std::runtime_error("SIMD INTER INTRA implementation must be X2_AVX, X4_AVX, or X2_SSE");
+    //         }
+    //     }
+    //     else {
+    //         throw std::runtime_error("BCJR implementation for INTER_INTRA SIMD must be FAST");
+    //     }
+    // }
+    // else {
+    //     throw std::runtime_error("SIMD strategies (simd_strat) for BCJR include SEQ, INTER, INTRA, and INTER_INTRA");
+    // }
 
-    d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_fast<B_8, Q_8>>(d_K, d_N, n_iterations, dec_n, dec_i, *d_pi, buffered);
+    if (dec_impl == Decoder::STD) {
+        d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_std<B_8, Q_8>>(d_K, d_N, n_iterations, dec_n, dec_i, *d_pi, buffered);
+    }
+    else if (dec_impl == Decoder::FAST) {
+        d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_fast<B_8, Q_8>>(d_K, d_N, n_iterations, dec_n, dec_i, *d_pi, buffered);
+    }
+    else {
+        throw std::runtime_error("Turbo decoder has standard and fast implementations. Set dec_impl to STD or FAST");
+    }
 
-    d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
+    if (quant_impl == Quantizer::STD) {
+        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, 2);
+    }
+    else if (quant_impl == Quantizer::FAST) {
+        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
+    }
+    else {
+        d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_N);
+    }
     d_quant_input = std::vector<Q_8>(d_N);
     d_tmp_input = std::vector<float>(d_N);
 }
