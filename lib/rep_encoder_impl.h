@@ -27,7 +27,7 @@ private:
   std::unique_ptr<aff3ct::module::Encoder_repetition_sys<B_8>> d_encoder;
 
 public:
-  rep_encoder_impl(int K, int rep=3);
+  rep_encoder_impl(int K, int rep=3, bool buffered=true);
   ~rep_encoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

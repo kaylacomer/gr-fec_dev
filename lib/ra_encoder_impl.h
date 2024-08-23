@@ -14,7 +14,6 @@
 
 #include "Tools/types.h"
 #include "Module/Encoder/RA/Encoder_RA.hpp"
-#include "Tools/Interleaver/Interleaver_core.hpp"
 
 #include "aff3ct_interleaver_headers.h"
 
@@ -31,7 +30,8 @@ private:
   std::unique_ptr<aff3ct::module::Interleaver<B_8>> d_interleaver;
 
 public:
-  ra_encoder_impl(int K, int rep=3);
+  ra_encoder_impl(int K, int rep=3, Interleaver::interleaver_t interleaver=Interleaver::RANDOM,
+                    Interleaver::itl_read_order_t read_order=Interleaver::NA, int itl_n_cols = -1);
   ~ra_encoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

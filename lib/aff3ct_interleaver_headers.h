@@ -8,3 +8,4 @@
 #include "Tools/Interleaver/LTE/Interleaver_core_LTE.hpp"
 #include "Tools/Interleaver/ARP/Interleaver_core_ARP_DVB_RCS1.hpp"
 #include "Tools/Interleaver/ARP/Interleaver_core_ARP_DVB_RCS2.hpp"
+#include <gnuradio/fec_dev/aff3ct_interleaver.h>

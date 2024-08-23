@@ -14,7 +14,7 @@
 
 #include "Tools/types.h"
 #include "Module/Decoder/Repetition/Decoder_repetition_std.hpp"
-#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
+#include "Module/Decoder/Repetition/Decoder_repetition_fast.hpp"
 
 #include "aff3ct_quantizer_headers.h"
 
@@ -28,11 +28,12 @@ private:
   int d_N;
   std::vector<float> d_tmp_input;
   std::vector<Q_8> d_quant_input;
-  std::unique_ptr<aff3ct::module::Decoder_repetition_std<B_8, Q_8>> d_decoder;
-  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Decoder_SISO<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
-  rep_decoder_impl(int K, int rep=3);
+  rep_decoder_impl(int K, int rep=3, bool buffered = true, uint8_t quant_fixed_point_pos=2, uint8_t quant_saturation_pos=6,
+  Quantizer::quantizer_impl_t quant_impl=Quantizer::STD, Decoder::decoder_impl_t dec_impl=Decoder::STD);
   ~rep_decoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

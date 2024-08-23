@@ -10,6 +10,7 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_encoder.h>
+#include "gnuradio/fec_dev/aff3ct_interleaver.h"
 
 namespace gr {
 namespace fec_dev {
@@ -29,8 +30,12 @@ public:
     *
     * \param K Number of bits per frame
     * \param rep Number of repetitions per bit. Codeword size N = rep*K
+    * \param interleaver Type of interleaver, default Random
+    * \param read_order Interleaver read order for COL_ROW, ROW_COL types
+    * \param itl_n_cols Interleaver number of columns for column/row types
     */
-    static generic_encoder::sptr make(int K, int rep=3);
+    static generic_encoder::sptr make(int K, int rep=3, Interleaver::interleaver_t interleaver=Interleaver::RANDOM,
+                    Interleaver::itl_read_order_t read_order=Interleaver::NA, int itl_n_cols = -1);
 
     /*!
     * Sets the uncoded frame size to \p K

@@ -14,8 +14,6 @@
 
 #include "Tools/types.h"
 #include "Module/Decoder/RA/Decoder_RA.hpp"
-#include "Tools/Interleaver/Interleaver_core.hpp"
-#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
 
 #include "aff3ct_quantizer_headers.h"
 #include "aff3ct_interleaver_headers.h"
@@ -33,10 +31,13 @@ private:
   std::unique_ptr<aff3ct::module::Decoder_RA<B_8, Q_8>> d_decoder;
   std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
   std::unique_ptr<aff3ct::module::Interleaver<Q_8>> d_pi;
-  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
-  ra_decoder_impl(int K, int rep=3, int iter=1);
+  ra_decoder_impl(int K, int rep=3, int iter=1, Interleaver::interleaver_t interleaver=Interleaver::RANDOM,
+                    Interleaver::itl_read_order_t read_order=Interleaver::NA, int itl_n_cols = -1, 
+                    uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6, 
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD);
   ~ra_decoder_impl() override;
 
   bool set_frame_size(unsigned int K) override;

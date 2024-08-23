@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rep_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(55abfaa92c71449af52b92eafc558a8d)                     */
+/* BINDTOOL_HEADER_FILE_HASH(c61c1fd64223f4ac5477aeeb2bfc2a59)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,6 +38,7 @@ void bind_rep_encoder(py::module& m)
         .def_static("make", &rep_encoder::make,
            py::arg("K"),
            py::arg("rep") = 3,
+           py::arg("buffered") = true,
            D(rep_encoder,make)
         )
 

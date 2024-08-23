@@ -10,6 +10,8 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
+#include "gnuradio/fec_dev/aff3ct_interleaver.h"
+#include "gnuradio/fec_dev/aff3ct_decoder.h"
 
 namespace gr {
 namespace fec_dev {
@@ -30,8 +32,17 @@ public:
     * \param K Number of bits per frame
     * \param rep Number of repetitions per bit. Codeword size N = rep*K
     * \param iter Number of iterations to perform in the decoder
+    * \param interleaver Type of interleaver, default Random
+    * \param read_order Interleaver read order for COL_ROW, ROW_COL types
+    * \param itl_n_cols Interleaver number of columns for column/row types
+    * \param quant_fixed_point_pos Position of decimal point in quantized representation
+    * \param quant_saturation_pos Quantizer's saturation position
+    * \param quant_impl Quantizer implementation: STD or FAST
     */
-    static generic_decoder::sptr make(int K, int rep=3, int iter=1);
+    static generic_decoder::sptr make(int K, int rep=3, int iter=1, Interleaver::interleaver_t interleaver=Interleaver::RANDOM,
+                    Interleaver::itl_read_order_t read_order=Interleaver::NA, int itl_n_cols = -1, 
+                    uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6, 
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD);
 
     /*!
     * Sets the uncoded frame size to \p K

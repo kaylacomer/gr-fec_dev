@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rep_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(7fd31bd61182cc0fbdc7bc14383aaae2)                     */
+/* BINDTOOL_HEADER_FILE_HASH(414d790ba74ae4ba85de161bd2e48dad)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -38,6 +38,11 @@ void bind_rep_decoder(py::module& m)
         .def_static("make", &rep_decoder::make,
            py::arg("K"),
            py::arg("rep") = 3,
+           py::arg("buffered") = true,
+           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_saturation_pos") = 6,
+           py::arg("quant_impl") =::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+           py::arg("dec_impl") =::gr::fec_dev::Decoder::_decoder_impl_t::STD,
            D(rep_decoder,make)
         )
 

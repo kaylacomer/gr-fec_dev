@@ -11,11 +11,11 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr rep_encoder::make(int K, int rep)
+fec::generic_encoder::sptr rep_encoder::make(int K, int rep, bool buffered)
 {
-    return fec::generic_encoder::sptr(new rep_encoder_impl(K, rep));
+    return fec::generic_encoder::sptr(new rep_encoder_impl(K, rep, buffered));
 }
-    rep_encoder_impl::rep_encoder_impl(int K, int rep)
+    rep_encoder_impl::rep_encoder_impl(int K, int rep, bool buffered)
         : generic_encoder("rep_encoder"),
         d_K(K),
         d_N(rep * K)

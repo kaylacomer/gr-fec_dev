@@ -12,22 +12,44 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr rep_decoder::make(int K, int rep)
+fec::generic_decoder::sptr rep_decoder::make(int K, int rep, bool buffered, uint8_t quant_fixed_point_pos, uint8_t quant_saturation_pos,
+  Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl)
 {
-    return fec::generic_decoder::sptr(new rep_decoder_impl(K, rep));
+    return fec::generic_decoder::sptr(new rep_decoder_impl(K, rep, buffered, quant_fixed_point_pos, quant_saturation_pos, quant_impl, dec_impl));
 }
-    rep_decoder_impl::rep_decoder_impl(int K, int rep)
+    rep_decoder_impl::rep_decoder_impl(int K, int rep, bool buffered, uint8_t quant_fixed_point_pos, uint8_t quant_saturation_pos,
+        Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl)
         : generic_decoder("rep_decoder"),
         d_K(K),
         d_N(rep * K)
     {
         set_frame_size(K);
 
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
+        if (quant_impl == Quantizer::STD) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos);
+        }
+        else if (quant_impl == Quantizer::FAST) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, quant_fixed_point_pos);
+        }
+        else {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_N);
+        }
+
+        // d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
         d_quant_input = std::vector<Q_8>(d_N);
         d_tmp_input = std::vector<float>(d_N);
 
-        d_decoder = std::make_unique<aff3ct::module::Decoder_repetition_std<B_8, Q_8>>(d_K, d_N);
+        if (dec_impl == Decoder::STD) {
+            d_decoder = std::make_unique<aff3ct::module::Decoder_repetition_std<B_8, Q_8>>(d_K, d_N, buffered);
+        }
+        else if (dec_impl == Decoder::FAST) {
+            d_decoder = std::make_unique<aff3ct::module::Decoder_repetition_fast<B_8, Q_8>>(d_K, d_N, buffered);
+        }
+        else {
+            throw std::runtime_error("Repetition decoder has standard and fast implementations. Set dec_impl to STD or FAST");
+        }
+
+        // d_decoder = std::make_unique<aff3ct::module::Decoder_repetition_std<B_8, Q_8>>(d_K, d_N);
 }
 
 rep_decoder_impl::~rep_decoder_impl()

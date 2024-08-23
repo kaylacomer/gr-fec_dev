@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ra_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(ddc7a5682ff7937a8af2ad919a4d20fb)                     */
+/* BINDTOOL_HEADER_FILE_HASH(6632e89c64b05feee91977255a71b44a)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,6 +37,9 @@ void bind_ra_encoder(py::module& m)
         .def_static("make", &ra_encoder::make,
            py::arg("K"),
            py::arg("rep") = 3,
+           py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::RANDOM,
+           py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
+           py::arg("itl_n_cols") = -1,
            D(ra_encoder,make)
         )
 

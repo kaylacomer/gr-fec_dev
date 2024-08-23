@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ra_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(39de98f74f35a3b0d2f2c82ad8084dd9)                     */
+/* BINDTOOL_HEADER_FILE_HASH(2973f22b98a06840fadc6e176b0bc003)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -40,8 +40,13 @@ void bind_ra_decoder(py::module& m)
              py::arg("K"),
              py::arg("rep") = 3,
              py::arg("iter") = 1,
+             py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::RANDOM,
+             py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::NA,
+             py::arg("itl_n_cols") = -1,
+             py::arg("quant_fixed_point_pos") = 2,
+             py::arg("quant_saturation_pos") = 6,
+             py::arg("quant_impl") =::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
              D(ra_decoder, make))
-
 
         .def("set_frame_size",
              &ra_decoder::set_frame_size,
