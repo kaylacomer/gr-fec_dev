@@ -41,8 +41,6 @@ public:
                     bool buffered=true,
                     std::vector<int> polys={013,015},
                     int trellis_size = 8,
-                    Turbo::subenc_implem_t subenc_impl=Turbo::sys,
-                    int n_ff = -1,
                     Interleaver::interleaver_t interleaver=Interleaver::NO,
                     Interleaver::itl_read_order_t read_order=Interleaver::NA,
                     int itl_n_cols = -1);

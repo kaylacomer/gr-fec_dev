@@ -37,13 +37,12 @@ public:
     * \param polys Polynomials that define the two identical RSC sub-encoders.
     *        Set in octal
     * \param trellis_size Number of trellis stages. 8 for LTE, 16 for CCSDS
+    * \param quant_fixed_point_pos Position of decimal point in quantized representation
+    * \param quant_saturation_pos Quantizer's saturation position
     * \param quant_impl Quantizer implementation - STD/FAST/NO
-    * \param subenc_impl RSC subencoder implementation. Determines whether user
-    *        sets polynomials or number of D flip flops
-    * \param n_ff Number of D flip flops. Only needed for generic subencoder impl
     * \param dec_impl Decoder implementation: fast or standard
     * \param bcjr_impl BCJR subdecoder implementation: STD, FAST, VERY_FAST, GENERIC
-    * \param simd_strat SIMD strategy. Normally SEQ -- sequential. Can be set to INTER or INTRA
+    * \param simd_strat SIMD strategy. Normally SEQ -- sequential. Can be set to INTER, INTRA, or INTER_INTRA
     * \param simd_interintra_impl If using INTER_INTRA SIMD strategy, choose implementation
     * * \param interleaver Type of interleaver. Only needs to be set if not using LTE or CCSDS standard
     * \param read_order Interleaver read order for COL_ROW, ROW_COL types
@@ -55,9 +54,10 @@ public:
                                       bool buffered=true,
                                       std::vector<int> polys={013,015},
                                       int trellis_size = 8,
+                                      uint8_t quant_fixed_point_pos = 2,
+                                      uint8_t quant_saturation_pos = 6,
+                                      bool set_sat_pos = false,
                                       Quantizer::quantizer_impl_t quant_impl=Quantizer::STD,
-                                      Turbo::subenc_implem_t subenc_impl=Turbo::sys,
-                                      int n_ff = -1,
                                       Decoder::decoder_impl_t dec_impl=Decoder::STD,
                                       BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,
                                       SIMD::simd_strat_t simd_strat=SIMD::SEQ,
@@ -67,11 +67,7 @@ public:
                                       int itl_n_cols = -1);
 
     /*!
-    * Sets the uncoded frame size to \p frame_bits. If \p
-    * frame_bits is greater than the value given to the
-    * constructor, the frame size will be capped by that initial
-    * value and this function will return false. Otherwise, it
-    * returns true.
+    * Sets the uncoded frame size to \p frame_bits
     */
     bool set_frame_size(unsigned int frame_bits) override = 0;
 

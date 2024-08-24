@@ -20,11 +20,6 @@ typedef enum _enc_standard_t {
     CUSTOM
 } enc_standard_t;
 
-typedef enum _subenc_implem_t {
-    sys = 0,
-    generic_sys
-} subenc_implem_t;
-
 }
 
 }

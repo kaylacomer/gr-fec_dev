@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(4272d46e7c365cf54bd020ac13cc6c24)                     */
+/* BINDTOOL_HEADER_FILE_HASH(71819e6ae1998d651e0dbb8de1c06727)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -45,9 +45,10 @@ void bind_turbo_decoder(py::module& m)
                     py::arg("buffered") = true,
                     py::arg("polys") = std::vector<int>{013, 015},
                     py::arg("trellis_size") = 8,
-                    py::arg("subenc_impl") = ::gr::fec_dev::Turbo::_subenc_implem_t::sys,
+                    py::arg("quant_fixed_point_pos") = 2,
+                    py::arg("quant_saturation_pos") = 6,
+                    py::arg("set_sat_pos") = false,
                     py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
-                    py::arg("n_ff") = -1,
                     py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
                     py::arg("bcjr_impl") = ::gr::fec_dev::BCJR::_bcjr_impl_t::GENERIC,
                     py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,

@@ -18,15 +18,13 @@ fec::generic_encoder::sptr turbo_encoder::make(int frame_bits,
                                       bool buffered,
                                       std::vector<int> polys,
                                       int trellis_size,
-                                      Turbo::subenc_implem_t subenc_impl,
-                                      int n_ff,
                                       Interleaver::interleaver_t interleaver,
                                       Interleaver::itl_read_order_t read_order,
                                       int itl_n_cols)
 {
-    return fec::generic_encoder::sptr(new turbo_encoder_impl(
-        frame_bits, standard, buffered, polys, trellis_size, subenc_impl,
-        n_ff, interleaver, read_order, itl_n_cols));
+    return fec::generic_encoder::sptr(std::make_shared<turbo_encoder_impl>(
+        frame_bits, standard, buffered, polys, trellis_size,
+        interleaver, read_order, itl_n_cols));
 }
 
 /*
@@ -37,8 +35,6 @@ turbo_encoder_impl::turbo_encoder_impl(int frame_bits,
                                       bool buffered,
                                       std::vector<int> polys,
                                       int trellis_size,
-                                      Turbo::subenc_implem_t subenc_impl,
-                                      int n_ff,
                                       Interleaver::interleaver_t interleaver,
                                       Interleaver::itl_read_order_t read_order,
                                       int itl_n_cols)

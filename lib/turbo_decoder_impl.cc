@@ -23,9 +23,10 @@ fec::generic_decoder::sptr turbo_decoder::make(int frame_bits,
                                       bool buffered,
                                       std::vector<int> polys,
                                       int trellis_size,
+                                      uint8_t quant_fixed_point_pos,
+                                      uint8_t quant_saturation_pos,
+                                      bool set_sat_pos,
                                       Quantizer::quantizer_impl_t quant_impl,
-                                      Turbo::subenc_implem_t subenc_impl,
-                                      int n_ff,
                                       Decoder::decoder_impl_t dec_impl,
                                       BCJR::bcjr_impl_t bcjr_impl,
                                       SIMD::simd_strat_t simd_strat,
@@ -34,9 +35,9 @@ fec::generic_decoder::sptr turbo_decoder::make(int frame_bits,
                                       Interleaver::itl_read_order_t read_order,
                                       int itl_n_cols)
 {
-    return fec::generic_decoder::sptr(new turbo_decoder_impl(
-        frame_bits, n_iterations, standard, buffered, polys, trellis_size, quant_impl,
-        subenc_impl, n_ff, dec_impl, bcjr_impl, simd_strat, simd_interintra_impl, interleaver, read_order, itl_n_cols));
+    return fec::generic_decoder::sptr(std::make_shared<turbo_decoder_impl>(
+        frame_bits, n_iterations, standard, buffered, polys, trellis_size, quant_fixed_point_pos, quant_saturation_pos, set_sat_pos, quant_impl,
+        dec_impl, bcjr_impl, simd_strat, simd_interintra_impl, interleaver, read_order, itl_n_cols));
 }
 
 turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
@@ -45,9 +46,10 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
                                       bool buffered,
                                       std::vector<int> polys,
                                       int trellis_size,
+                                      uint8_t quant_fixed_point_pos,
+                                      uint8_t quant_saturation_pos,
+                                      bool set_sat_pos,
                                       Quantizer::quantizer_impl_t quant_impl,
-                                      Turbo::subenc_implem_t subenc_impl,
-                                      int n_ff,
                                       Decoder::decoder_impl_t dec_impl,
                                       BCJR::bcjr_impl_t bcjr_impl,
                                       SIMD::simd_strat_t simd_strat,
@@ -227,10 +229,20 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
     }
 
     if (quant_impl == Quantizer::STD) {
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, 2);
+        if (set_sat_pos) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
+        }
+        else {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos);
+        }
     }
     else if (quant_impl == Quantizer::FAST) {
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
+        if (set_sat_pos) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
+        }
+        else {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, quant_fixed_point_pos);
+        }
     }
     else {
         d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_N);

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_common.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(d22c9cbb1a9c51aaa7662b2bb3c22d43)                     */
+/* BINDTOOL_HEADER_FILE_HASH(b057c79a4dd525b76055efdbcad30ef4)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -44,10 +44,4 @@ void bind_turbo_common(py::module& m)
         .export_values();
 
     py::implicitly_convertible<int, ::gr::fec_dev::Turbo::_enc_standard_t>();
-    py::enum_<::gr::fec_dev::Turbo::_subenc_implem_t>(m_Turbo, "_subenc_implem_t")
-        .value("sys", ::gr::fec_dev::Turbo::_subenc_implem_t::sys)                 // 0
-        .value("generic_sys", ::gr::fec_dev::Turbo::_subenc_implem_t::generic_sys) // 1
-        .export_values();
-
-    py::implicitly_convertible<int, ::gr::fec_dev::Turbo::_subenc_implem_t>();
 }
