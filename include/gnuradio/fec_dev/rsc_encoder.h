@@ -29,7 +29,7 @@ public:
     *
     * \param frame_size Number of bits per frame
     */
-    static generic_encoder::sptr make(int frame_size);
+    static generic_encoder::sptr make(int frame_size, std::vector<int> polys={013,015}, int trellis_size = 8, bool buffered=true);
 
     /*!
     * Sets the uncoded frame size to \p frame_size

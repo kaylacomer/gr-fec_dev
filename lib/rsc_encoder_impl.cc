@@ -11,19 +11,16 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr rsc_encoder::make(int K)
+fec::generic_encoder::sptr rsc_encoder::make(int K, std::vector<int> polys, int trellis_size, bool buffered)
 {
-    return fec::generic_encoder::sptr(std::make_shared<rsc_encoder_impl>(K));
+    return fec::generic_encoder::sptr(std::make_shared<rsc_encoder_impl>(K, polys, trellis_size, buffered));
 }
-    rsc_encoder_impl::rsc_encoder_impl(int K)
+    rsc_encoder_impl::rsc_encoder_impl(int K, std::vector<int> polys, int trellis_size, bool buffered)
         : generic_encoder("rsc_encoder"),
         d_K(K),
-        d_trellis_size(8)
+        d_trellis_size(trellis_size)
     {
         set_frame_size(K);
-
-        std::vector<int> polys={013,015};
-        bool buffered = true;
         d_encoder = std::make_unique<aff3ct::module::Encoder_RSC_generic_sys<B_8>>(d_K, d_N, buffered, polys);
 }
 
@@ -47,10 +44,7 @@ void rsc_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    std::vector<B_8> input_vector(in, in + d_K);
-    input_vector.resize(d_K, 0);
-
-    d_encoder->encode(input_vector.data(), out);
+    d_encoder->encode(in, out);
 }
 
 } /* namespace fec_dev */

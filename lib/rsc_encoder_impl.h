@@ -27,7 +27,7 @@ private:
   std::unique_ptr<aff3ct::module::Encoder_RSC_generic_sys<B_8>> d_encoder;
 
 public:
-  rsc_encoder_impl(int K);
+  rsc_encoder_impl(int K, std::vector<int> polys={013,015}, int trellis_size = 8, bool buffered=true);
   ~rsc_encoder_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

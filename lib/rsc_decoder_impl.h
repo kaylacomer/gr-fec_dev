@@ -37,7 +37,7 @@ private:
   std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
-  rsc_decoder_impl(int K);
+  rsc_decoder_impl(int K, std::vector<int> polys={013,015}, int trellis_size = 8, bool buffered=true);
   ~rsc_decoder_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

@@ -12,13 +12,14 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr rsc_decoder::make(int K)
+fec::generic_decoder::sptr rsc_decoder::make(int K, std::vector<int> polys, int trellis_size, bool buffered)
 {
-    return fec::generic_decoder::sptr(std::make_shared<rsc_decoder_impl>(K));
+    return fec::generic_decoder::sptr(std::make_shared<rsc_decoder_impl>(K, polys, trellis_size, buffered));
 }
-    rsc_decoder_impl::rsc_decoder_impl(int K)
+    rsc_decoder_impl::rsc_decoder_impl(int K, std::vector<int> polys, int trellis_size, bool buffered)
         : generic_decoder("rsc_decoder"),
-        d_K(K)
+        d_K(K),
+        d_trellis_size(trellis_size)
     {
         set_frame_size(K);
 
@@ -26,9 +27,7 @@ fec::generic_decoder::sptr rsc_decoder::make(int K)
         d_quant_input = std::vector<Q_8>(d_N);
         d_tmp_input = std::vector<float>(d_N);
 
-        std::vector<int> polys={013, 015};
         bool is_closed = true;
-        bool buffered = true;
 
         auto enco_n = aff3ct::module::Encoder_RSC_generic_sys<B_8>(d_K, d_N, buffered, polys);
         auto trellis_n = enco_n.get_trellis();
