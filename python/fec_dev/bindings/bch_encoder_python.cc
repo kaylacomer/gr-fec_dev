@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(bch_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(c890c389e0d0b197d79be88c6ec6bd4a)                     */
+/* BINDTOOL_HEADER_FILE_HASH(1420ec0145272eb9ffa0f942867bc2a2)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -39,6 +39,7 @@ void bind_bch_encoder(py::module& m)
         .def_static("make", &bch_encoder::make,
            py::arg("frame_bits"),
            py::arg("t") = 5,
+           py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
            D(bch_encoder,make)
         )
 

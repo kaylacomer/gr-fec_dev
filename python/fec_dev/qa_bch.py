@@ -11,7 +11,7 @@ class test_bch(gr_unittest.TestCase):
         self.tb = None
 
     def test_basic001(self):
-        frame_bits = 248
+        frame_bits = 122
         data_size = frame_bits//8
         t = 5
 

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(bch_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(d09ec336c03d12edae9bb13296e848a6)                     */
+/* BINDTOOL_HEADER_FILE_HASH(b8946008061a7bcd5223d59c8f3af5f8)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,6 +37,11 @@ void bind_bch_decoder(py::module& m)
         .def_static("make", &bch_decoder::make,
            py::arg("frame_bits"),
            py::arg("t") = 5,
+           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_saturation_pos") = 6,
+           py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+           py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
+           py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
            D(bch_decoder,make)
         )
 
