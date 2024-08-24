@@ -11,29 +11,31 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
+fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t, SIMD::simd_strat_t simd_strat)
 {
-    return fec::generic_encoder::sptr(new bch_encoder_impl(frame_bits, t));
+    return fec::generic_encoder::sptr(std::make_shared<bch_encoder_impl>(frame_bits, t, simd_strat));
 }
     /*
      * The private constructor
      */
-    bch_encoder_impl::bch_encoder_impl(int frame_bits, uint8_t t)
+    bch_encoder_impl::bch_encoder_impl(int frame_bits, uint8_t t, SIMD::simd_strat_t simd_strat)
         : generic_encoder("bch_encoder"),
-        d_frame_bits(frame_bits),
-        d_t(t)
+        d_frame_bits(frame_bits)
     {
         set_frame_size(frame_bits);
 
         uint8_t m = std::ceil(std::log2(frame_bits+1));
         d_N = (1 << m) - 1;
 
-        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, d_t);
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, t);
         d_K = d_N - d_poly_gen->get_n_rdncy();
 
         d_zeros = d_K - d_frame_bits;
         d_codeword_size = d_N - d_zeros;
-
+        if (d_zeros) {
+            d_logger->info("Padding {:d}-bit input (K_info) with {:d} zeros. K: {:d}, N: {:d}, N_cw: {:d}", frame_bits, t, d_K, d_N, d_codeword_size);
+        }
+        
         if (d_K < 3) {
             throw std::runtime_error("K < 3 - frame_bits and t incompatible. Reduce t or increase frame_bits");
         }
@@ -41,7 +43,15 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t)
         d_tmp_input = std::vector<B_8>(d_K);
         d_tmp_output = std::vector<B_8>(d_N);
 
-        d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
+        if (simd_strat == SIMD::SEQ) {
+            d_encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
+        }
+        else if (simd_strat == SIMD::INTER) {
+            d_encoder = std::make_unique<aff3ct::module::Encoder_BCH_inter<B_8>>(d_K, d_N, *d_poly_gen);
+        }
+        else {
+            throw std::runtime_error("SIMD for BCH must be sequential or inter. Set simd_strat to SEQ or INTER");
+        }
 }
 
 /*

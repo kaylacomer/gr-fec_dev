@@ -15,6 +15,7 @@
 
 #include "Tools/types.h"
 #include "Module/Encoder/BCH/Encoder_BCH.hpp"
+#include "Module/Encoder/BCH/Encoder_BCH_inter.hpp"
 #include "Tools/Code/BCH/BCH_polynomial_generator.hpp"
 
 namespace gr {
@@ -26,7 +27,6 @@ private:
   unsigned int d_frame_bits;
   int d_K;
   int d_N;
-  int d_t;
   int d_zeros;
   int d_codeword_size;
   std::vector<B_8> d_tmp_input;
@@ -36,7 +36,7 @@ private:
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
-  bch_encoder_impl(int frame_bits=127, uint8_t t=5);
+  bch_encoder_impl(int frame_bits, uint8_t t=5, SIMD::simd_strat_t simd_strat=SIMD::SEQ);
   ~bch_encoder_impl() override;
 
   bool set_frame_size(unsigned int frame_bits) override;

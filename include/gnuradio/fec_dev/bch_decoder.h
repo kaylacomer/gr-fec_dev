@@ -10,6 +10,7 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
+#include <gnuradio/fec_dev/aff3ct_decoder.h>
 
 namespace gr {
 namespace fec_dev {
@@ -28,15 +29,18 @@ public:
     * Build a bch decoding FEC API object.
     *
     * \param frame_bits Number of encoded bits per frame.
+    * \param t Number of correctable errors
+    * \param quant_fixed_point_pos Position of decimal point in quantized representation
+    * \param quant_saturation_pos Quantizer's saturation position
+    * \param quant_impl Quantizer implementation - STD/FAST/NO
+    * \param dec_impl Decoder implementation: fast or standard
+    * \param simd_strat SIMD strategy for BCH Encoder. Only need to specify if using GENIUS dec_impl. SEQ or INTER
     */
-    static generic_decoder::sptr make(int frame_bits=127, uint8_t t=5);
+    static generic_decoder::sptr make(int frame_bits, uint8_t t=5, uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6,
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD, Decoder::decoder_impl_t dec_impl=Decoder::STD, SIMD::simd_strat_t simd_strat=SIMD::SEQ);
 
     /*!
-    * Sets the uncoded frame size to \p frame_size. If \p
-    * frame_size is greater than the value given to the
-    * constructor, the frame size will be capped by that initial
-    * value and this function will return false. Otherwise, it
-    * returns true.
+    * Sets the uncoded frame size to \p frame_size
     */
     bool set_frame_size(unsigned int frame_bits) override = 0;
 

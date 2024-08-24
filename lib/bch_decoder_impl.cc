@@ -13,20 +13,23 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr bch_decoder::make(int frame_bits, uint8_t t)
+fec::generic_decoder::sptr bch_decoder::make(int frame_bits, uint8_t t, uint8_t quant_fixed_point_pos, uint8_t 
+                    quant_saturation_pos, Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl,
+                    SIMD::simd_strat_t simd_strat)
 {
-    return fec::generic_decoder::sptr(new bch_decoder_impl(frame_bits, t));
+    return fec::generic_decoder::sptr(std::make_shared<bch_decoder_impl>(frame_bits, t, quant_fixed_point_pos, quant_saturation_pos, quant_impl, dec_impl, simd_strat));
 }
-    bch_decoder_impl::bch_decoder_impl(int frame_bits, uint8_t t)
+    bch_decoder_impl::bch_decoder_impl(int frame_bits, uint8_t t, uint8_t quant_fixed_point_pos, uint8_t 
+                    quant_saturation_pos, Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl,
+                    SIMD::simd_strat_t simd_strat)
         : generic_decoder("bch_decoder"),
-        d_frame_size(frame_bits),
-        d_t(t)
+        d_frame_size(frame_bits)
     {
         set_frame_size(frame_bits);
 
         uint8_t m = std::ceil(std::log2(frame_bits+1));
         d_N = (1 << m) - 1;
-        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, d_t);
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(d_N, t);
         d_K = d_N - d_poly_gen->get_n_rdncy();
         d_zeros = d_K - d_frame_size;
         d_codeword_size = d_N - d_zeros;
@@ -35,12 +38,42 @@ fec::generic_decoder::sptr bch_decoder::make(int frame_bits, uint8_t t)
             throw std::runtime_error("K < 3 - frame_bits and t incompatible. Reduce t or increase frame_bits");
         }
 
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, 2);
+        if (quant_impl == Quantizer::STD) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_codeword_size, 2);
+        }
+        else if (quant_impl == Quantizer::FAST) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, 2);
+        }
+        else {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_codeword_size);
+        }
+        // d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, 2);
         d_quant_input = std::vector<Q_8>(d_N);
         d_tmp_input = std::vector<float>(d_codeword_size);
         d_tmp_output = std::vector<B_8>(d_K);
 
-        d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>>(d_K, d_N, *d_poly_gen);
+        if (dec_impl == Decoder::STD) {
+            d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_std<B_8, Q_8>>(d_K, d_N, *d_poly_gen);
+        }
+        else if (dec_impl == Decoder::FAST) {
+            d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_fast<B_8, Q_8>>(d_K, d_N, *d_poly_gen);
+        }
+        else if (dec_impl == Decoder::GENIUS) {
+            if (simd_strat == SIMD::SEQ) {
+                auto encoder = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
+                d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_genius<B_8, Q_8>>(d_K, d_N, t, *encoder);
+            }
+            else if (simd_strat == SIMD::INTER) {
+                auto encoder = std::make_unique<aff3ct::module::Encoder_BCH_inter<B_8>>(d_K, d_N, *d_poly_gen);
+                d_decoder = std::make_unique<aff3ct::module::Decoder_BCH_genius<B_8, Q_8>>(d_K, d_N, t, *encoder);
+            }
+            else {
+                throw std::runtime_error("SIMD for BCH must be sequential or inter. Set simd_strat to SEQ or INTER");
+            }
+        }
+        else {
+            throw std::runtime_error("BCH decoder has STD, FAST, and GENIUS implementations");
+        }
 }
 
 bch_decoder_impl::~bch_decoder_impl()
@@ -69,8 +102,6 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     
     int status = d_decoder->decode_siho(d_quant_input.data(), d_tmp_output.data(), -1);
 
-    // std::cout << "status: " << status << " ---- SUCCESS 0 , FAILURE 1" << std::endl;
-    // std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
     if (status == spu::runtime::status_t::SUCCESS) {
         std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
     }

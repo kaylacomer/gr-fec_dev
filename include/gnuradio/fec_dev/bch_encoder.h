@@ -10,6 +10,7 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_encoder.h>
+#include <gnuradio/fec_dev/aff3ct_decoder.h>
 
 namespace gr {
 namespace fec_dev {
@@ -27,18 +28,14 @@ public:
     /*!
     * Build a bch encoding FEC API object.
     *
-    * \param frame_size Number of bits per frame. If using in the
-    *        tagged stream style, this is the maximum allowable
-    *        number of bits per frame.
+    * \param frame_bits Number of bits per frame
+    * \param t Number of correctable errors
+    * \param simd_strat SIMD strategy. Normally SEQ -- sequential. Can be set to INTER
     */
-    static generic_encoder::sptr make(int frame_bits=127, uint8_t t=5);
+    static generic_encoder::sptr make(int frame_bits, uint8_t t=5, SIMD::simd_strat_t simd_strat=SIMD::SEQ);
 
     /*!
-    * Sets the uncoded frame size to \p frame_size. If \p
-    * frame_size is greater than the value given to the
-    * constructor, the frame size will be capped by that initial
-    * value and this function will return false. Otherwise, it
-    * returns true.
+    * Sets the uncoded frame size to \p frame_size
     */
     bool set_frame_size(unsigned int frame_bits) override = 0;
 
