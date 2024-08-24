@@ -13,7 +13,7 @@ namespace fec_dev {
 
 fec::generic_encoder::sptr rs_encoder::make(int frame_size)
 {
-    return fec::generic_encoder::sptr(new rs_encoder_impl(frame_size));
+    return fec::generic_encoder::sptr(std::make_shared<rs_encoder_impl>(frame_size));
 }
     rs_encoder_impl::rs_encoder_impl(int frame_size)
         : generic_encoder("rs_encoder"),

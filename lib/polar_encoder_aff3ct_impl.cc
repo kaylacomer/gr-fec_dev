@@ -13,7 +13,7 @@ namespace fec_dev {
 
 fec::generic_encoder::sptr polar_encoder_aff3ct::make(int K)
 {
-    return fec::generic_encoder::sptr(new polar_encoder_aff3ct_impl(K));
+    return fec::generic_encoder::sptr(std::make_shared<polar_encoder_aff3ct_impl>(K));
 }
     polar_encoder_aff3ct_impl::polar_encoder_aff3ct_impl(int K)
         : generic_encoder("polar_encoder_aff3ct"),

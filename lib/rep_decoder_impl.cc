@@ -15,7 +15,7 @@ namespace fec_dev {
 fec::generic_decoder::sptr rep_decoder::make(int K, int rep, bool buffered, uint8_t quant_fixed_point_pos, uint8_t quant_saturation_pos,
   Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl)
 {
-    return fec::generic_decoder::sptr(new rep_decoder_impl(K, rep, buffered, quant_fixed_point_pos, quant_saturation_pos, quant_impl, dec_impl));
+    return fec::generic_decoder::sptr(std::make_shared<rep_decoder_impl>(K, rep, buffered, quant_fixed_point_pos, quant_saturation_pos, quant_impl, dec_impl));
 }
     rep_decoder_impl::rep_decoder_impl(int K, int rep, bool buffered, uint8_t quant_fixed_point_pos, uint8_t quant_saturation_pos,
         Quantizer::quantizer_impl_t quant_impl, Decoder::decoder_impl_t dec_impl)

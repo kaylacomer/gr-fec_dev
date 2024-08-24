@@ -14,7 +14,7 @@ namespace fec_dev {
 
 fec::generic_decoder::sptr rsc_decoder::make(int K)
 {
-    return fec::generic_decoder::sptr(new rsc_decoder_impl(K));
+    return fec::generic_decoder::sptr(std::make_shared<rsc_decoder_impl>(K));
 }
     rsc_decoder_impl::rsc_decoder_impl(int K)
         : generic_decoder("rsc_decoder"),

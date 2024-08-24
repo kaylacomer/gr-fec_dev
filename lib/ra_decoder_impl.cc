@@ -17,7 +17,7 @@ fec::generic_decoder::sptr ra_decoder::make(int K, int rep, int iter, Interleave
         Interleaver::itl_read_order_t read_order, int itl_n_cols, uint8_t quant_fixed_point_pos, 
         uint8_t quant_saturation_pos, Quantizer::quantizer_impl_t quant_impl)
 {
-    return fec::generic_decoder::sptr(new ra_decoder_impl(K, rep, iter, interleaver, read_order, itl_n_cols, quant_fixed_point_pos, quant_saturation_pos, quant_impl));
+    return fec::generic_decoder::sptr(std::make_shared<ra_decoder_impl>(K, rep, iter, interleaver, read_order, itl_n_cols, quant_fixed_point_pos, quant_saturation_pos, quant_impl));
 }
     ra_decoder_impl::ra_decoder_impl(int K, int rep, int iter, Interleaver::interleaver_t interleaver, Interleaver::itl_read_order_t read_order, int itl_n_cols,
         uint8_t quant_fixed_point_pos, uint8_t quant_saturation_pos, Quantizer::quantizer_impl_t quant_impl)

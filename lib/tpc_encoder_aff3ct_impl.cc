@@ -13,7 +13,7 @@ namespace fec_dev {
 
 fec::generic_encoder::sptr tpc_encoder_aff3ct::make(int K)
 {
-    return fec::generic_encoder::sptr(new tpc_encoder_aff3ct_impl(K));
+    return fec::generic_encoder::sptr(std::make_shared<tpc_encoder_aff3ct_impl>(K));
 }
     tpc_encoder_aff3ct_impl::tpc_encoder_aff3ct_impl(int K)
         : generic_encoder("tpc_encoder_aff3ct"),

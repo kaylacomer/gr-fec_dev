@@ -14,7 +14,7 @@ namespace fec_dev {
 
 fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K)
 {
-    return fec::generic_decoder::sptr(new tpc_decoder_aff3ct_impl(K));
+    return fec::generic_decoder::sptr(std::make_shared<tpc_decoder_aff3ct_impl>(K));
 }
     tpc_decoder_aff3ct_impl::tpc_decoder_aff3ct_impl(int K)
         : generic_decoder("tpc_decoder_aff3ct"),

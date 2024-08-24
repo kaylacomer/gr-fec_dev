@@ -15,7 +15,7 @@ namespace fec_dev {
 
 fec::generic_decoder::sptr rs_decoder::make(int frame_size)
 {
-    return fec::generic_decoder::sptr(new rs_decoder_impl(frame_size));
+    return fec::generic_decoder::sptr(std::make_shared<rs_decoder_impl>(frame_size));
 }
     rs_decoder_impl::rs_decoder_impl(int frame_size)
         : generic_decoder("rs_decoder"),

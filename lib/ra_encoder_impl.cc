@@ -14,7 +14,7 @@ namespace fec_dev {
 
 fec::generic_encoder::sptr ra_encoder::make(int K, int rep, Interleaver::interleaver_t interleaver, Interleaver::itl_read_order_t read_order, int itl_n_cols)
 {
-    return fec::generic_encoder::sptr(new ra_encoder_impl(K, rep, interleaver, read_order, itl_n_cols));
+    return fec::generic_encoder::sptr(std::make_shared<ra_encoder_impl>(K, rep, interleaver, read_order, itl_n_cols));
 }
     ra_encoder_impl::ra_encoder_impl(int K, int rep, Interleaver::interleaver_t interleaver, Interleaver::itl_read_order_t read_order, int itl_n_cols)
         : generic_encoder("ra_encoder"),

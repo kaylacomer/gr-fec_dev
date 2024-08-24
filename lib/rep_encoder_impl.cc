@@ -13,7 +13,7 @@ namespace fec_dev {
 
 fec::generic_encoder::sptr rep_encoder::make(int K, int rep, bool buffered)
 {
-    return fec::generic_encoder::sptr(new rep_encoder_impl(K, rep, buffered));
+    return fec::generic_encoder::sptr(std::make_shared<rep_encoder_impl>(K, rep, buffered));
 }
     rep_encoder_impl::rep_encoder_impl(int K, int rep, bool buffered)
         : generic_encoder("rep_encoder"),
