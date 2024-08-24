@@ -14,8 +14,9 @@
 
 #include "Tools/types.h"
 #include "Module/Decoder/RS/Standard/Decoder_RS_std.hpp"
+#include "Module/Decoder/RS/Genius/Decoder_RS_genius.hpp"
 #include "Tools/Code/RS/RS_polynomial_generator.hpp"
-#include "Module/Quantizer/Pow2/Quantizer_pow2_fast.hpp"
+#include "Module/Encoder/RS/Encoder_RS.hpp"
 
 #include "aff3ct_quantizer_headers.h"
 
@@ -28,16 +29,19 @@ private:
   unsigned int d_frame_size;
   int d_K;
   int d_N;
-  int d_t;
+  int d_zeros;
+  int d_codeword_size;
   std::vector<float> d_tmp_input;
+  std::vector<B_8> d_tmp_output;
   std::vector<Q_8> d_quant_input;
 
-  std::unique_ptr<aff3ct::module::Decoder_RS_std<B_8, Q_8>> d_decoder;
+  std::unique_ptr<aff3ct::module::Decoder_RS<B_8, Q_8>> d_decoder;
   std::unique_ptr<aff3ct::tools::RS_polynomial_generator> d_poly_gen;
-  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
-  rs_decoder_impl(int frame_size);
+  rs_decoder_impl(int frame_size, uint8_t t=5, uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6,
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD, Decoder::decoder_impl_t dec_impl=Decoder::STD);
   ~rs_decoder_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

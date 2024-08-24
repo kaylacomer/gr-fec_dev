@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rs_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(2094150cc0304f9cfb51a68b87df455a)                     */
+/* BINDTOOL_HEADER_FILE_HASH(2a34a39944859b3a845e84caf05bdf31)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,6 +37,11 @@ void bind_rs_decoder(py::module& m)
 
         .def_static("make", &rs_decoder::make,
            py::arg("frame_size"),
+           py::arg("t") = 5,
+           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_saturation_pos") = 6,
+           py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+           py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
            D(rs_decoder,make)
         )
 

@@ -26,13 +26,15 @@ private:
   unsigned int d_frame_size;
   int d_K;
   int d_N;
+  int d_zeros;
+  int d_codeword_size;
   std::vector<B_8> d_tmp_input;
   std::vector<B_8> d_tmp_output;
   std::unique_ptr<aff3ct::module::Encoder_RS<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::RS_polynomial_generator> d_poly_gen;
 
 public:
-  rs_encoder_impl(int frame_size);
+  rs_encoder_impl(int frame_size, uint8_t t=5);
   ~rs_encoder_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

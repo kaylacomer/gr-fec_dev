@@ -11,19 +11,27 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr rs_encoder::make(int frame_size)
+fec::generic_encoder::sptr rs_encoder::make(int frame_size, uint8_t t)
 {
-    return fec::generic_encoder::sptr(std::make_shared<rs_encoder_impl>(frame_size));
+    return fec::generic_encoder::sptr(std::make_shared<rs_encoder_impl>(frame_size, t));
 }
-    rs_encoder_impl::rs_encoder_impl(int frame_size)
+    rs_encoder_impl::rs_encoder_impl(int frame_size, uint8_t t)
         : generic_encoder("rs_encoder"),
         d_frame_size(frame_size)
     {
-        int t=5;
         set_frame_size(frame_size);
+
+        uint8_t m = std::ceil(std::log2(frame_size+1));
+        d_N = std::pow(2,m)-1;
 
         d_poly_gen = std::make_unique<aff3ct::tools::RS_polynomial_generator>(d_N, t);
         d_K = d_N - d_poly_gen->get_n_rdncy();
+
+        d_zeros = d_K - d_frame_size;
+        d_codeword_size = d_N - d_zeros;
+        if (d_zeros) {
+            d_logger->info("Padding {:d}-bit input (K_info) with {:d} zeros. K: {:d}, N: {:d}, N_cw: {:d}", d_frame_size, t, d_K, d_N, d_codeword_size);
+        }
         if (d_K < 3) {
             throw std::runtime_error("K < 3 - frame_bits and t incompatible. Reduce t or increase frame_bits");
         }
@@ -35,50 +43,26 @@ rs_encoder_impl::~rs_encoder_impl()
 {
 }
 
-int rs_encoder_impl::get_output_size() { return d_N - (d_K - d_frame_size); }
+int rs_encoder_impl::get_output_size() { return d_codeword_size; }
 int rs_encoder_impl::get_input_size() { return d_frame_size; }
 
 bool rs_encoder_impl::set_frame_size(unsigned int frame_size)
 {
-    bool ret = true;
-
-    uint8_t m = std::ceil(std::log2(frame_size+1));
-    d_N = std::pow(2,m)-1;
-
-    return ret;
+    return true;
 }
 
-double rs_encoder_impl::rate() { return static_cast<float>((d_N - (d_K - d_frame_size))) / d_frame_size; } // encoder rate
+double rs_encoder_impl::rate() { return static_cast<float>(d_frame_size) / d_codeword_size; } // encoder rate
 
 void rs_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const B_8* in = (const B_8*)inbuffer;
-    // std::vector<B_8> input_vector(in, in + d_frame_size);
-    std::memcpy(d_tmp_input.data(), in, d_frame_size);
-
-    std::cout << "here1" << std::endl;
-
-    int zeros = d_K - d_frame_size;
-    if (zeros > 0) {
-        d_tmp_input.insert(d_tmp_input.begin(), zeros, 0);
-    }
-
-    std::cout << "here2" << std::endl;
-
-    std::cout << "here3" << std::endl;
+    B_8* out = (B_8*)outbuffer;
+    
+    std::memcpy(&d_tmp_input[d_zeros], in, d_frame_size * sizeof(B_8));
 
     d_encoder->encode(d_tmp_input.data(), d_tmp_output.data());
 
-    std::cout << "here4" << std::endl;
-
-    if (zeros > 0) {
-        d_tmp_output.erase(d_tmp_output.begin(), d_tmp_output.begin() + zeros);
-    }
-    std::cout << "here5" << std::endl;
-
-    B_8* out = (B_8*)outbuffer;
-    std::memcpy(out, d_tmp_output.data() + zeros, d_N - zeros);
-    std::cout << "here6" << std::endl;
+    std::memcpy(out, &d_tmp_output[d_zeros], d_codeword_size * sizeof(B_8));
 }
 
 } /* namespace fec_dev */

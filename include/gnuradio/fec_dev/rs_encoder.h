@@ -31,7 +31,7 @@ public:
     *        tagged stream style, this is the maximum allowable
     *        number of bits per frame.
     */
-    static generic_encoder::sptr make(int frame_size);
+    static generic_encoder::sptr make(int frame_size, uint8_t t=5);
 
     /*!
     * Sets the uncoded frame size to \p frame_size. If \p

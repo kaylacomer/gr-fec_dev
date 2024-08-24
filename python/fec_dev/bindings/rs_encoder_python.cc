@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rs_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(81431b06a191c9ea9fef08e307d18bc5)                     */
+/* BINDTOOL_HEADER_FILE_HASH(2a6aab80f5f49ca6ae4ffdb4babb2eba)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,6 +37,7 @@ void bind_rs_encoder(py::module& m)
 
         .def_static("make", &rs_encoder::make,
            py::arg("frame_size"),
+           py::arg("t") = 5,
            D(rs_encoder,make)
         )
 

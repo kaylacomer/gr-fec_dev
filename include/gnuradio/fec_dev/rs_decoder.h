@@ -10,6 +10,7 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
+#include <gnuradio/fec_dev/aff3ct_decoder.h>
 
 namespace gr {
 namespace fec_dev {
@@ -31,7 +32,8 @@ public:
     *        tagged stream style, this is the maximum allowable
     *        number of bits per frame.
     */
-    static generic_decoder::sptr make(int frame_size);
+    static generic_decoder::sptr make(int frame_size, uint8_t t=5, uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6,
+                    Quantizer::quantizer_impl_t quant_impl=Quantizer::STD, Decoder::decoder_impl_t dec_impl=Decoder::STD);
 
     /*!
     * Sets the uncoded frame size to \p frame_size. If \p
