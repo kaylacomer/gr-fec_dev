@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(bcjr.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(e66ff8b9af93bb9b742df7ee0d027e73)                     */
+/* BINDTOOL_HEADER_FILE_HASH(db29996f0c9f7a25ffd3a3e9e6ce00b4)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -60,4 +60,15 @@ void bind_bcjr(py::module& m)
         .export_values();
 
     py::implicitly_convertible<int, ::gr::fec_dev::SIMD::_simd_interintra_impl_t>();
+
+    py::module m_RSC = m.def_submodule("RSC");
+
+
+    py::enum_<::gr::fec_dev::RSC::_rsc_decoder_impl_t>(m_RSC, "_rsc_decoder_impl_t")
+        .value("BCJR", ::gr::fec_dev::RSC::_rsc_decoder_impl_t::BCJR) // 0
+        .value("Viterbi_SIHO", ::gr::fec_dev::RSC::_rsc_decoder_impl_t::Viterbi_SIHO) // 1
+        .value("Viterbi_list", ::gr::fec_dev::RSC::_rsc_decoder_impl_t::Viterbi_list) // 2
+        .export_values();
+
+    py::implicitly_convertible<int, ::gr::fec_dev::RSC::_rsc_decoder_impl_t>();
 }

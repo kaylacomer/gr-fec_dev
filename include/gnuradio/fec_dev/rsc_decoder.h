@@ -10,6 +10,8 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
+#include <gnuradio/fec_dev/aff3ct_decoder.h>
+#include <gnuradio/fec_dev/bcjr.h>
 
 namespace gr {
 namespace fec_dev {
@@ -29,12 +31,24 @@ public:
     *
     * \param frame_size Number of bits per frame
     */
-    static generic_decoder::sptr make(int frame_size, std::vector<int> polys={013,015}, int trellis_size = 8, bool buffered=true);
+    static generic_decoder::sptr make(int K, 
+                  std::vector<int> polys={013,015}, 
+                  int trellis_size = 8,
+                  bool buffered=true,
+                  RSC::rsc_decoder_impl_t dec_type = RSC::BCJR,
+                  uint8_t quant_fixed_point_pos = 2,
+                  uint8_t quant_saturation_pos = 6,
+                  Quantizer::quantizer_impl_t quant_impl=Quantizer::STD,
+                  BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,
+                  SIMD::simd_strat_t simd_strat=SIMD::SEQ,
+                  SIMD::simd_interintra_impl_t simd_interintra_impl=SIMD::NA,
+                  std::string viterbi_list_poly_key="none",
+                  bool viterbi_siho_is_closed=true);
 
     /*!
     * Sets the uncoded frame size to \p frame_size
     */
-    bool set_frame_size(unsigned int frame_size) override = 0;
+    bool set_frame_size(unsigned int K) override = 0;
 
     /*!
     * Returns the coding rate of this decoder.

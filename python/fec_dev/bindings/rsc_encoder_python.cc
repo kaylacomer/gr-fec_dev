@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rsc_encoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(56cd5049abc165a1634e9cbd5628993d)                     */
+/* BINDTOOL_HEADER_FILE_HASH(cf8df4840991073233fd221f1671bce5)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -37,6 +37,9 @@ void bind_rsc_encoder(py::module& m)
 
         .def_static("make", &rsc_encoder::make,
            py::arg("frame_size"),
+           py::arg("polys") = std::vector<int>{013, 015},
+           py::arg("trellis_size") = 8,
+           py::arg("buffered") = true,
            D(rsc_encoder,make)
         )
 

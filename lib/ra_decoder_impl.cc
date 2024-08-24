@@ -82,10 +82,10 @@ fec::generic_decoder::sptr ra_decoder::make(int K, int rep, int iter, Interleave
         d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
 
         if (quant_impl == Quantizer::STD) {
-            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos);
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
         }
         else if (quant_impl == Quantizer::FAST) {
-            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, quant_fixed_point_pos);
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
         }
         else {
             d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_N);

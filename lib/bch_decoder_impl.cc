@@ -39,15 +39,14 @@ fec::generic_decoder::sptr bch_decoder::make(int frame_bits, uint8_t t, uint8_t 
         }
 
         if (quant_impl == Quantizer::STD) {
-            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_codeword_size, 2);
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_codeword_size, quant_fixed_point_pos, quant_saturation_pos);
         }
         else if (quant_impl == Quantizer::FAST) {
-            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, 2);
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, quant_fixed_point_pos, quant_saturation_pos);
         }
         else {
             d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_codeword_size);
         }
-        // d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_codeword_size, 2);
         d_quant_input = std::vector<Q_8>(d_N);
         d_tmp_input = std::vector<float>(d_codeword_size);
         d_tmp_output = std::vector<B_8>(d_K);

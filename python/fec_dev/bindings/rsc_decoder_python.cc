@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rsc_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(e8fecf703812287a35544f0be802ee07)                     */
+/* BINDTOOL_HEADER_FILE_HASH(7eb6b9c4f45393b0d56f423c565d193f)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -29,6 +29,7 @@ namespace py = pybind11;
 
 void bind_rsc_decoder(py::module& m)
 {
+
     using rsc_decoder = ::gr::fec_dev::rsc_decoder;
 
 
@@ -36,24 +37,47 @@ void bind_rsc_decoder(py::module& m)
         std::shared_ptr<rsc_decoder>>(m, "rsc_decoder", D(rsc_decoder))
 
         .def_static("make", &rsc_decoder::make,
-           py::arg("frame_size"),
-           D(rsc_decoder,make)
-        )
+             py::arg("K"),
+             py::arg("polys") = std::vector<int>{013, 015},
+             py::arg("trellis_size") = 8,
+             py::arg("buffered") = true,
+             py::arg("dec_type") = ::gr::fec_dev::RSC::_rsc_decoder_impl_t::BCJR,
+             py::arg("quant_fixed_point_pos") = 2,
+             py::arg("quant_saturation_pos") = 6,
+             py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+             py::arg("bcjr_impl") = ::gr::fec_dev::BCJR::_bcjr_impl_t::GENERIC,
+             py::arg("simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
+             py::arg("simd_interintra_impl") = ::gr::fec_dev::SIMD::_simd_interintra_impl_t::NA,
+             py::arg("viterbi_list_poly_key") = "none",
+             py::arg("viterbi_siho_is_closed") = true,
+             D(rsc_decoder, make))
+
 
         .def("set_frame_size",
-            &rsc_decoder::set_frame_size,
-            py::arg("frame_size"),
-            D(rsc_decoder, set_frame_size))
+             &rsc_decoder::set_frame_size,
+             py::arg("K"),
+             D(rsc_decoder, set_frame_size))
+
 
         .def("rate", &rsc_decoder::rate, D(rsc_decoder, rate))
 
         ;
+
+
+    py::module m_Quantizer = m.def_submodule("Quantizer");
+
+
+    py::module m_Decoder = m.def_submodule("Decoder");
+
+
+    py::module m_SIMD = m.def_submodule("SIMD");
+
+
+    py::module m_BCJR = m.def_submodule("BCJR");
+
+
+    py::module m_RSC = m.def_submodule("RSC");
+
+
+    py::module m_Interleaver = m.def_submodule("Interleaver");
 }
-
-
-
-
-
-
-
-
