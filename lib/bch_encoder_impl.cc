@@ -78,11 +78,11 @@ void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
     
-    std::memcpy(&d_tmp_input[d_zeros], in, d_frame_bits * sizeof(B_8));
+    std::memcpy(&d_tmp_input[d_zeros], in, d_frame_bits);
 
     d_encoder->encode(d_tmp_input.data(), d_tmp_output.data());
 
-    std::memcpy(out, &d_tmp_output[d_zeros], d_codeword_size * sizeof(B_8));
+    std::memcpy(out, &d_tmp_output[d_zeros], d_codeword_size);
 }
 
 } /* namespace fec_dev */

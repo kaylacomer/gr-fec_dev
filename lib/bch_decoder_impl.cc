@@ -101,13 +101,13 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     
     int status = d_decoder->decode_siho(d_quant_input.data(), d_tmp_output.data(), -1);
 
-    if (status == spu::runtime::status_t::SUCCESS) {
-        std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size * sizeof(B_8));
-    }
-    else {
-        d_logger->info("Decoding failed");
-        std::fill(out, out + d_frame_size * sizeof(B_8), 0);
-    }
+    // if (status == spu::runtime::status_t::SUCCESS) {
+        std::memcpy(out, &d_tmp_output[d_zeros], d_frame_size);
+    // }
+    // else {
+    //     d_logger->info("Decoding failed");
+    //     std::fill(out, out + d_frame_size, 0);
+    // }
 }
 
 
