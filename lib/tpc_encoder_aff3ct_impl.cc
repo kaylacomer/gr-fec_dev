@@ -11,18 +11,28 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr tpc_encoder_aff3ct::make(int K)
+fec::generic_encoder::sptr tpc_encoder_aff3ct::make(int K_sqrt,
+                                                    int N_sqrt,
+                                                    int t,
+                                                    SIMD::simd_strat_t bch_simd_strat,
+                                                    Interleaver::interleaver_t interleaver,
+                                                    Interleaver::itl_read_order_t read_order,
+                                                    bool parity_extended)
 {
-    return fec::generic_encoder::sptr(std::make_shared<tpc_encoder_aff3ct_impl>(K));
+    return fec::generic_encoder::sptr(std::make_shared<tpc_encoder_aff3ct_impl>(K_sqrt, N_sqrt, t, bch_simd_strat, interleaver, read_order, parity_extended));
 }
-    tpc_encoder_aff3ct_impl::tpc_encoder_aff3ct_impl(int K)
+    tpc_encoder_aff3ct_impl::tpc_encoder_aff3ct_impl(int K_sqrt,
+                                                    int N_sqrt,
+                                                    int t,
+                                                    SIMD::simd_strat_t bch_simd_strat,
+                                                    Interleaver::interleaver_t interleaver,
+                                                    Interleaver::itl_read_order_t read_order,
+                                                    bool parity_extended)
         : generic_encoder("tpc_encoder_aff3ct"),
         d_K(45),
         d_N(63*63)
     {
-        set_frame_size(K);
-
-        int t=5;
+        set_frame_size(K_sqrt);
 
         d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(std::sqrt(d_N), t);
         int rdncy = d_poly_gen->get_n_rdncy();

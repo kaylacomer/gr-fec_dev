@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(tpc_encoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(715cbe84eecbf0fc563b14f774eb1c92)                     */
+/* BINDTOOL_HEADER_FILE_HASH(d76be95c8246cff75781a13702f6339e)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,13 @@ void bind_tpc_encoder_aff3ct(py::module& m)
         std::shared_ptr<tpc_encoder_aff3ct>>(m, "tpc_encoder_aff3ct", D(tpc_encoder_aff3ct))
 
         .def_static("make", &tpc_encoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K_sqrt"),
+           py::arg("N_sqrt"),
+           py::arg("t"),
+           py::arg("bch_simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
+           py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::ROW_COL,
+           py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::TOP_LEFT,
+           py::arg("parity_extended") = false,
            D(tpc_encoder_aff3ct,make)
         )
 

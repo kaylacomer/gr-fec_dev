@@ -12,18 +12,55 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K)
+fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K_sqrt,
+                                                    int N_sqrt,
+                                                    int t,
+                                                    SIMD::simd_strat_t bch_simd_strat,
+                                                    Interleaver::interleaver_t interleaver,
+                                                    Interleaver::itl_read_order_t read_order,
+                                                    bool parity_extended,
+                                                    uint8_t quant_fixed_point_pos,
+                                                    uint8_t quant_saturation_pos,
+                                                    Quantizer::quantizer_impl_t quant_impl,
+                                                    Decoder::decoder_impl_t bch_dec_impl,
+                                                    Decoder::decoder_impl_t chase_pyndiah_impl,
+                                                    int n_iterations,
+                                                    std::vector<float> alpha,
+                                                    std::vector<float> beta,
+                                                    std::vector<float> chase_pyndiah_coef,
+                                                    int n_least_reliable_pos,
+                                                    int n_test_vectors,
+                                                    int n_competitors)
 {
-    return fec::generic_decoder::sptr(std::make_shared<tpc_decoder_aff3ct_impl>(K));
+    return fec::generic_decoder::sptr(std::make_shared<tpc_decoder_aff3ct_impl>(K_sqrt, N_sqrt, t, bch_simd_strat, interleaver, read_order,
+                                                    parity_extended, quant_fixed_point_pos, quant_saturation_pos, quant_impl, bch_dec_impl,
+                                                    chase_pyndiah_impl, n_iterations, alpha, beta, chase_pyndiah_coef, n_least_reliable_pos,
+                                                    n_test_vectors, n_competitors));
 }
-    tpc_decoder_aff3ct_impl::tpc_decoder_aff3ct_impl(int K)
+    tpc_decoder_aff3ct_impl::tpc_decoder_aff3ct_impl(int K_sqrt,
+                                                    int N_sqrt,
+                                                    int t,
+                                                    SIMD::simd_strat_t bch_simd_strat,
+                                                    Interleaver::interleaver_t interleaver,
+                                                    Interleaver::itl_read_order_t read_order,
+                                                    bool parity_extended,
+                                                    uint8_t quant_fixed_point_pos,
+                                                    uint8_t quant_saturation_pos,
+                                                    Quantizer::quantizer_impl_t quant_impl,
+                                                    Decoder::decoder_impl_t bch_dec_impl,
+                                                    Decoder::decoder_impl_t chase_pyndiah_impl,
+                                                    int n_iterations,
+                                                    std::vector<float> alpha,
+                                                    std::vector<float> beta,
+                                                    std::vector<float> chase_pyndiah_coef,
+                                                    int n_least_reliable_pos,
+                                                    int n_test_vectors,
+                                                    int n_competitors)
         : generic_decoder("tpc_decoder_aff3ct"),
         d_K(45),
         d_N(63*63)
     {
-        set_frame_size(K);
-
-        int t=5;
+        set_frame_size(K_sqrt);
 
         d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_N, std::sqrt(d_N), "TOP_LEFT");
         d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
@@ -43,7 +80,7 @@ fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K)
         auto cp_c = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K, std::sqrt(d_N), dec_BCH, enc_BCH);
         cp_r.set_n_frames(std::sqrt(d_N));
         cp_c.set_n_frames(std::sqrt(d_N));
-        std::vector<float> alpha = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+        // std::vector<float> alpha = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
         d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_product<B_8, Q_8>>(4, alpha, cp_r, cp_c, *d_pi);
         
 

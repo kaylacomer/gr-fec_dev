@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(tpc_decoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(3f3cd5a196597f6645cdbf0cd744deed)                     */
+/* BINDTOOL_HEADER_FILE_HASH(dcae9a0342c1d6ec574468f389a01a71)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,25 @@ void bind_tpc_decoder_aff3ct(py::module& m)
         std::shared_ptr<tpc_decoder_aff3ct>>(m, "tpc_decoder_aff3ct", D(tpc_decoder_aff3ct))
 
         .def_static("make", &tpc_decoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K_sqrt"),
+           py::arg("N_sqrt"),
+           py::arg("t"),
+           py::arg("bch_simd_strat") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
+           py::arg("interleaver") = ::gr::fec_dev::Interleaver::_interleaver_t::ROW_COL,
+           py::arg("read_order") = ::gr::fec_dev::Interleaver::_itl_read_order_t::TOP_LEFT,
+           py::arg("parity_extended") = false,
+           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_saturation_pos") = 6,
+           py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
+           py::arg("bch_dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
+           py::arg("chase_pyndiah_dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::STD,
+           py::arg("n_iterations") = 4,
+           py::arg("alpha") = std::vector<float>{0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5},
+           py::arg("beta") = std::vector<float>{},
+           py::arg("chase_pyndiah_coef") = std::vector<float>{1, 1, 1, 1, 0},
+           py::arg("n_least_reliable_pos") = 2,
+           py::arg("n_test_vectors") = 4,
+           py::arg("n_competitors") = 4,
            D(tpc_decoder_aff3ct,make)
         )
 

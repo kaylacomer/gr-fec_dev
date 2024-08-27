@@ -35,7 +35,14 @@ private:
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
 
 public:
-  tpc_encoder_aff3ct_impl(int K);
+  tpc_encoder_aff3ct_impl(int K_sqrt,
+                          int N_sqrt,
+                          int t,
+                          SIMD::simd_strat_t bch_simd_strat=SIMD::SEQ,
+                          Interleaver::interleaver_t interleaver=Interleaver::ROW_COL,
+                          Interleaver::itl_read_order_t read_order=Interleaver::TOP_LEFT,
+                          bool parity_extended=false
+                          );
   ~tpc_encoder_aff3ct_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

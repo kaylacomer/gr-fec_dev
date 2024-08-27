@@ -45,7 +45,7 @@ fec::generic_encoder::sptr bch_encoder::make(int frame_bits, uint8_t t, SIMD::si
         }
         
         if (d_zeros) {
-            d_logger->info("Padding {:d}-bit input (K_info) with {:d} zeros. K: {:d}, N: {:d}, N_cw: {:d}", frame_bits, d_zeros, d_K, d_N, d_codeword_size);
+            d_logger->info("Padding {:d}-bit input (K_info) with {:d} zeros. K: {:d}, N: {:d}, N_cw: {:d}, t: {:d}", frame_bits, d_zeros, d_K, d_N, d_codeword_size, t);
         }
         
         if (d_K < 3) {
@@ -91,7 +91,7 @@ void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     B_8* out = (B_8*)outbuffer;
     
     // std::memcpy(&d_tmp_input[d_zeros], in, d_frame_bits);
-    for (int i = 0; i < d_frame_bits; i++) {
+    for (int i = 0; i < d_frame_bits; ++i) {
         d_tmp_input[d_zeros + i] = static_cast<B_32>(in[i]);
         if (static_cast<B_32>(in[i]) != d_tmp_input[d_zeros + i]) {
             std::cout << "in: " << static_cast<B_32>(in[i]) << std::endl;
