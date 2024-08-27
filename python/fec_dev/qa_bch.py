@@ -32,9 +32,9 @@ class test_bch(gr_unittest.TestCase):
         self.assertEqual(data_in, data_out)
     
     def test_basic002(self):
-        frame_bits = 222
+        frame_bits = 180
         data_size = frame_bits//8
-        t = 7
+        t = 9
 
         enc = fec_dev.bch_encoder.make(frame_bits, t)
         dec = fec_dev.bch_decoder.make(frame_bits, t)

@@ -30,18 +30,18 @@ namespace fec_dev {
 class FEC_API bch_decoder_impl : public bch_decoder
 {
 private:
-  unsigned int d_frame_size;
+  int d_frame_size;
   int d_K;
   int d_N;
   int d_zeros;
   int d_codeword_size;
   std::vector<float> d_tmp_input;
-  std::vector<B_8> d_tmp_output;
-  std::vector<Q_8> d_quant_input;
+  std::vector<B_32> d_tmp_output;
+  std::vector<Q_32> d_quant_input;
 
-  std::unique_ptr<aff3ct::module::Decoder_BCH<B_8, Q_8>> d_decoder;
-  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
-  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Decoder_BCH<B_32, Q_32>> d_decoder;
+  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_32>> d_poly_gen;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_32>> d_quant;
 
 public:
   bch_decoder_impl(int frame_bits, uint8_t t=5, uint8_t quant_fixed_point_pos = 2, uint8_t quant_saturation_pos = 6,

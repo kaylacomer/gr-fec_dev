@@ -24,16 +24,16 @@ namespace fec_dev {
 class FEC_API bch_encoder_impl : public bch_encoder
 {
 private:
-  unsigned int d_frame_bits;
+  int d_frame_bits;
   int d_K;
   int d_N;
   int d_zeros;
   int d_codeword_size;
-  std::vector<B_8> d_tmp_input;
-  std::vector<B_8> d_tmp_output;
+  std::vector<B_32> d_tmp_input;
+  std::vector<B_32> d_tmp_output;
 
-  std::unique_ptr<aff3ct::module::Encoder_BCH<B_8>> d_encoder;
-  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
+  std::unique_ptr<aff3ct::module::Encoder_BCH<B_32>> d_encoder;
+  std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_32>> d_poly_gen;
 
 public:
   bch_encoder_impl(int frame_bits, uint8_t t=5, SIMD::simd_strat_t simd_strat=SIMD::SEQ);
