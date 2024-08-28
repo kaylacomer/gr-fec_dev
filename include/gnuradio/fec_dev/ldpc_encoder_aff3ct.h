@@ -10,6 +10,7 @@
 
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_encoder.h>
+#include <gnuradio/fec_dev/ldpc_common_aff3ct.h>
 
 namespace gr {
 namespace fec_dev {
@@ -29,7 +30,12 @@ public:
     *
     * \param frame_size Number of bits per frame
     */
-    static generic_encoder::sptr make(int frame_size);
+    static generic_encoder::sptr make(int K = 0,
+                           int N = 0,
+                           LDPC::encoder_t enc_type = LDPC::LDPC,
+                           std::string enc_gen_matrix_path="",
+                           LDPC::enc_gen_matrix_method_t enc_gen_matrix_method = LDPC::IDENTITY,
+                           std::string enc_gen_matrix_save_path="");
 
     /*!
     * Sets the uncoded frame size to \p frame_size

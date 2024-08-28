@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ldpc_encoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b188ec6c736d203d1fdf439a1767e4f6)                     */
+/* BINDTOOL_HEADER_FILE_HASH(c606875453a6fdcf6972de6c2bd5463b)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,12 @@ void bind_ldpc_encoder_aff3ct(py::module& m)
         std::shared_ptr<ldpc_encoder_aff3ct>>(m, "ldpc_encoder_aff3ct", D(ldpc_encoder_aff3ct))
 
         .def_static("make", &ldpc_encoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K") = 0,
+           py::arg("N") = 0,
+           py::arg("enc_type") = ::gr::fec_dev::LDPC::_encoder_t::LDPC,
+           py::arg("enc_gen_matrix_path") = "",
+           py::arg("enc_gen_matrix_method") = ::gr::fec_dev::LDPC::_enc_gen_matrix_method_t::IDENTITY,
+           py::arg("enc_gen_matrix_save_path") = "",
            D(ldpc_encoder_aff3ct,make)
         )
 

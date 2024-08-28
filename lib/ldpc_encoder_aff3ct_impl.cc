@@ -11,11 +11,22 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr ldpc_encoder_aff3ct::make(int K)
+fec::generic_encoder::sptr ldpc_encoder_aff3ct::make(int K,
+                           int N,
+                           LDPC::encoder_t enc_type,
+                           std::string enc_gen_matrix_path,
+                           LDPC::enc_gen_matrix_method_t enc_gen_matrix_method,
+                           std::string enc_gen_matrix_save_path)
 {
-    return fec::generic_encoder::sptr(std::make_shared<ldpc_encoder_aff3ct_impl>(K));
+    return fec::generic_encoder::sptr(std::make_shared<ldpc_encoder_aff3ct_impl>(K, N, enc_type, 
+        enc_gen_matrix_path, enc_gen_matrix_method, enc_gen_matrix_save_path));
 }
-    ldpc_encoder_aff3ct_impl::ldpc_encoder_aff3ct_impl(int K)
+    ldpc_encoder_aff3ct_impl::ldpc_encoder_aff3ct_impl(int K,
+                           int N,
+                           LDPC::encoder_t enc_type,
+                           std::string enc_gen_matrix_path,
+                           LDPC::enc_gen_matrix_method_t enc_gen_matrix_method,
+                           std::string enc_gen_matrix_save_path)
         : generic_encoder("ldpc_encoder_aff3ct"),
         d_K(K)
     {

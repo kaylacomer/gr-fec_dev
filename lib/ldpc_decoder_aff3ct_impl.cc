@@ -11,11 +11,39 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr ldpc_decoder_aff3ct::make(int K)
+fec::generic_decoder::sptr ldpc_decoder_aff3ct::make(int K,
+                           int N,
+                           std::string dec_h_parity_matrix_path,
+                           LDPC::decoder_t dec_type,
+                           LDPC::dec_impl_t dec_impl,
+                           SIMD::simd_strat_t simd_impl,
+                           LDPC::dec_H_reorder_t dec_h_reorder,
+                           LDPC::dec_min_AMS_t dec_min_AMS,
+                           float dec_norm_NMS,
+                           float dec_offset_OMS,
+                           float dec_mwbf_factor,
+                           int dec_synd_depth,
+                           std::vector<float> ppbf_prob,
+                           bool dec_no_synd)
 {
-    return fec::generic_decoder::sptr(std::make_shared<ldpc_decoder_aff3ct_impl>(K));
+    return fec::generic_decoder::sptr(std::make_shared<ldpc_decoder_aff3ct_impl>(K, N, dec_h_parity_matrix_path,
+        dec_type, dec_impl, simd_impl, dec_h_reorder, dec_min_AMS, dec_norm_NMS, dec_offset_OMS,
+        dec_mwbf_factor, dec_synd_depth, ppbf_prob, dec_no_synd));
 }
-    ldpc_decoder_aff3ct_impl::ldpc_decoder_aff3ct_impl(int K)
+    ldpc_decoder_aff3ct_impl::ldpc_decoder_aff3ct_impl(int K,
+                           int N,
+                           std::string dec_h_parity_matrix_path,
+                           LDPC::decoder_t dec_type,
+                           LDPC::dec_impl_t dec_impl,
+                           SIMD::simd_strat_t simd_impl,
+                           LDPC::dec_H_reorder_t dec_h_reorder,
+                           LDPC::dec_min_AMS_t dec_min_AMS,
+                           float dec_norm_NMS,
+                           float dec_offset_OMS,
+                           float dec_mwbf_factor,
+                           int dec_synd_depth,
+                           std::vector<float> ppbf_prob,
+                           bool dec_no_synd)
         : generic_decoder("ldpc_decoder_aff3ct"),
         d_K(K)
     {

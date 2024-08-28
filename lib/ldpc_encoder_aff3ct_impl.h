@@ -27,7 +27,13 @@ private:
   //std::unique_ptr<aff3ct::module::Encoder_RA<B_8>> d_encoder;
 
 public:
-  ldpc_encoder_aff3ct_impl(int K);
+  ldpc_encoder_aff3ct_impl(int K = 0,
+                           int N = 0,
+                           LDPC::encoder_t enc_type = LDPC::LDPC,
+                           std::string enc_gen_matrix_path="",
+                           LDPC::enc_gen_matrix_method_t enc_gen_matrix_method = LDPC::IDENTITY,
+                           std::string enc_gen_matrix_save_path=""
+                           );
   ~ldpc_encoder_aff3ct_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

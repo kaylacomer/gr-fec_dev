@@ -26,8 +26,10 @@ install(FILES api.h
     rep_decoder.h
     tpc_encoder_aff3ct.h
     tpc_decoder_aff3ct.h
+    polar_common_aff3ct.h
     polar_decoder_aff3ct.h
     polar_encoder_aff3ct.h
+    ldpc_common_aff3ct.h
     ldpc_encoder_aff3ct.h
     ldpc_decoder_aff3ct.h
     rsc_decoder.h

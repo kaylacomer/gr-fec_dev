@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ldpc_decoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(58b547163af95b1bc52e3f5a264572b2)                     */
+/* BINDTOOL_HEADER_FILE_HASH(a7fcdd5d03398ae0a744f7dc938df747)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,20 @@ void bind_ldpc_decoder_aff3ct(py::module& m)
         std::shared_ptr<ldpc_decoder_aff3ct>>(m, "ldpc_decoder_aff3ct", D(ldpc_decoder_aff3ct))
 
         .def_static("make", &ldpc_decoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K") = 0,
+           py::arg("N") = 0,
+           py::arg("dec_h_parity_matrix_path") = "",
+           py::arg("dec_type") = ::gr::fec_dev::LDPC::_decoder_t::BIT_FLIPPING,
+           py::arg("dec_impl") = ::gr::fec_dev::LDPC::_dec_impl_t::STD,
+           py::arg("simd_impl") = ::gr::fec_dev::SIMD::_simd_strat_t::SEQ,
+           py::arg("dec_h_reorder") = ::gr::fec_dev::LDPC::_dec_H_reorder_t::NONE,
+           py::arg("dec_min_AMS") = ::gr::fec_dev::LDPC::_dec_min_AMS_t::MINL,
+           py::arg("dec_norm_NMS") = 1.0,
+           py::arg("dec_offset_OMS") = 1.0,
+           py::arg("dec_mwbf_factor") = 0.0,
+           py::arg("dec_synd_depth") = 1,
+           py::arg("ppbf_prob") = std::vector<float>{},
+           py::arg("dec_no_synd") = false,
            D(ldpc_decoder_aff3ct,make)
         )
 
