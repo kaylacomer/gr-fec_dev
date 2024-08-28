@@ -46,7 +46,16 @@ private:
   std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
 
 public:
-  polar_decoder_aff3ct_impl(int K);
+  polar_decoder_aff3ct_impl(int K,
+                            int N,
+                            Polar::frozen_bit_gen_t frozen_bit_gen = Polar::GA_ARIKAN,
+                            Polar::noise_t noise_type = Polar::Sigma,
+                            Polar::decoder_t decoder_type = Polar::SC,
+                            Decoder::decoder_impl_t dec_impl = Decoder::NAIVE,
+                            uint8_t quant_fixed_point_pos = 2,
+                            uint8_t quant_saturation_pos = 6,
+                            Quantizer::quantizer_impl_t quant_impl=Quantizer::STD
+                            );
   ~polar_decoder_aff3ct_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

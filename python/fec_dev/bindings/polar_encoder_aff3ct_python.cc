@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(polar_encoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(571703c72ceeb85dc87a994d75e44a8c)                     */
+/* BINDTOOL_HEADER_FILE_HASH(288e01231848307480c7125ecfd79460)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,10 @@ void bind_polar_encoder_aff3ct(py::module& m)
         std::shared_ptr<polar_encoder_aff3ct>>(m, "polar_encoder_aff3ct", D(polar_encoder_aff3ct))
 
         .def_static("make", &polar_encoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K"),
+           py::arg("N"),
+           py::arg("frozen_bit_gen") = ::gr::fec_dev::Polar::_frozen_bit_gen_t::GA_ARIKAN,
+           py::arg("noise_type") = ::gr::fec_dev::Polar::_noise_t::Sigma,
            D(polar_encoder_aff3ct,make)
         )
 

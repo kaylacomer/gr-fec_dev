@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(polar_decoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(dfc6b754038f92767449c7892d916b9b)                     */
+/* BINDTOOL_HEADER_FILE_HASH(27ba177e3fc55b7767c7f5eb89058420)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -36,7 +36,15 @@ void bind_polar_decoder_aff3ct(py::module& m)
         std::shared_ptr<polar_decoder_aff3ct>>(m, "polar_decoder_aff3ct", D(polar_decoder_aff3ct))
 
         .def_static("make", &polar_decoder_aff3ct::make,
-           py::arg("frame_size"),
+           py::arg("K"),
+           py::arg("N"),
+           py::arg("frozen_bit_gen") = ::gr::fec_dev::Polar::_frozen_bit_gen_t::GA_ARIKAN,
+           py::arg("noise_type") = ::gr::fec_dev::Polar::_noise_t::Sigma,
+           py::arg("decoder_type") = ::gr::fec_dev::Polar::_decoder_t::SC,
+           py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::NAIVE,
+           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_saturation_pos") = 6,
+           py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
            D(polar_decoder_aff3ct,make)
         )
 

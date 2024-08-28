@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(aff3ct_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(69a29dfb351d3211318ca561d7dc7b15)                     */
+/* BINDTOOL_HEADER_FILE_HASH(98079db001aed0dbb734965fdc019316)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -52,6 +52,7 @@ void bind_aff3ct_decoder(py::module& m)
         .value("FAST", ::gr::fec_dev::Decoder::_decoder_impl_t::FAST)           // 1
         .value("GENIUS", ::gr::fec_dev::Decoder::_decoder_impl_t::GENIUS)       // 2
         .value("VERY_FAST", ::gr::fec_dev::Decoder::_decoder_impl_t::VERY_FAST) // 3
+        .value("NAIVE", ::gr::fec_dev::Decoder::_decoder_impl_t::NAIVE)         // 4
         .export_values();
 
     py::implicitly_convertible<int, ::gr::fec_dev::Decoder::_decoder_impl_t>();

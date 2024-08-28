@@ -40,6 +40,7 @@ list(APPEND fec_dev_python_files
     rep_decoder_python.cc
     tpc_encoder_aff3ct_python.cc
     tpc_decoder_aff3ct_python.cc
+    polar_common_aff3ct_python.cc
     polar_decoder_aff3ct_python.cc
     polar_encoder_aff3ct_python.cc
     ldpc_encoder_aff3ct_python.cc

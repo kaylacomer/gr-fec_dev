@@ -24,7 +24,8 @@ typedef enum _decoder_impl_t {
     STD = 0,
     FAST,
     GENIUS,
-    VERY_FAST
+    VERY_FAST,
+    NAIVE
 } decoder_impl_t;
 }
 

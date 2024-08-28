@@ -11,11 +11,17 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_encoder::sptr polar_encoder_aff3ct::make(int K)
-{
-    return fec::generic_encoder::sptr(std::make_shared<polar_encoder_aff3ct_impl>(K));
+fec::generic_encoder::sptr polar_encoder_aff3ct::make(int K,
+                                                      int N,
+                                                      Polar::frozen_bit_gen_t frozen_bit_gen,
+                                                      Polar::noise_t noise_type)
+                        {
+    return fec::generic_encoder::sptr(std::make_shared<polar_encoder_aff3ct_impl>(K, N, frozen_bit_gen, noise_type));
 }
-    polar_encoder_aff3ct_impl::polar_encoder_aff3ct_impl(int K)
+    polar_encoder_aff3ct_impl::polar_encoder_aff3ct_impl(int K,
+                                                      int N,
+                                                      Polar::frozen_bit_gen_t frozen_bit_gen,
+                                                      Polar::noise_t noise_type)
         : generic_encoder("polar_encoder_aff3ct"),
         d_K(K),
         d_N(256)

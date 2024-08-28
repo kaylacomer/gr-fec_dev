@@ -36,6 +36,7 @@ namespace py = pybind11;
     void bind_rep_decoder(py::module& m);
     void bind_tpc_encoder_aff3ct(py::module& m);
     void bind_tpc_decoder_aff3ct(py::module& m);
+    void bind_polar_common_aff3ct(py::module& m);
     void bind_polar_decoder_aff3ct(py::module& m);
     void bind_polar_encoder_aff3ct(py::module& m);
     void bind_ldpc_encoder_aff3ct(py::module& m);
@@ -86,6 +87,7 @@ PYBIND11_MODULE(fec_dev_python, m)
     bind_rep_decoder(m);
     bind_tpc_encoder_aff3ct(m);
     bind_tpc_decoder_aff3ct(m);
+    bind_polar_common_aff3ct(m);
     bind_polar_decoder_aff3ct(m);
     bind_polar_encoder_aff3ct(m);
     bind_ldpc_encoder_aff3ct(m);

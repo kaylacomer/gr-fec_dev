@@ -36,7 +36,10 @@ private:
   std::unique_ptr<aff3ct::tools::Frozenbits_generator> d_frozen_bitgen;
 
 public:
-  polar_encoder_aff3ct_impl(int K);
+  polar_encoder_aff3ct_impl(int K,
+                            int N,
+                            Polar::frozen_bit_gen_t frozen_bit_gen = Polar::GA_ARIKAN,
+                            Polar::noise_t noise_type = Polar::Sigma);
   ~polar_encoder_aff3ct_impl() override;
 
   bool set_frame_size(unsigned int frame_size) override;

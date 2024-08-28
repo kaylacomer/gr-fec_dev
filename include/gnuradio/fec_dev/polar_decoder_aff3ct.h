@@ -11,6 +11,9 @@
 #include <gnuradio/fec_dev/api.h>
 #include <gnuradio/fec/generic_decoder.h>
 
+#include <gnuradio/fec_dev/aff3ct_decoder.h>
+#include <gnuradio/fec_dev/polar_common_aff3ct.h>
+
 namespace gr {
 namespace fec_dev {
 
@@ -29,7 +32,15 @@ public:
     *
     * \param frame_size Number of bits per frame
     */
-    static generic_decoder::sptr make(int frame_size);
+    static generic_decoder::sptr make(int K,
+                            int N,
+                            Polar::frozen_bit_gen_t frozen_bit_gen = Polar::GA_ARIKAN,
+                            Polar::noise_t noise_type = Polar::Sigma,
+                            Polar::decoder_t decoder_type = Polar::SC,
+                            Decoder::decoder_impl_t dec_impl = Decoder::NAIVE,
+                            uint8_t quant_fixed_point_pos = 2,
+                            uint8_t quant_saturation_pos = 6,
+                            Quantizer::quantizer_impl_t quant_impl=Quantizer::STD);
 
     /*!
     * Sets the uncoded frame size to \p frame_size

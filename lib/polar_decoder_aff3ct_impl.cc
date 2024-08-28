@@ -12,11 +12,28 @@
 namespace gr {
 namespace fec_dev {
 
-fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K)
+fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K,
+                                                      int N,
+                                                      Polar::frozen_bit_gen_t frozen_bit_gen,
+                                                      Polar::noise_t noise_type,
+                                                      Polar::decoder_t decoder_type,
+                                                      Decoder::decoder_impl_t dec_impl,
+                                                      uint8_t quant_fixed_point_pos,
+                                                      uint8_t quant_saturation_pos,
+                                                      Quantizer::quantizer_impl_t quant_impl)
 {
-    return fec::generic_decoder::sptr(std::make_shared<polar_decoder_aff3ct_impl>(K));
+    return fec::generic_decoder::sptr(std::make_shared<polar_decoder_aff3ct_impl>(K, N, frozen_bit_gen, 
+            noise_type, decoder_type, dec_impl, quant_fixed_point_pos, quant_saturation_pos, quant_impl));
 }
-    polar_decoder_aff3ct_impl::polar_decoder_aff3ct_impl(int K)
+    polar_decoder_aff3ct_impl::polar_decoder_aff3ct_impl(int K,
+                                                         int N,
+                                                         Polar::frozen_bit_gen_t frozen_bit_gen,
+                                                         Polar::noise_t noise_type,
+                                                         Polar::decoder_t decoder_type,
+                                                         Decoder::decoder_impl_t dec_impl,
+                                                         uint8_t quant_fixed_point_pos,
+                                                         uint8_t quant_saturation_pos,
+                                                         Quantizer::quantizer_impl_t quant_impl)
         : generic_decoder("polar_decoder_aff3ct"),
         d_K(K),
         d_N(256)
