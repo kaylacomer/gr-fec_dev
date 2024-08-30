@@ -43,11 +43,12 @@ private:
   std::unique_ptr<aff3ct::module::Decoder_SIHO<B_8, Q_8>> d_decoder;
   std::vector<float> d_tmp_input;
   std::vector<Q_8> d_quant_input;
-  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
   polar_decoder_aff3ct_impl(int K,
                             int N,
+                            float sigma,
                             Polar::frozen_bit_gen_t frozen_bit_gen = Polar::GA_ARIKAN,
                             Polar::noise_t noise_type = Polar::Sigma,
                             Polar::decoder_t decoder_type = Polar::SC,
