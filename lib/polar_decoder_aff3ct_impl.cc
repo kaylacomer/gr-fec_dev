@@ -38,10 +38,11 @@ fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K,
                                                          Quantizer::quantizer_impl_t quant_impl)
         : generic_decoder("polar_decoder_aff3ct"),
         d_K(K),
-        d_N(256)
+        d_N(N)
     {
         set_frame_size(K);
 
+        std::vector<bool> frozen_bits(d_N);
         if (frozen_bit_gen == Polar::GA_ARIKAN) {
             d_frozen_bitgen = std::make_unique<aff3ct::tools::Frozenbits_generator_GA_Arikan>(d_K, d_N);
         }
@@ -52,17 +53,14 @@ fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K,
         if (noise_type == Polar::Sigma) {
             auto noise = std::make_unique<aff3ct::tools::Sigma<>>(sigma);
             d_frozen_bitgen->set_noise(*noise);
+            d_frozen_bitgen->generate(frozen_bits);
         }
         else {
             throw std::runtime_error("Only Sigma noise supported at this time");
         }
 
-        std::vector<bool> frozen_bits(d_N);
-        d_frozen_bitgen->generate(frozen_bits);
-
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
-        d_quant_input = std::vector<Q_8>(d_N);
-        d_tmp_input = std::vector<float>(d_N);
+        // d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
+        
 
         if (quant_impl == Quantizer::STD) {
             d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
@@ -73,6 +71,8 @@ fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K,
         else {
             d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(d_N);
         }
+        d_quant_input = std::vector<Q_8>(d_N);
+        d_tmp_input = std::vector<float>(d_N);
         
         // using API_polar = aff3ct::tools::API_polar_static_intra_8bit<B_8, Q_8>;
         // d_decoder = std::make_unique<aff3ct::module::Decoder_polar_SC_fast_sys<B_8, Q_8, API_polar>>(d_K, d_N, frozen_bits);

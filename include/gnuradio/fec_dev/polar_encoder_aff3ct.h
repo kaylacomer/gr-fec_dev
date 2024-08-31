@@ -33,6 +33,7 @@ public:
     */
     static generic_encoder::sptr make(int K,
                             int N,
+                            float sigma,
                             Polar::frozen_bit_gen_t frozen_bit_gen = Polar::GA_ARIKAN,
                             Polar::noise_t noise_type = Polar::Sigma);
 
