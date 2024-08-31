@@ -61,22 +61,24 @@ class test_turbo(gr_unittest.TestCase):
 
         self.assertEqual(data_in, data_out)
     
-    # def test_CUSTOM(self):
-    #     data_size = 1784
-    #     frame_bits = data_size*8
+    def test_CUSTOM(self):
+        data_size = 184
+        frame_bits = data_size*8
 
-    #     enc = fec_dev.turbo_encoder.make(frame_bits, fec_dev.CUSTOM)
-    #     dec = fec_dev.turbo_decoder.make(frame_bits, fec_dev.CUSTOM)
+        enc = fec_dev.turbo_encoder.make(frame_bits, standard=fec_dev.Turbo.CUSTOM, interleaver=fec_dev.Interleaver.ROW_COL, read_order=fec_dev.Interleaver.TOP_LEFT, itl_n_cols=frame_bits)
+        dec = fec_dev.turbo_decoder.make(frame_bits, standard=fec_dev.Turbo.CUSTOM, interleaver=fec_dev.Interleaver.ROW_COL, read_order=fec_dev.Interleaver.TOP_LEFT, itl_n_cols=frame_bits)
 
-    #     threading = None
-    #     self.test = _qa_helper(data_size, enc, dec, threading)
-    #     self.tb.connect(self.test)
-    #     self.tb.run()
+        threading = None
+        self.test = _qa_helper(data_size, enc, dec, threading)
+        self.tb.connect(self.test)
+        self.tb.run()
 
-    #     data_out = self.test.snk_output.data()
-    #     data_in = self.test.snk_input.data()[0:len(data_out)]
+        data_out = self.test.snk_output.data()
+        data_in = self.test.snk_input.data()[0:len(data_out)]
+        print(data_out)
+        print(data_in)
 
-    #     self.assertEqual(data_in, data_out)
+        self.assertEqual(data_in, data_out)
 
 if __name__ == '__main__':
     gr_unittest.run(test_turbo)

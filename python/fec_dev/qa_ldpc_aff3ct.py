@@ -3,7 +3,7 @@ from gnuradio import fec
 from gnuradio import fec_dev
 from _qa_helper import _qa_helper
 
-class test_polar(gr_unittest.TestCase):
+class test_ldpc(gr_unittest.TestCase):
     def setUp(self):
         self.tb = gr.top_block()
 
@@ -12,12 +12,11 @@ class test_polar(gr_unittest.TestCase):
 
     def test_basic001(self):
         frame_bits = 176
-        N = 256
-        sigma = 0.6692
+        N = 215
         data_size = frame_bits//8
 
-        enc = fec_dev.polar_encoder_aff3ct.make(frame_bits, N, sigma)
-        dec = fec_dev.polar_decoder_aff3ct.make(frame_bits, N, sigma)
+        enc = fec_dev.ldpc_encoder_aff3ct.make(frame_bits, N)
+        dec = fec_dev.ldpc_decoder_aff3ct.make(frame_bits, N)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)
@@ -33,13 +32,12 @@ class test_polar(gr_unittest.TestCase):
         self.assertEqual(data_in, data_out)
     
     def test_basic002(self):
-        frame_bits = 102
+        frame_bits = 180
         N = 256
-        sigma = 0.6692
         data_size = frame_bits//8
 
-        enc = fec_dev.polar_encoder_aff3ct.make(frame_bits, N, sigma)
-        dec = fec_dev.polar_decoder_aff3ct.make(frame_bits, N, sigma)
+        enc = fec_dev.ldpc_encoder_aff3ct.make(frame_bits, N)
+        dec = fec_dev.ldpc_decoder_aff3ct.make(frame_bits, N)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)
@@ -55,4 +53,4 @@ class test_polar(gr_unittest.TestCase):
         self.assertEqual(data_in, data_out)
     
 if __name__ == '__main__':
-    gr_unittest.run(test_polar)
+    gr_unittest.run(test_ldpc)
