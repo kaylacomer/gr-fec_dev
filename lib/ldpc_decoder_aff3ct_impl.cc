@@ -56,8 +56,8 @@ ldpc_decoder_aff3ct_impl::~ldpc_decoder_aff3ct_impl()
 {
 }
 
-int ldpc_decoder_aff3ct_impl::get_output_size() { return d_N; }
-int ldpc_decoder_aff3ct_impl::get_input_size() { return d_K; }
+int ldpc_decoder_aff3ct_impl::get_output_size() { return d_K; }
+int ldpc_decoder_aff3ct_impl::get_input_size() { return d_N; }
 
 bool ldpc_decoder_aff3ct_impl::set_frame_size(unsigned int K)
 {
@@ -68,10 +68,16 @@ double ldpc_decoder_aff3ct_impl::rate() { return static_cast<float>(d_K) / d_N; 
 
 void ldpc_decoder_aff3ct_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
-    const B_8* in = (const B_8*)inbuffer;
+    const float* in = (const float*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    //d_decoder->decode(in, out);
+    // volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_N);
+    // d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
+    
+    // int status = d_decoder->decode_siho(d_quant_input.data(), out, -1);
+    // if (status == 1) {
+    //     std::cout << "Decoding FAILURE" << std::endl;
+    // }
 }
 
 } /* namespace fec_dev */
