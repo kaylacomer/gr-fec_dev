@@ -51,7 +51,7 @@ bool rs_encoder_impl::set_frame_size(unsigned int frame_size)
     return true;
 }
 
-double rs_encoder_impl::rate() { return static_cast<float>(d_frame_size) / d_codeword_size; } // encoder rate
+double rs_encoder_impl::rate() { return static_cast<float>(d_codeword_size) / d_frame_size; } // block output:input rate, inverse of codec rate
 
 void rs_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

@@ -125,7 +125,7 @@ bool turbo_encoder_impl::set_frame_size(unsigned int frame_bits)
     return true;
 }
 
-double turbo_encoder_impl::rate() { return static_cast<float>(d_K) / d_N; }
+double turbo_encoder_impl::rate() { return static_cast<float>(d_N) / d_K; } // block output:input rate, inverse of codec rate
 
 void turbo_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

@@ -47,7 +47,7 @@ bool ldpc_encoder_aff3ct_impl::set_frame_size(unsigned int K)
     return true;
 }
 
-double ldpc_encoder_aff3ct_impl::rate() { return static_cast<float>(d_K) / d_N; } // encoder rate
+double ldpc_encoder_aff3ct_impl::rate() { return static_cast<float>(d_N) / d_K; } // block output:input rate, inverse of codec rate
 
 void ldpc_encoder_aff3ct_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

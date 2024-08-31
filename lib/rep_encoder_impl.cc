@@ -37,7 +37,7 @@ bool rep_encoder_impl::set_frame_size(unsigned int K)
     return true;
 }
 
-double rep_encoder_impl::rate() { return static_cast<float>(d_K) / d_N; } // encoder rate
+double rep_encoder_impl::rate() { return static_cast<float>(d_N) / d_K; } // block output:input rate, inverse of codec rate
 
 void rep_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

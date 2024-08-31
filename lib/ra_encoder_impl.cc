@@ -91,7 +91,7 @@ bool ra_encoder_impl::set_frame_size(unsigned int K)
     return true;
 }
 
-double ra_encoder_impl::rate() { return static_cast<float>(d_K) / d_N; } // encoder rate
+double ra_encoder_impl::rate() { return static_cast<float>(d_N) / d_K; } // block output:input rate, inverse of codec rate
 
 void ra_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

@@ -83,7 +83,7 @@ bool bch_encoder_impl::set_frame_size(unsigned int frame_bits)
     return ret;
 }
 
-double bch_encoder_impl::rate() { return static_cast<float>(d_codeword_size) / d_frame_bits; }
+double bch_encoder_impl::rate() { return static_cast<float>(d_codeword_size) / d_frame_bits; } // block output:input rate, inverse of codec rate
 
 void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
