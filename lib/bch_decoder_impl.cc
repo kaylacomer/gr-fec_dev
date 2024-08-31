@@ -119,6 +119,11 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     //     d_logger->info("Decoding failed");
     //     std::fill(out, out + d_frame_size, 0);
     // }
+    for (int i = 0; i < d_tmp_output.size(); i++) {
+        if ((d_tmp_output[i] != 0) && (d_tmp_output[i] != 1)) {
+            __builtin_trap();
+        }
+    }
     for (int i = 0; i < d_frame_size; i++) {
         out[i] = static_cast<B_8>(d_tmp_output[d_zeros + i]);
         if (static_cast<B_32>(out[i]) != d_tmp_output[d_zeros + i]) {
