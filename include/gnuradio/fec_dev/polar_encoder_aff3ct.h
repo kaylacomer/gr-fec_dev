@@ -21,15 +21,26 @@ namespace fec_dev {
 * \ingroup error_coding_blk
 *
 * \details
-* A polar encoder class
+* This class performs Polar
+* encoding using the AFF3CT library API. For more information about the encoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/polar/codec.html.
+* 
+* The polar encoding class is currently minimally functional and may not be configurable to
+* the user's needs. This class needs work
 */
 class FEC_API polar_encoder_aff3ct : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a polar encoding FEC API object.
+    * Build polar encoding FEC API object. Many parameters only have one option
+    * that has been implemented. If the user tries to use an option
+    * that is not configured, they will encounter a standard runtime error.
     *
-    * \param frame_size Number of bits per frame
+    * \param K Number of bits per frame output from encoder
+    * \param N Number of bits per frame input to the encoder
+    * \param sigma Standard deviation of noise
+    * \param frozen_bit_gen Only GA_ARIKAN implemented. Options: GA_ARIKAN, FIVE_G, BEC, GA, TV
+    * \param noise_type Only Sigma implemented. Options: Sigma, Received_optical_power, Event_probability
     */
     static generic_encoder::sptr make(int K,
                             int N,

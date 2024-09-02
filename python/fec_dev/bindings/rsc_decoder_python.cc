@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(rsc_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(7eb6b9c4f45393b0d56f423c565d193f)                     */
+/* BINDTOOL_HEADER_FILE_HASH(b8a74dd2b1943c99ce69173a24f9a999)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -42,7 +42,7 @@ void bind_rsc_decoder(py::module& m)
              py::arg("trellis_size") = 8,
              py::arg("buffered") = true,
              py::arg("dec_type") = ::gr::fec_dev::RSC::_rsc_decoder_impl_t::BCJR,
-             py::arg("quant_fixed_point_pos") = 2,
+             py::arg("quant_fixed_point_pos") = 1,
              py::arg("quant_saturation_pos") = 6,
              py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
              py::arg("bcjr_impl") = ::gr::fec_dev::BCJR::_bcjr_impl_t::GENERIC,

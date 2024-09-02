@@ -80,7 +80,7 @@ fec::generic_decoder::sptr polar_decoder_aff3ct::make(int K,
             d_decoder = std::make_unique<aff3ct::module::Decoder_polar_SC_naive_sys<B_8, Q_8>>(d_K, d_N, frozen_bits);
         }
         else {
-            throw std::runtime_error("Only NAIVE noise supported at this time");
+            throw std::runtime_error("Only NAIVE decoder supported at this time");
         }
 }
 

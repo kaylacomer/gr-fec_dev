@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(polar_decoder_aff3ct.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(a0a6c64e55d2682371a8d0342c1506ba)                     */
+/* BINDTOOL_HEADER_FILE_HASH(7812eb1a21ce78ec1a90a2790cb2370c)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -43,7 +43,7 @@ void bind_polar_decoder_aff3ct(py::module& m)
            py::arg("noise_type") = ::gr::fec_dev::Polar::_noise_t::Sigma,
            py::arg("decoder_type") = ::gr::fec_dev::Polar::_decoder_t::SC,
            py::arg("dec_impl") = ::gr::fec_dev::Decoder::_decoder_impl_t::NAIVE,
-           py::arg("quant_fixed_point_pos") = 2,
+           py::arg("quant_fixed_point_pos") = 1,
            py::arg("quant_saturation_pos") = 6,
            py::arg("quant_impl") = ::gr::fec_dev::Quantizer::_quantizer_impl_t::STD,
            D(polar_decoder_aff3ct,make)

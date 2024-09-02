@@ -32,6 +32,7 @@ fec::generic_encoder::sptr ldpc_encoder_aff3ct::make(int K,
     {
         set_frame_size(K);
 
+        throw std::runtime_error("AFF3CT-based LDPC encoder has not been implemented");
         //d_encoder = std::make_unique<aff3ct::module::Encoder_RA<B_8>>(d_K, d_N, *d_interleaver);
 }
 

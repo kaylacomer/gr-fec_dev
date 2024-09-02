@@ -16,19 +16,29 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief ldpc Encoding class.
+* \brief LDPC Encoding class (via AFF3CT library). NOT IMPLEMENTED
 * \ingroup error_coding_blk
 *
 * \details
-* A ldpc encoder class
+* This class performs Low-Density Parity-Check (LDPC)
+* encoding using the AFF3CT library API. For more information about the encoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/ldpc/codec.html.
+*
+* Note: This class is NOT currently functional and needs work
 */
 class FEC_API ldpc_encoder_aff3ct : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a ldpc encoding FEC API object.
+    * Build LDPC encoding FEC API object. Most parameter descriptions are copied from the AFF3CT
+    * User Manual directly and currently have no meaning. Class is non-functional
     *
-    * \param frame_size Number of bits per frame
+    * \param K Number of bits per frame output from encoder
+    * \param N Number of bits per frame input to the encoder
+    * \param enc_type Encoder type
+    * \param enc_gen_matrix_path Give the path to the G generator matrix in an AList or QC formated file.
+    * \param enc_gen_matrix_method Specify the method used to build the G generator matrix from the H parity matrix when using the LDPC_H encoder.
+    * \param enc_gen_matrix_save_path Set the file path where the G generator matrix will be saved (AList file format). To use with the LDPC_H encoder.
     */
     static generic_encoder::sptr make(int K = 0,
                            int N = 0,

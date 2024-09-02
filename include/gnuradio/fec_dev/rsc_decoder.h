@@ -36,7 +36,7 @@ public:
                   int trellis_size = 8,
                   bool buffered=true,
                   RSC::rsc_decoder_impl_t dec_type = RSC::BCJR,
-                  uint8_t quant_fixed_point_pos = 2,
+                  uint8_t quant_fixed_point_pos = 1,
                   uint8_t quant_saturation_pos = 6,
                   Quantizer::quantizer_impl_t quant_impl=Quantizer::STD,
                   BCJR::bcjr_impl_t bcjr_impl=BCJR::GENERIC,

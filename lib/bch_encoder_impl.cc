@@ -90,7 +90,12 @@ void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     const B_8* in = (const B_8*)inbuffer;
     B_8* out = (B_8*)outbuffer;
     
-    // std::memcpy(&d_tmp_input[d_zeros], in, d_frame_bits);
+    /*
+    * The AFF3CT library uses the input data type as part of the encoding process. When left as B_8 / int8_t, the encoder
+    * is highly prohibitive and has a maximum m of 8 -> maximum N = 2^8-1 = 255. For better compatibility with expected use,
+    * the input data are cast to B_32 / int32_t before encoding. The output data are cast to B_8 for the block's use.
+    * Since the input and output data are unpacked and consist only of 0s and 1s, the type cast works.
+    */
     for (int i = 0; i < d_frame_bits; ++i) {
         d_tmp_input[d_zeros + i] = static_cast<B_32>(in[i]);
         if (static_cast<B_32>(in[i]) != d_tmp_input[d_zeros + i]) {

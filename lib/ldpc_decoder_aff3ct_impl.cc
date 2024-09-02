@@ -49,6 +49,7 @@ fec::generic_decoder::sptr ldpc_decoder_aff3ct::make(int K,
     {
         set_frame_size(K);
 
+        throw std::runtime_error("AFF3CT-based LDPC decoder has not been implemented");
         //d_decoder = std::make_unique<aff3ct::module::decoder_RA<B_8>>(d_K, d_N, *d_interleaver);
 }
 

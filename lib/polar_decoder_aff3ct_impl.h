@@ -53,7 +53,7 @@ public:
                             Polar::noise_t noise_type = Polar::Sigma,
                             Polar::decoder_t decoder_type = Polar::SC,
                             Decoder::decoder_impl_t dec_impl = Decoder::NAIVE,
-                            uint8_t quant_fixed_point_pos = 2,
+                            uint8_t quant_fixed_point_pos = 1,
                             uint8_t quant_saturation_pos = 6,
                             Quantizer::quantizer_impl_t quant_impl=Quantizer::STD
                             );
