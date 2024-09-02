@@ -27,8 +27,8 @@ namespace fec_dev {
 class FEC_API tpc_encoder_aff3ct_impl : public tpc_encoder_aff3ct
 {
 private:
-  unsigned int d_K;
-  int d_N;
+  unsigned int d_K_sqrt;
+  int d_N_sqrt;
   std::unique_ptr<aff3ct::module::Encoder_turbo_product<B_8>> d_encoder;
   std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
   std::unique_ptr<aff3ct::module::Interleaver<B_8>> d_pi;

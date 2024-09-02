@@ -17,19 +17,36 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief rsc decoding class.
+* \brief RSC decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details
-* A rsc decoder class
+* This class performs Recursive Systematic Convolutional (RSC)
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/rsc/codec.html.
+* For more information about the quantization parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
 */
 class FEC_API rsc_decoder : virtual public fec::generic_decoder
 {
 public:
     /*!
-    * Build a rsc decoding FEC API object.
+    * Build an RSC decoding FEC API object.
     *
-    * \param frame_size Number of bits per frame
+    * \param K Number of bits per frame
+    * \param polys Polynomials that define the encoder. Specified in octal
+    * \param trellis_size Number of trellis stages
+    * \param buffered Whether to use buffered encoding. Impacts bit organization
+    * \param dec_type Only tested for BCJR. Needs work to use Viterbi
+    * \param quant_fixed_point_pos Position of decimal point in quantized representation
+    * \param quant_saturation_pos Quantizer's saturation position
+    * \param quant_impl Quantizer implementation: STD or FAST
+    * \param bcjr_impl Only tested with GENERIC. Needs work to use STD, FAST, or VERY_FAST
+    * \param simd_strat Only tested with SEQ. Needs work to use INTER, INTRA, or INTER_INTRA
+    * \param simd_interintra_impl For \p simd_strat INTER_INTRA, which has not been implemented
+    * \param viterbi_list_poly_key Polynomial string key (ex. "32-GZIP") matching list in bcjr.h. Not implemented yet
+    * \param viterbi_siho_is_closed is_closed option in Viterbi constructors. Not implemented yet
+    * 
     */
     static generic_decoder::sptr make(int K, 
                   std::vector<int> polys={013,015}, 

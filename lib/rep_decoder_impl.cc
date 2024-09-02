@@ -23,6 +23,8 @@ fec::generic_decoder::sptr rep_decoder::make(int K, int rep, bool buffered, uint
         d_K(K),
         d_N(rep * K)
     {
+        throw std::runtime_error("AFF3CT-based repetition decoder is not currently functional");
+
         set_frame_size(K);
 
         if (quant_impl == Quantizer::STD) {

@@ -20,8 +20,15 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief Turbo Decoding class.
+* \brief Turbo decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
+*
+* \details
+* This class performs Turbo
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/turbo/codec.html.
+* For more information about the quantization parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
 */
 class FEC_API turbo_decoder : virtual public fec::generic_decoder
 {
@@ -39,10 +46,11 @@ public:
     * \param trellis_size Number of trellis stages. 8 for LTE, 16 for CCSDS
     * \param quant_fixed_point_pos Position of decimal point in quantized representation
     * \param quant_saturation_pos Quantizer's saturation position
+    * \param set_sat_pos Whether to call Quantizer constructor with \p quant_saturation_pos. Included in Turbo only to analyze whether parameter has an effect. Not intended to be permanent.
     * \param quant_impl Quantizer implementation - STD/FAST/NO
-    * \param dec_impl Decoder implementation: fast or standard
-    * \param bcjr_impl BCJR subdecoder implementation: STD, FAST, VERY_FAST, GENERIC
-    * \param simd_strat SIMD strategy. Normally SEQ -- sequential. Can be set to INTER, INTRA, or INTER_INTRA
+    * \param dec_impl Decoder implementation: FAST/STD
+    * \param bcjr_impl BCJR subdecoder implementation: STD, FAST, VERY_FAST, GENERIC. Only tested with GENERIC
+    * \param simd_strat SIMD strategy. Only tested with SEQ -- sequential. Can be set to INTER, INTRA, or INTER_INTRA
     * \param simd_interintra_impl If using INTER_INTRA SIMD strategy, choose implementation
     * * \param interleaver Type of interleaver. Only needs to be set if not using LTE or CCSDS standard
     * \param read_order Interleaver read order for COL_ROW, ROW_COL types

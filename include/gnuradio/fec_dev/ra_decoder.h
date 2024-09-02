@@ -17,11 +17,15 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief Repeat-Accumulate Decoding class.
+* \brief RA Decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details
-* Repeat-Accumulate decoder class
+* This class performs Repeat-Accumulate (RA) 
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/ra/codec.html.
+* For more information about the quantization parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
 */
 class FEC_API ra_decoder : virtual public fec::generic_decoder
 {

@@ -16,11 +16,17 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief Repetition decoding class.
+* \brief Repetition Decoding class (via AFF3CT library). NOT FUNCTIONAL
 * \ingroup error_coding_blk
 *
 * \details
-* A Repetition decoder class
+* This class performs Low-Density Parity-Check (LDPC)
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/rep/codec.html.
+* For more information about the quantization parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
+* 
+* Note: This class is NOT currently functional and needs work.
 */
 class FEC_API rep_decoder : virtual public fec::generic_decoder
 {

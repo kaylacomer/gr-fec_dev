@@ -27,12 +27,12 @@ namespace fec_dev {
 * https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
 * 
 * The AFF3CT BCH API requires codeword size N = 2^m - 1, where m is an integer from 3.
-* The constructor calculates the lowest possible m for the user-specified \p K and \p t. The
-* decoder pads the input with zeros if \p K is less than \p frame_bits, which is likely unless
+* The constructor calculates the lowest possible m for the user-specified \p frame_bits and \p t. The
+* decoder pads the input with zeros if \p frame_bits is less than \p K, which is likely unless
 * the user has chosen values to avoid zero-padding. Currently, zero-padding results in
 * last 7 bits of the output being zero instead of the correct, initial values. It is
-* recommended that the user choose \p K and \p t such that zero-padding is not required.
-* Appropriate values for \p K and \p t can be found in the file names of the AFF3CT reference
+* recommended that the user choose \p frame_bits and \p t such that zero-padding is not required.
+* Appropriate values for \p frame_bits and \p t can be found in the file names of the AFF3CT reference
 * simulation data: https://github.com/aff3ct/error_rate_references/tree/51dff02f0fac4840be7d41c1a01a56e206cb5f07/BCH/AWGN/BPSK/ALGEBRAIC.
 *
 * The BCH decoder implementation \p dec_impl can be 'STD', 'FAST', or 'GENIUS'. A user may

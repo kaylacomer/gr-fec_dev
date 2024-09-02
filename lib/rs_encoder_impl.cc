@@ -19,6 +19,8 @@ fec::generic_encoder::sptr rs_encoder::make(int frame_size, uint8_t t)
         : generic_encoder("rs_encoder"),
         d_frame_size(frame_size)
     {
+        throw std::runtime_error("AFF3CT-based RS encoder is not currently functional");
+
         set_frame_size(frame_size);
 
         uint8_t m = std::ceil(std::log2(frame_size+1));

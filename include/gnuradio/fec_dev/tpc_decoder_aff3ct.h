@@ -17,11 +17,18 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief tpc decoding class.
+* \brief TPC decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details
-* A tpc decoder class
+* This class performs Turbo Product Code (TPC)
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/turbo_prod/codec.html
+* For more information about the quantization parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/quantizer/quantizer.html.
+*
+* The TPC decoding class is currently minimally functional and may not be configurable to
+* the user's needs. This class needs work
 */
 class FEC_API tpc_decoder_aff3ct : virtual public fec::generic_decoder
 {
@@ -29,7 +36,25 @@ public:
     /*!
     * Build a tpc decoding FEC API object.
     *
-    * \param frame_size Number of bits per frame
+    * \param K_sqrt Number of bits per frame input to each BCH sub-encoder / output from each sub-decoder
+    * \param N_sqrt Number of bits per frame output from each BCH sub-encoder / input to each sub-decoder
+    * \param t Correction factor in each BCH sub-encoder
+    * \param bch_simd_strat SIMD strategy for BCH sub-encoders. Only works with SEQ currently.
+    * \param interleaver Type of interleaver
+    * \param read_order Interleaver read order for COL_ROW, ROW_COL types
+    * \param parity_extended Whether the sub-encoders have a parity bit
+    * \param quant_fixed_point_pos Position of decimal point in quantized representation
+    * \param quant_saturation_pos Quantizer's saturation position
+    * \param quant_impl Quantizer implementation: STD or FAST
+    * \param bch_dec_impl Sub-decoder implementation: STD/FAST/GENIUS. Only tested with STD
+    * \param chase_pyndiah_impl Chase-Pyndiah decoder implementation: STD/FAST. Only tested with STD
+    * \param n_iterations Number of iterations in decoding process
+    * \param alpha Weighting factor, twice the number of iterations
+    * \param beta Reliability factor. If not given, dynamically computed. NOT currently implemented
+    * \param chase_pyndiah_coef 5 CP constant coefficients, a, b, c, d, e
+    * \param n_least_reliable_pos Number of least reliable positions
+    * \param n_test_vectors Number of test vectors
+    * \param n_competitors Number of competitors. NOT currently implemented
     */
     static generic_decoder::sptr make(int K_sqrt,
                           int N_sqrt,

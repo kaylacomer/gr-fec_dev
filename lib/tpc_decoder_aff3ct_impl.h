@@ -32,9 +32,8 @@ namespace fec_dev {
 class FEC_API tpc_decoder_aff3ct_impl : public tpc_decoder_aff3ct
 {
 private:
-  int d_K;
-  int d_N;
-  int d_t;
+  int d_K_sqrt;
+  int d_N_sqrt;
   std::vector<float> d_tmp_input;
   std::vector<Q_8> d_quant_input;
 

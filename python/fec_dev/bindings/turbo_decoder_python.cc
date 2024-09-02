@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(turbo_decoder.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(71819e6ae1998d651e0dbb8de1c06727)                     */
+/* BINDTOOL_HEADER_FILE_HASH(b34b63f1161419112ca8a13238c58614)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>

@@ -17,7 +17,7 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief polar Encoding class.
+* \brief Polar encoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details

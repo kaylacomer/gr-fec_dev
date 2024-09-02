@@ -29,33 +29,74 @@ fec::generic_encoder::sptr tpc_encoder_aff3ct::make(int K_sqrt,
                                                     Interleaver::itl_read_order_t read_order,
                                                     bool parity_extended)
         : generic_encoder("tpc_encoder_aff3ct"),
-        d_K(45),
-        d_N(63*63)
+        d_K_sqrt(K_sqrt),
+        d_N_sqrt(N_sqrt)
     {
         set_frame_size(K_sqrt);
 
-        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(std::sqrt(d_N), t);
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(N_sqrt, t);
         int rdncy = d_poly_gen->get_n_rdncy();
-        d_K = std::sqrt(d_N) - rdncy;
-        // auto enc_r = std::make_unique<aff3ct::module::Encoder_BCH<B_8>>(d_K, d_N, *d_poly_gen);
-        // auto enc_c = enc_r;
+        d_K_sqrt = N_sqrt - rdncy;
 
-        auto enc_r = aff3ct::module::Encoder_BCH<B_8>(d_K, std::sqrt(d_N), *d_poly_gen);
-        enc_r.set_n_frames(std::sqrt(d_N));
+        auto enc_r = aff3ct::module::Encoder_BCH<B_8>(K_sqrt, N_sqrt, *d_poly_gen);
+        enc_r.set_n_frames(N_sqrt);
         auto enc_c = enc_r;
 
-        // const aff3ct::tools::Interleaver_core_row_column<T>::READ_ORDER read_order
-        // const std::string& read_order
-        // "TOP_LEFT"
-    //     Interleaver_core_row_column(const int size, const int n_cols, const std::string& read_order);
-    // Interleaver_core_row_column(const int size,
-    //                             const int n_cols,
-    //                             const aff3ct::tools::Interleaver_core_row_column<T>::READ_ORDER read_order);
-        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_N, std::sqrt(d_N), "TOP_LEFT");
-        // d_interleaver_core->set_n_frames(d_K);
-        d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
+        int N = N_sqrt * N_sqrt;
+        int itl_n_cols = N_sqrt;
 
-        //  Encoder_turbo_product(const Encoder<B>& enc_r, const Encoder<B>& enc_c, const Interleaver<B>& pi);
+        if (interleaver == Interleaver::COL_ROW || interleaver == Interleaver::ROW_COL) {
+            std::string order;
+            switch (read_order) {
+                case Interleaver::TOP_LEFT:
+                    order = "TOP_LEFT";
+                    break;
+                case Interleaver::TOP_RIGHT:
+                    order = "TOP_RIGHT";
+                    break;
+                case Interleaver::BOTTOM_LEFT:
+                    order = "BOTTOM_LEFT";
+                    break;
+                case Interleaver::BOTTOM_RIGHT:
+                    order = "BOTTOM_RIGHT";
+                    break;
+                default:
+                    throw std::runtime_error("Need to specify interleaver read order");
+            }
+            if (interleaver == Interleaver::COL_ROW) d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(N, itl_n_cols, order);
+            else d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(N, itl_n_cols, order);
+        }
+        else {
+            switch(interleaver) {
+                case Interleaver::NO:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(N);
+                    break;
+                case Interleaver::RAND_COL:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(N, itl_n_cols);
+                    break;
+                case Interleaver::GOLDEN:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(N);
+                    break;
+                case Interleaver::DVB_RCS1:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(N);
+                    break;
+                case Interleaver::DVB_RCS2:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(N);
+                    break;
+                case Interleaver::LTE:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(N);
+                    break;
+                case Interleaver::CCSDS:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(N);
+                    break;
+                case Interleaver::RANDOM:
+                default:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(N);
+                    break;
+            }
+        }
+
+        d_pi = std::make_unique<aff3ct::module::Interleaver<B_8>>(*d_interleaver_core);
 
         d_encoder = std::make_unique<aff3ct::module::Encoder_turbo_product<B_8>>(enc_r, enc_c, *d_pi);
 }
@@ -64,15 +105,15 @@ tpc_encoder_aff3ct_impl::~tpc_encoder_aff3ct_impl()
 {
 }
 
-int tpc_encoder_aff3ct_impl::get_output_size() { return d_N; }
-int tpc_encoder_aff3ct_impl::get_input_size() { return d_K; }
+int tpc_encoder_aff3ct_impl::get_output_size() { return d_N_sqrt * d_N_sqrt; }
+int tpc_encoder_aff3ct_impl::get_input_size() { return d_K_sqrt * d_K_sqrt; }
 
 bool tpc_encoder_aff3ct_impl::set_frame_size(unsigned int K)
 {
     return true;
 }
 
-double tpc_encoder_aff3ct_impl::rate() { return static_cast<float>(d_N) / d_K; } // block output:input rate, inverse of codec rate
+double tpc_encoder_aff3ct_impl::rate() { return static_cast<float>(d_N_sqrt * d_N_sqrt) / d_K_sqrt * d_K_sqrt; } // block output:input rate, inverse of codec rate
 
 void tpc_encoder_aff3ct_impl::generic_work(const void* inbuffer, void* outbuffer)
 {

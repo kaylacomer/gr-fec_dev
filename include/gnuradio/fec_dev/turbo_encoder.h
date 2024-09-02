@@ -18,8 +18,13 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief Turbo Encoding class.
+* \brief Turbo decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
+*
+* \details
+* This class performs Turbo
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/turbo/codec.html.
 */
 class FEC_API turbo_encoder : virtual public fec::generic_encoder
 {

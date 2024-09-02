@@ -15,11 +15,15 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief Repetition Encoding class.
+* \brief Repetition encoding class (via AFF3CT library). NOT FUNCTIONAL
 * \ingroup error_coding_blk
 *
 * \details
-* A Repetition encoder class
+* This class performs repetition
+* encoding using the AFF3CT library API. For more information about the encoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/rep/codec.html.
+* 
+* Note: This class is NOT currently functional and needs work.
 */
 class FEC_API rep_encoder : virtual public fec::generic_encoder
 {

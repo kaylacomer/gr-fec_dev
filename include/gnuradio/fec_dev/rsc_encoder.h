@@ -15,19 +15,24 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief rsc Encoding class.
+* \brief RSC decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details
-* A rsc encoder class
+* This class performs Recursive Systematic Convolutional (RSC)
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/rsc/codec.html.
 */
 class FEC_API rsc_encoder : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a rsc encoding FEC API object.
+    * Build an RSC encoding FEC API object.
     *
-    * \param frame_size Number of bits per frame
+    * \param K Number of bits per frame
+    * \param polys Polynomials that define the encoder. Specified in octal
+    * \param trellis_size Number of trellis stages
+    * \param buffered Whether to use buffered encoding. Impacts bit organization
     */
     static generic_encoder::sptr make(int frame_size, std::vector<int> polys={013,015}, int trellis_size = 8, bool buffered=true);
 

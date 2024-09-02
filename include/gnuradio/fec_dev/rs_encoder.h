@@ -15,21 +15,30 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief rs Encoding class.
+* \brief RS Encoding class (via AFF3CT library). NOT FUNCTIONAL
 * \ingroup error_coding_blk
 *
 * \details
-* A rs encoder class
+* This class performs Reed-Solomon (RS)
+* encoding using the AFF3CT library API. For more information about the encoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/rs/codec.html.
+*
+* The AFF3CT RS API requires codeword size N = 2^m - 1, where m is an integer from 3 that also
+* represents the number of bits per symbol. Thus, the binary codeword size is N x m.
+* The constructor calculates the lowest possible m for the user-specified \p frame_size and \p t. The
+* decoder pads the input with zeros if \p frame_size is less than \p K, which is likely unless
+* the user has chosen values to avoid zero-padding.
+* 
+* Note: This class is NOT currently functional and needs work.
 */
 class FEC_API rs_encoder : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a rs encoding FEC API object.
+    * Build an RS encoding FEC API object.
     *
-    * \param frame_size Number of bits per frame. If using in the
-    *        tagged stream style, this is the maximum allowable
-    *        number of bits per frame.
+    * \param frame_size Number of bits per frame
+    * \param t Number of correctable errors / correction power of the decoder
     */
     static generic_encoder::sptr make(int frame_size, uint8_t t=5);
 

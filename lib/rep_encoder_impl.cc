@@ -20,6 +20,8 @@ fec::generic_encoder::sptr rep_encoder::make(int K, int rep, bool buffered)
         d_K(K),
         d_N(rep * K)
     {
+        throw std::runtime_error("AFF3CT-based repetition encoder is not currently functional");
+
         set_frame_size(K);
 
         d_encoder = std::make_unique<aff3ct::module::Encoder_repetition_sys<B_8>>(d_K, d_N);

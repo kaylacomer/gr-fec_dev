@@ -57,31 +57,83 @@ fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K_sqrt,
                                                     int n_test_vectors,
                                                     int n_competitors)
         : generic_decoder("tpc_decoder_aff3ct"),
-        d_K(45),
-        d_N(63*63)
+        d_K_sqrt(K_sqrt),
+        d_N_sqrt(N_sqrt)
     {
         set_frame_size(K_sqrt);
+        int N = N_sqrt*N_sqrt;
+        int itl_n_cols = N_sqrt;
 
-        d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(d_N, std::sqrt(d_N), "TOP_LEFT");
+        if (interleaver == Interleaver::COL_ROW || interleaver == Interleaver::ROW_COL) {
+            std::string order;
+            switch (read_order) {
+                case Interleaver::TOP_LEFT:
+                    order = "TOP_LEFT";
+                    break;
+                case Interleaver::TOP_RIGHT:
+                    order = "TOP_RIGHT";
+                    break;
+                case Interleaver::BOTTOM_LEFT:
+                    order = "BOTTOM_LEFT";
+                    break;
+                case Interleaver::BOTTOM_RIGHT:
+                    order = "BOTTOM_RIGHT";
+                    break;
+                default:
+                    throw std::runtime_error("Need to specify interleaver read order");
+            }
+            if (interleaver == Interleaver::COL_ROW) d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_column_row<>>(N, itl_n_cols, order);
+            else d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_row_column<>>(N, itl_n_cols, order);
+        }
+        else {
+            switch(interleaver) {
+                case Interleaver::NO:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_NO<>>(N);
+                    break;
+                case Interleaver::RAND_COL:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random_column<>>(N, itl_n_cols);
+                    break;
+                case Interleaver::GOLDEN:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_golden<>>(N);
+                    break;
+                case Interleaver::DVB_RCS1:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS1<>>(N);
+                    break;
+                case Interleaver::DVB_RCS2:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_ARP_DVB_RCS2<>>(N);
+                    break;
+                case Interleaver::LTE:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_LTE<>>(N);
+                    break;
+                case Interleaver::CCSDS:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_CCSDS<>>(N);
+                    break;
+                case Interleaver::RANDOM:
+                default:
+                    d_interleaver_core = std::make_unique<aff3ct::tools::Interleaver_core_random<>>(N);
+                    break;
+            }
+        }
+
         d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
 
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
-        d_quant_input = std::vector<Q_8>(d_N);
-        d_tmp_input = std::vector<float>(d_N);
+        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(N, 2);
+        d_quant_input = std::vector<Q_8>(N);
+        d_tmp_input = std::vector<float>(N);
 
-        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(std::sqrt(d_N), t);
+        d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(N_sqrt, t);
         int rdncy = d_poly_gen->get_n_rdncy();
-        d_K = std::sqrt(d_N) - rdncy;
-        auto dec_BCH = aff3ct::module::Decoder_BCH_std<B_8, Q_8>(d_K, std::sqrt(d_N), *d_poly_gen);
-        auto enc_BCH = aff3ct::module::Encoder_BCH<B_8>(d_K, std::sqrt(d_N), *d_poly_gen);
-        dec_BCH.set_n_frames(std::sqrt(d_N));
-        enc_BCH.set_n_frames(std::sqrt(d_N));
-        auto cp_r = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K, std::sqrt(d_N), dec_BCH, enc_BCH);
-        auto cp_c = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K, std::sqrt(d_N), dec_BCH, enc_BCH);
-        cp_r.set_n_frames(std::sqrt(d_N));
-        cp_c.set_n_frames(std::sqrt(d_N));
-        // std::vector<float> alpha = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
-        d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_product<B_8, Q_8>>(4, alpha, cp_r, cp_c, *d_pi);
+        d_K_sqrt = N_sqrt - rdncy;
+        auto dec_BCH = aff3ct::module::Decoder_BCH_std<B_8, Q_8>(d_K_sqrt, N_sqrt, *d_poly_gen);
+        auto enc_BCH = aff3ct::module::Encoder_BCH<B_8>(d_K_sqrt, N_sqrt, *d_poly_gen);
+        dec_BCH.set_n_frames(N_sqrt);
+        enc_BCH.set_n_frames(N_sqrt);
+        auto cp_r = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K_sqrt, N_sqrt, dec_BCH, enc_BCH);
+        auto cp_c = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K_sqrt, N_sqrt, dec_BCH, enc_BCH);
+        cp_r.set_n_frames(N_sqrt);
+        cp_c.set_n_frames(N_sqrt);
+
+        d_decoder = std::make_unique<aff3ct::module::Decoder_turbo_product<B_8, Q_8>>(n_iterations, alpha, cp_r, cp_c, *d_pi);
         
 
 //         Decoder_chase_pyndiah(const int K,
@@ -105,22 +157,22 @@ tpc_decoder_aff3ct_impl::~tpc_decoder_aff3ct_impl()
 {
 }
 
-int tpc_decoder_aff3ct_impl::get_output_size() { return d_K; }
-int tpc_decoder_aff3ct_impl::get_input_size() { return d_N; }
+int tpc_decoder_aff3ct_impl::get_output_size() { return d_K_sqrt * d_K_sqrt; }
+int tpc_decoder_aff3ct_impl::get_input_size() { return d_N_sqrt * d_N_sqrt; }
 
 bool tpc_decoder_aff3ct_impl::set_frame_size(unsigned int K)
 {
     return true;
 }
 
-double tpc_decoder_aff3ct_impl::rate() { return static_cast<float>(d_K) / d_N; } // decoder rate
+double tpc_decoder_aff3ct_impl::rate() { return static_cast<float>(d_K_sqrt * d_K_sqrt) / d_N_sqrt * d_N_sqrt; } // decoder rate
 
 void tpc_decoder_aff3ct_impl::generic_work(const void* inbuffer, void* outbuffer)
 {
     const float* in = (const float*)inbuffer;
     B_8* out = (B_8*)outbuffer;
 
-    volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_N);
+    volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_N_sqrt*d_N_sqrt);
     d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
     
     int status = d_decoder->decode_siho(d_quant_input.data(), out, -1);

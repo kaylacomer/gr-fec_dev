@@ -17,19 +17,27 @@ namespace gr {
 namespace fec_dev {
 
 /*!
-* \brief tpc Encoding class.
+* \brief TPC decoding class (via AFF3CT library).
 * \ingroup error_coding_blk
 *
 * \details
-* A tpc encoder class
+* This class performs Turbo Product Code (TPC)
+* decoding using the AFF3CT library API. For more information about the decoder parameters, see
+* https://aff3ct.readthedocs.io/en/latest/user/simulation/parameters/codec/turbo_prod/codec.html
 */
 class FEC_API tpc_encoder_aff3ct : virtual public fec::generic_encoder
 {
 public:
     /*!
-    * Build a tpc encoding FEC API object.
+    * Build a TPC encoding FEC API object.
     *
-    * \param frame_size Number of bits per frame
+    * \param K_sqrt Number of bits per frame input to each BCH sub-encoder / output from each sub-decoder
+    * \param N_sqrt Number of bits per frame output from each BCH sub-encoder / input to each sub-decoder
+    * \param t Correction factor in each BCH sub-encoder
+    * \param bch_simd_strat SIMD strategy for BCH sub-encoders. Only works with SEQ currently.
+    * \param interleaver Type of interleaver
+    * \param read_order Interleaver read order for COL_ROW, ROW_COL types
+    * \param parity_extended Whether the sub-encoders have a parity bit
     */
     static generic_encoder::sptr make(int K_sqrt,
                                     int N_sqrt,

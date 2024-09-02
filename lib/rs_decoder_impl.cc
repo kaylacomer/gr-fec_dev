@@ -23,6 +23,8 @@ fec::generic_decoder::sptr rs_decoder::make(int frame_size, uint8_t t, uint8_t q
         : generic_decoder("rs_decoder"),
         d_frame_size(frame_size)
     {
+        throw std::runtime_error("AFF3CT-based RS decoder is not currently functional");
+
         set_frame_size(frame_size);
 
         uint8_t m = std::ceil(std::log2(frame_size+1));
