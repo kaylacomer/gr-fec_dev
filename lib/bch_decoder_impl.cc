@@ -108,7 +108,7 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     B_8* out = (B_8*)outbuffer;
 
     volk_32f_s32f_multiply_32f(d_tmp_input.data(), in, -1.0f, d_codeword_size);
-    d_quant->process(d_tmp_input.data(), &d_quant_input[d_zeros], -1);
+    d_quant->process(d_tmp_input.data(), d_quant_input.data(), -1);
     
     int status = d_decoder->decode_siho(d_quant_input.data(), d_tmp_output.data(), -1);
 
@@ -125,10 +125,10 @@ void bch_decoder_impl::generic_work(const void* inbuffer, void* outbuffer)
         }
     }
     for (int i = 0; i < d_frame_size; i++) {
-        out[i] = static_cast<B_8>(d_tmp_output[d_zeros + i]);
-        if (static_cast<B_32>(out[i]) != d_tmp_output[d_zeros + i]) {
+        out[i] = static_cast<B_8>(d_tmp_output[i]);
+        if (static_cast<B_32>(out[i]) != d_tmp_output[i]) {
             std::cout << "out: " << static_cast<B_32>(out[i]) << std::endl;
-            std::cout << "tmp out: " << d_tmp_output[d_zeros + i] << std::endl;
+            std::cout << "tmp out: " << d_tmp_output[i] << std::endl;
         }
     }
 }

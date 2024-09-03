@@ -97,20 +97,20 @@ void bch_encoder_impl::generic_work(const void* inbuffer, void* outbuffer)
     * Since the input and output data are unpacked and consist only of 0s and 1s, the type cast works.
     */
     for (int i = 0; i < d_frame_bits; ++i) {
-        d_tmp_input[d_zeros + i] = static_cast<B_32>(in[i]);
-        if (static_cast<B_32>(in[i]) != d_tmp_input[d_zeros + i]) {
+        d_tmp_input[i] = static_cast<B_32>(in[i]);
+        if (static_cast<B_32>(in[i]) != d_tmp_input[i]) {
             std::cout << "in: " << static_cast<B_32>(in[i]) << std::endl;
-            std::cout << "tmp in: " << d_tmp_input[d_zeros + i] << std::endl;
+            std::cout << "tmp in: " << d_tmp_input[i] << std::endl;
         }
     }
 
     d_encoder->encode(d_tmp_input.data(), d_tmp_output.data());
 
     for (int i = 0; i < d_codeword_size; i++) {
-        out[i] = static_cast<B_8>(d_tmp_output[d_zeros + i]);
-        if (static_cast<B_32>(out[i]) != d_tmp_output[d_zeros + i]) {
+        out[i] = static_cast<B_8>(d_tmp_output[i]);
+        if (static_cast<B_32>(out[i]) != d_tmp_output[i]) {
             std::cout << "out: " << static_cast<B_32>(out[i]) << std::endl;
-            std::cout << "tmp out: " << d_tmp_output[d_zeros + i] << std::endl;
+            std::cout << "tmp out: " << d_tmp_output[i] << std::endl;
         }
     }
     // std::memcpy(out, &d_tmp_output[d_zeros], d_codeword_size);
