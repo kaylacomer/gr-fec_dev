@@ -117,17 +117,31 @@ fec::generic_decoder::sptr tpc_decoder_aff3ct::make(int K_sqrt,
 
         d_pi = std::make_unique<aff3ct::module::Interleaver<Q_8>>(*d_interleaver_core);
 
-        d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(N, 2);
+        if (quant_impl == Quantizer::STD) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(N, quant_fixed_point_pos, quant_saturation_pos);
+        }
+        else if (quant_impl == Quantizer::FAST) {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(N, quant_fixed_point_pos, quant_saturation_pos);
+        }
+        else {
+            d_quant = std::make_unique<aff3ct::module::Quantizer_NO<float, Q_8>>(N);
+        }
         d_quant_input = std::vector<Q_8>(N);
         d_tmp_input = std::vector<float>(N);
 
         d_poly_gen = std::make_unique<aff3ct::tools::BCH_polynomial_generator<B_8>>(N_sqrt, t);
         int rdncy = d_poly_gen->get_n_rdncy();
         d_K_sqrt = N_sqrt - rdncy;
+        if (bch_dec_impl != Decoder::STD) {
+            throw std::runtime_error("Only BCH STD dec_impl supported at this time");
+        }
         auto dec_BCH = aff3ct::module::Decoder_BCH_std<B_8, Q_8>(d_K_sqrt, N_sqrt, *d_poly_gen);
         auto enc_BCH = aff3ct::module::Encoder_BCH<B_8>(d_K_sqrt, N_sqrt, *d_poly_gen);
         dec_BCH.set_n_frames(N_sqrt);
         enc_BCH.set_n_frames(N_sqrt);
+        if (chase_pyndiah_impl != Decoder::STD) {
+            throw std::runtime_error("Only STD CP dec_impl supported at this time");
+        }
         auto cp_r = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K_sqrt, N_sqrt, dec_BCH, enc_BCH);
         auto cp_c = aff3ct::module::Decoder_chase_pyndiah<B_8, Q_8>(d_K_sqrt, N_sqrt, dec_BCH, enc_BCH);
         cp_r.set_n_frames(N_sqrt);

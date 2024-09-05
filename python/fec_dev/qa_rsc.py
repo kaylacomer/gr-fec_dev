@@ -14,8 +14,8 @@ class test_bch(gr_unittest.TestCase):
         frame_bits = 176
         data_size = frame_bits//8
 
-        enc = fec_dev.bch_encoder.make(frame_bits)
-        dec = fec_dev.bch_decoder.make(frame_bits)
+        enc = fec_dev.rsc_encoder.make(frame_bits)
+        dec = fec_dev.rsc_decoder.make(frame_bits, dec_type=fec_dev.RSC.Viterbi_SIHO)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)
@@ -34,8 +34,8 @@ class test_bch(gr_unittest.TestCase):
         frame_bits = 180
         data_size = frame_bits//8
 
-        enc = fec_dev.bch_encoder.make(frame_bits)
-        dec = fec_dev.bch_decoder.make(frame_bits)
+        enc = fec_dev.rsc_encoder.make(frame_bits)
+        dec = fec_dev.rsc_decoder.make(frame_bits, dec_type=fec_dev.RSC.Viterbi_SIHO)
 
         threading = None
         self.test = _qa_helper(data_size, enc, dec, threading)

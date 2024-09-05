@@ -11,9 +11,9 @@ class test_tpc(gr_unittest.TestCase):
         self.tb = None
 
     def test_basic001(self):
-        frame_bits = 176
-        N = 215
-        t = 5
+        frame_bits = 57
+        N = 63
+        t = 1
         data_size = frame_bits//8
 
         enc = fec_dev.tpc_encoder_aff3ct.make(frame_bits, N, t)
@@ -33,9 +33,9 @@ class test_tpc(gr_unittest.TestCase):
         self.assertEqual(data_in, data_out)
     
     def test_basic002(self):
-        frame_bits = 180
-        N = 256
-        t = 5
+        frame_bits = 120
+        N = 127
+        t = 1
         data_size = frame_bits//8
 
         enc = fec_dev.tpc_encoder_aff3ct.make(frame_bits, N, t)

@@ -49,7 +49,6 @@ fec::generic_decoder::sptr rsc_decoder::make(int K,
     {
         set_frame_size(K);
 
-        // d_quant = std::make_unique<aff3ct::module::Quantizer_pow2_fast<float, Q_8>>(d_N, 2);
         if (quant_impl == Quantizer::STD) {
             d_quant = std::make_unique<aff3ct::module::Quantizer_pow2<float, Q_8>>(d_N, quant_fixed_point_pos, quant_saturation_pos);
         }
@@ -139,9 +138,9 @@ fec::generic_decoder::sptr rsc_decoder::make(int K,
         //             throw std::runtime_error("BCJR implementation for INTER_INTRA SIMD must be FAST");
         //         }
         //     }
-        //     else {
-        //         throw std::runtime_error("SIMD strategies (simd_strat) for BCJR include SEQ, INTER, INTRA, and INTER_INTRA");
-        //     }
+            else {
+                throw std::runtime_error("SIMD strategies (simd_strat) for BCJR include SEQ, INTER, INTRA, and INTER_INTRA");
+            }
         // }
 }
 
@@ -149,8 +148,8 @@ rsc_decoder_impl::~rsc_decoder_impl()
 {
 }
 
-int rsc_decoder_impl::get_output_size() { return d_N; }
-int rsc_decoder_impl::get_input_size() { return d_K; }
+int rsc_decoder_impl::get_output_size() { return d_K; }
+int rsc_decoder_impl::get_input_size() { return d_N; }
 
 bool rsc_decoder_impl::set_frame_size(unsigned int K)
 {

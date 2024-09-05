@@ -135,8 +135,12 @@ turbo_decoder_impl::turbo_decoder_impl(int frame_bits,
     // aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8> dec_n;
     // aff3ct::module::Decoder_RSC_BCJR<B_8, Q_8> dec_i;
 
+    
     auto dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_n, buffered);
     auto dec_i = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_i, buffered);
+    if (simd_strat != SIMD::SEQ || bcjr_impl != BCJR::GENERIC) {
+        throw std::runtime_error("simd_strat STD, bcjr_impl GENERIC only supported combination at this time");
+    }
     // if (simd_strat == SIMD::SEQ) {
     //     if (bcjr_impl == BCJR::GENERIC) { // default
             // dec_n = aff3ct::module::Decoder_RSC_BCJR_seq_generic_std<B_8, Q_8>(d_K, trellis_n, buffered);

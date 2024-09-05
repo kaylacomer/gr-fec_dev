@@ -41,7 +41,7 @@ private:
   std::unique_ptr<aff3ct::tools::BCH_polynomial_generator<B_8>> d_poly_gen;
   std::unique_ptr<aff3ct::tools::Interleaver_core<>> d_interleaver_core;
   std::unique_ptr<aff3ct::module::Interleaver<Q_8>> d_pi;
-  std::unique_ptr<aff3ct::module::Quantizer_pow2_fast<float, Q_8>> d_quant;
+  std::unique_ptr<aff3ct::module::Quantizer<float, Q_8>> d_quant;
 
 public:
   tpc_decoder_aff3ct_impl(int K_sqrt,
